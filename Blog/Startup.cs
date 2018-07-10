@@ -14,6 +14,7 @@ namespace Blog
             Console.WriteLine("Please log in or register before using my blog!");
             Console.WriteLine("If you have account login using this format: Username Password");
             Console.WriteLine("Otherwise create account using this format: new Username Password");
+            Console.WriteLine("post Some random Title:Thiis a very informative post:guides,lol,stuff,memes");
             while (true)
             {
                 string input = Console.ReadLine();
@@ -22,7 +23,7 @@ namespace Blog
                     break;
                 }
 
-                string[] inputCommand = input.Split(':');
+                string[] inputCommand = input.Split(' ');
 
                 if (Account.Logged)
                 {
@@ -38,7 +39,10 @@ namespace Blog
                             Blog.ShowAccountInformation();
                             break;
                         case "comment":
-                            Blog.CreateComment(inputCommand[1],inputCommand[2]);
+                            Blog.CreateComment(input);
+                            break;
+                        case "post":
+                            Blog.CreatePost(input);
                             break;
                     }
                 }

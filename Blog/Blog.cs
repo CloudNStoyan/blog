@@ -21,8 +21,15 @@ namespace Blog
         }
 
         public const string ConnectionPath = @"Server=vm5;Port=5437;Database=postgres;Uid=postgres;Pwd=9ae51c68-c9d6-40e8-a1d6-a71be968ba3e;";
-        public static void CreatePost(string title, string content)
+
+        public static void CreatePost(string input) //string title, string content,string[] tags)
         {
+            string title = input.Split(':')[0].Remove(0, 5);
+            string content = input.Split(':')[1];
+            string[] tags = input.Split(':')[2].Split(',');
+
+            var ids = new List<int>();
+            // post Some random Title:Thiis a very informative post:guides,lol,stuff,memes
             using (var conn = new NpgsqlConnection(ConnectionPath))
             {
                 conn.Open();
@@ -31,20 +38,51 @@ namespace Blog
                 cmd.Parameters.AddWithValue("c", content);
                 cmd.Parameters.AddWithValue("u", Account.Id);
                 cmd.ExecuteNonQuery();
+
+                foreach (string tag in tags)
+                {
+                    cmd = new NpgsqlCommand("SELECT * FROM tags WHERE name=@n", conn);
+                    cmd.Parameters.AddWithValue("n", tag);
+                    var rdr = cmd.ExecuteReader();
+                    var build = new StringBuilder();
+                    while (rdr.Read())
+                    {
+                        build.AppendLine($"{rdr["name"]}");
+                    }
+
+                    if (build.ToString().Length == 0)
+                    {
+                        cmd = new NpgsqlCommand("INSERT INTO tags (name) VALUES (@n)",conn);
+                        cmd.Parameters.AddWithValue("n", tag);
+                        cmd.ExecuteNonQuery();
+                    }
+                    else
+                    {
+                        cmd = new NpgsqlCommand("SELECT * FROM tags WHERE name=@n",conn); // DELETE WHOLE SCOPE
+                        cmd.Parameters.AddWithValue("n", tag);
+                        rdr = cmd.ExecuteReader();
+                        while (rdr.Read())
+                        {
+
+                        }
+                    }
+                }
                 cmd.Dispose();
                 conn.Dispose();
             }
+
         }
 
-        public static void CreateComment( string content, string postId)
+        public static void CreateComment(string input)
         {
+            string[] splitedInput = input.Split(':');
             using (var conn = new NpgsqlConnection(ConnectionPath))
             {
                 conn.Open();
                 var cmd = new NpgsqlCommand("INSERT INTO comments (author_name,content,post_id) VALUES (@a,@c,@p)",conn);
                 cmd.Parameters.AddWithValue("a", Account.Name);
-                cmd.Parameters.AddWithValue("c", content);
-                cmd.Parameters.AddWithValue("p", int.Parse(postId));
+                cmd.Parameters.AddWithValue("c", splitedInput[1]);
+                cmd.Parameters.AddWithValue("p", int.Parse(splitedInput[0].Split(' ')[1]));
                 cmd.ExecuteNonQuery();
                 cmd.Dispose();
                 conn.Dispose();

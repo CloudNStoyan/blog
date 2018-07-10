@@ -12,7 +12,7 @@ namespace Blog
    {
        public static string Name;
        public static int PostsCount;
-       public static string Id;
+       public static int Id;
        public static bool Logged;
 
        public static void Login(string name, string password)
@@ -35,7 +35,7 @@ namespace Blog
                if (buildOutput.Length > 1)
                {
                    Name = userInfo[0];
-                   Id = userInfo[2];
+                   Id = int.Parse(userInfo[2]);
                    Logged = true;
                }
                else
