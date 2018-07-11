@@ -38,11 +38,23 @@ namespace Blog
                         case "profile":
                             Blog.ShowAccountInformation();
                             break;
-                        case "comment":
+                        case "comment:":
                             Blog.CreateComment(input);
                             break;
                         case "post":
                             Blog.CreatePost(input);
+                            break;
+                        case "view":
+                            Blog.ViewPost(input);
+                            break;
+                        case "edit-post-title:":
+                            Blog.EditPostTitle(input);
+                            break;
+                        case "edit-post-content:":
+                            Blog.EditPostContent(input);
+                            break;
+                        case "edit-comment:":
+                            Blog.EditComment(input);
                             break;
                     }
                 }
