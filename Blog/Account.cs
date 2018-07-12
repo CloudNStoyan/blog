@@ -37,6 +37,8 @@ namespace Blog
                    Name = userInfo[0];
                    Id = int.Parse(userInfo[2]);
                    Logged = true;
+                   Console.WriteLine($"Sucesfully logged as {Name}");
+                   Console.WriteLine("Type help for more information");
                }
                else
                {
@@ -48,6 +50,16 @@ namespace Blog
                conn.Dispose();
            }
        }
+
+       public static void AskForLogin()
+       {
+           Console.Write("Username: ");
+           string name = Console.ReadLine();
+           Console.Write("Password: ");
+           string password = Console.ReadLine();
+
+           Login(name,password);
+        }
 
        public static void Create(string name, string password)
        {

@@ -15,15 +15,36 @@ namespace Blog
             Console.WriteLine("If you have account login using this format: Username Password");
             Console.WriteLine("Otherwise create account using this format: new Username Password");
             Console.WriteLine("post Some random Title:Thiis a very informative post:guides,lol,stuff,memes");
+
+
+            while (!Account.Logged)
+            {
+                Account.AskForLogin();
+            }
+
             while (true)
             {
+                Console.Write("Blog --> ");
                 string input = Console.ReadLine();
                 if (input.ToLowerInvariant().Trim() == "exit")
                 {
                     break;
                 }
 
-                string[] inputCommand = input.Split(' ');
+                switch (input)
+                {
+                    case "help":
+                        Blog.ShowAllCommands();
+                        break;
+                    case "help-post":
+                        Blog.ShowPostCommands();
+                        break;
+                    case "help-comment":
+                        Blog.ShowCommentCommands();
+                        break;
+                }
+
+                /*string[] inputCommand = input.Split(' ');
 
                 if (Account.Logged)
                 {
@@ -83,6 +104,7 @@ namespace Blog
                         Console.WriteLine($"There is no account with {inputCommand[0]} {inputCommand[1]} details!");
                     }
                 }
+                */
             }
         }
     }
