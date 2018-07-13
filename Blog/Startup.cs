@@ -42,6 +42,15 @@ namespace Blog
                     case "help-comment":
                         Blog.ShowCommentCommands();
                         break;
+                    case "help-account":
+                        Blog.ShowAccountCommands();
+                        break;
+                    case "post-create":
+                        Blog.BeginCreatingPost();
+                        break;
+                    case "my-posts":
+                        Blog.ViewAccountPosts();
+                        break;
                 }
 
                 /*string[] inputCommand = input.Split(' ');
@@ -66,7 +75,7 @@ namespace Blog
                             Blog.CreatePost(input);
                             break;
                         case "view":
-                            Blog.ViewPost(input);
+                            Blog.ChoosePost(input);
                             break;
                         case "edit-post-title:":
                             Blog.EditPostTitle(input);
