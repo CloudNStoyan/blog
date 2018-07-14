@@ -243,16 +243,30 @@ namespace Blog
 
         }
 
-        public static void CreateComment(string input)
+        public static void CreateCommentInterface()
         {
-            string[] splitedInput = input.Split(':');
+            Console.Write("Your comment(Type 'done' when you are done!): ");
+            var buildComment = new StringBuilder();
+            while (true)
+            {
+                string line = Console.ReadLine();
+                if (line.ToLowerInvariant().Trim() == "done")
+                {
+                    break;
+                }
+
+                buildComment.AppendLine(line);
+            }
+
+            string comment = buildComment.ToString().Trim();
+
             using (var conn = new NpgsqlConnection(ConnectionPath))
             {
                 conn.Open();
                 using (var cmd = new NpgsqlCommand("INSERT INTO comments (author_name,content,post_id) VALUES (@a,@c,@p)", conn))
                 {
                     cmd.Parameters.AddWithValue("a", Account.Name);
-                    cmd.Parameters.AddWithValue("c", splitedInput[1]);
+                    cmd.Parameters.AddWithValue("c", comment);
                     cmd.Parameters.AddWithValue("p", CurrentPost);
                     cmd.ExecuteNonQuery();
                     cmd.Dispose();
@@ -260,11 +274,28 @@ namespace Blog
 
                 conn.Dispose();
             }
+
+            Console.WriteLine("You successfully commented!");
         }
 
-        public static void EditComment(string input)
+        public static void EditComment()
         {
-            string[] splitedInput = input.Split(':');
+            Console.Write("Edit comment(Type 'done' when you are done):");
+
+            var buildNewComment = new StringBuilder();
+            while (true)
+            {
+                string line = Console.ReadLine();
+                if (line.ToLowerInvariant().Trim() == "done")
+                {
+                    break;
+                }
+
+                buildNewComment.AppendLine(line);
+            }
+
+            string newComment = buildNewComment.ToString();
+
             using (var conn = new NpgsqlConnection(ConnectionPath))
             {
                 conn.Open();
@@ -284,7 +315,7 @@ namespace Blog
                 }
                 using (var cmd = new NpgsqlCommand("UPDATE comments SET content=@c WHERE comment_id=@i", conn))
                 {
-                    cmd.Parameters.AddWithValue("c", splitedInput[1]);
+                    cmd.Parameters.AddWithValue("c", newComment);
                     cmd.Parameters.AddWithValue("i", commentId);
                     cmd.ExecuteNonQuery();
                     cmd.Dispose();
@@ -369,7 +400,12 @@ namespace Blog
         {
             if (Account.Id == userId)
             {
-                Console.WriteLine("\nDISCLAIMER: You can comment and edit this post!\nType: edit-help too see how!\nType: refresh to view again the post!\n");
+                var buildDisclaimer = new StringBuilder();
+                buildDisclaimer.AppendLine("\nDISCLAIMER: You can comment and edit this post!");
+                buildDisclaimer.AppendLine("Type: edit-help to see how to edit!");
+                buildDisclaimer.AppendLine("Type: comment-post to see how to comment!");
+                buildDisclaimer.AppendLine("Type: refresh to view again ths post!");
+                Console.WriteLine(buildDisclaimer);
             }
             else
             {
@@ -389,6 +425,12 @@ namespace Blog
                 {
                     case "refresh":
                         ViewPost(CurrentPost);
+                        break;
+                    case "comment-post":
+                        CreateCommentInterface();
+                        break;
+                    case "comment-select-mine":
+                        ShowUserComments();
                         break;
                     case "edit-help":
                         ShowEditCommands();
@@ -414,6 +456,71 @@ namespace Blog
 
                         EditPostContent(CurrentPost, buildContent.ToString());
                         break;
+                }
+            }
+        }
+
+        public static void ShowUserComments()
+        {
+            var commentIds = new List<int>();
+            var commentContents = new List<string>();
+
+            using (var conn = new NpgsqlConnection(ConnectionPath))
+            {
+                conn.Open();
+
+                using (var cmd = new NpgsqlCommand("SELECT * FROM comments WHERE author_name=@n", conn))
+                {
+                    cmd.Parameters.AddWithValue("n", Account.Name);
+
+                    using (var rdr = cmd.ExecuteReader())
+                    {
+                        while (rdr.Read())
+                        {
+                            commentIds.Add(int.Parse($"{rdr["comment_id"]}"));
+                            commentContents.Add($"{rdr["content"]}");
+                        }
+                    }
+                }
+
+                conn.Dispose();
+            }
+
+            for (int i = 0; i < commentIds.Count; i++)
+            {
+                var shortContent = new StringBuilder();
+                for (int j = 0; j < commentContents[i].Length || j < 7; j++)
+                {
+                    shortContent.Append(commentContents[i][j]);
+                }
+                Console.WriteLine($"{i + 1} | {shortContent}...");
+            }
+
+
+
+            while (true)
+            {
+                Console.Write("Select comment: ");
+                try
+                {
+                    string line = Console.ReadLine();
+                    if (line.ToLowerInvariant().Trim() == "return")
+                    {
+                        break;
+                    }
+
+                    int selectedComment = int.Parse(line) - 1;
+                    if (selectedComment > commentContents.Count - 1)
+                    {
+                        Console.WriteLine($"Please select comments from 1 to {commentContents.Count - 1}");
+                        continue;
+                    }
+
+                    Console.WriteLine(commentContents[selectedComment]);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Please type number!");
                 }
             }
         }
