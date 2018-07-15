@@ -10,66 +10,6 @@ namespace Blog
     
     public static class Blog
     {
-        public static void ShowAllCommands()
-        {
-            var buildAllCommands = new StringBuilder();
-            buildAllCommands.AppendLine("<--All Commands-->");
-            buildAllCommands.AppendLine("# help-post");
-            buildAllCommands.AppendLine("* This command gives you information on how to post a new post!");
-            buildAllCommands.AppendLine("# help-comment");
-            buildAllCommands.AppendLine("* This command gives you information on how to comment on a post!");
-            buildAllCommands.AppendLine("# help-view");
-            buildAllCommands.AppendLine("* This command gives you information on how to view material on the blog!");
-            buildAllCommands.AppendLine("# help-account");
-            buildAllCommands.AppendLine("* This command gives you information on what profile commands you have!");
-            buildAllCommands.AppendLine("<--All Commands-->");
-            Console.WriteLine(buildAllCommands.ToString().Trim());
-        }
-
-        public static void ShowPostCommands()
-        {
-            var buildPostCommands = new StringBuilder();
-            buildPostCommands.AppendLine("<--Post commands-->");
-            buildPostCommands.AppendLine("# post-create");
-            buildPostCommands.AppendLine("* This command walks you through a procces for making a new post!");
-            buildPostCommands.AppendLine("<--Post commands-->");
-            Console.WriteLine(buildPostCommands.ToString().Trim());
-        }
-
-        public static void ShowCommentCommands()
-        {
-            var buildCommentCommands = new StringBuilder();
-            buildCommentCommands.AppendLine("<--Comment commands-->");
-            buildCommentCommands.AppendLine("# comment-create");
-            buildCommentCommands.AppendLine("* This command walks you through a procces for commenting on a existing post!");
-            buildCommentCommands.AppendLine("# comment-edit");
-            buildCommentCommands.AppendLine("* This command walks you through a procces for editing an existing comment!");
-            buildCommentCommands.AppendLine("<--Comment commands-->");
-            Console.WriteLine(buildCommentCommands.ToString().Trim());
-        }
-
-        public static void ShowAccountCommands()
-        {
-            var buildAccountCommands = new StringBuilder();
-            buildAccountCommands.AppendLine("<--Account commands-->");
-            buildAccountCommands.AppendLine("# my-posts");
-            buildAccountCommands.AppendLine("* This command let you choose which of your posts you want to view!");
-            buildAccountCommands.AppendLine("<--Account commands-->");
-            Console.WriteLine(buildAccountCommands.ToString().Trim());
-        }
-
-        public static void ShowEditCommands()
-        {
-            var buildEditCommands = new StringBuilder();
-            buildEditCommands.AppendLine("<--Edit commands-->");
-            buildEditCommands.AppendLine("# edit-title");
-            buildEditCommands.AppendLine("* This command is giving you the opportunity to edit the title of the post!");
-            buildEditCommands.AppendLine("# edit-content");
-            buildEditCommands.AppendLine("* This command is giving you the opportunity to edit the content of the post!");
-            buildEditCommands.AppendLine("<--Edit commands-->");
-            Console.WriteLine(buildEditCommands.ToString().Trim());
-        }
-
         public const string ConnectionPath = @"Server=vm5;Port=5437;Database=postgres;Uid=postgres;Pwd=9ae51c68-c9d6-40e8-a1d6-a71be968ba3e;";
         public static int CurrentPost;
         public static int CurrentPostUserId;
@@ -103,9 +43,10 @@ namespace Blog
                 Console.WriteLine("Choose which post to view by entering his number! type return to return to main menu!");
                 while (true)
                 {
+                    Console.WriteLine("Type 'return' to return to the blog!");
                     Console.Write("Post number: ");
                     string line = Console.ReadLine();
-                    if (line.ToLowerInvariant().Trim() == "done")
+                    if (line.ToLowerInvariant().Trim() == "return")
                     {
                         break;
                     }
@@ -126,121 +67,6 @@ namespace Blog
                 }
                 conn.Dispose();
             }
-        }
-
-        public static void BeginCreatingPost()
-        {
-            Console.Write("Title: ");
-            string title = Console.ReadLine();
-            Console.Write("Content(Type done when you are done!): ");
-            var buildContent = new StringBuilder();
-            while (true)
-            {
-                string line = Console.ReadLine();
-                if (line.ToLowerInvariant().Trim() == "done")
-                {
-                    break;
-                }
-
-                buildContent.AppendLine(line);
-            }
-
-            string content = buildContent.ToString();
-            Console.Write("Tags(Split tags by ',')!: ");
-            string[] tags = Console.ReadLine().Split(',');
-            CreatePost(title,content,tags);
-            Console.WriteLine("Done! if you want to view your post type view-latest");
-
-        }
-
-        public static void CreatePost(string title,string content,string[] tags)
-        {
-            var ids = new List<int>();
-
-            using (var conn = new NpgsqlConnection(ConnectionPath))
-            {
-                conn.Open();
-                using (var cmd = new NpgsqlCommand("INSERT INTO posts (title,content,user_id) VALUES (@t,@c,@u)", conn))
-                {
-                    cmd.Parameters.AddWithValue("t", title);
-                    cmd.Parameters.AddWithValue("c", content);
-                    cmd.Parameters.AddWithValue("u", Account.Id);
-                    cmd.ExecuteNonQuery();
-                }
-
-
-                var build = new StringBuilder();
-                string buildId = String.Empty;
-
-                foreach (string tag in tags)
-                {
-                    using (var cmd = new NpgsqlCommand("SELECT * FROM tags WHERE name=@n", conn))
-                    {
-                        cmd.Parameters.AddWithValue("n", tag);
-                        using (var rdr = cmd.ExecuteReader())
-                        {
-                            while (rdr.Read())
-                            {
-                                build.AppendLine($"{rdr["name"]}");
-                                buildId = $"{rdr["tag_id"]}";
-                            }
-                        }
-                    }
-
-                    if (build.ToString().Length == 0)
-                    {
-                        using (var cmd = new NpgsqlCommand("INSERT INTO tags (name) VALUES (@n)", conn))
-                        {
-                            cmd.Parameters.AddWithValue("n", tag);
-                            cmd.ExecuteNonQuery();
-                        }
-
-                        using (var cmd = new NpgsqlCommand("SELECT * FROM tags WHERE name=@t", conn))
-                        {
-                            cmd.Parameters.AddWithValue("t", tag);
-                            using (var rdr = cmd.ExecuteReader())
-                            {
-                                while (rdr.Read())
-                                {
-                                    ids.Add(int.Parse(rdr["tag_id"].ToString()));
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        ids.Add(int.Parse(buildId));
-                    }
-                }
-
-                    
-                int postId = 0;
-                using (var cmd = new NpgsqlCommand("SELECT * FROM posts WHERE title=@t", conn))
-                {
-                    cmd.Parameters.AddWithValue("t", title);
-                    using (var rdr = cmd.ExecuteReader())
-                    {
-                        while (rdr.Read())
-                        {
-                            postId = int.Parse(rdr["post_id"].ToString());
-                        }
-                    }
-                }
-
-
-                foreach (int id in ids)
-                {
-                    using (var cmd = new NpgsqlCommand("INSERT INTO posts_tags (post_id,tag_id) VALUES (@p,@t)", conn))
-                    {
-                        cmd.Parameters.AddWithValue("p", postId);
-                        cmd.Parameters.AddWithValue("t", id);
-                        cmd.ExecuteNonQuery();
-                    }
-                }
-
-                conn.Dispose();
-            }
-
         }
 
         public static void CreateCommentInterface()
@@ -278,7 +104,7 @@ namespace Blog
             Console.WriteLine("You successfully commented!");
         }
 
-        public static void EditComment()
+        public static string EditComment(int commentId)
         {
             Console.Write("Edit comment(Type 'done' when you are done):");
 
@@ -299,100 +125,25 @@ namespace Blog
             using (var conn = new NpgsqlConnection(ConnectionPath))
             {
                 conn.Open();
-                int commentId = 0;
-                using (var cmd = new NpgsqlCommand("SELECT * FROM comments WHERE author_name=@n AND post_id=@i",conn))
-                {
-                    cmd.Parameters.AddWithValue("n", Account.Name);
-                    cmd.Parameters.AddWithValue("i", CurrentPost);
-                    using (var rdr = cmd.ExecuteReader())
-                    {
-                        while (rdr.Read())
-                        {
-                            commentId = int.Parse(rdr["comment_id"].ToString());
-                            Console.WriteLine(commentId);
-                        }
-                    }
-                }
+
                 using (var cmd = new NpgsqlCommand("UPDATE comments SET content=@c WHERE comment_id=@i", conn))
                 {
                     cmd.Parameters.AddWithValue("c", newComment);
                     cmd.Parameters.AddWithValue("i", commentId);
                     cmd.ExecuteNonQuery();
-                    cmd.Dispose();
                 }
-                conn.Dispose();
-            }
-        }
-
-        public static void ViewPost(int id)
-        {
-            using (var conn = new NpgsqlConnection(ConnectionPath))
-            {
-                conn.Open();
-                StringBuilder build;
-
-                int userId = 0;
-
-                using (var cmd = new NpgsqlCommand("SELECT * FROM posts WHERE post_id=@i", conn))
-                {
-                    cmd.Parameters.AddWithValue("i", id);
-
-                    using (var rdr = cmd.ExecuteReader())
-                    {
-                        build = new StringBuilder();
-
-                        while (rdr.Read())
-                        {
-                            userId = int.Parse($"{rdr["user_id"]}");
-                            build.AppendLine($"Title: {rdr["title"]}\n");
-                            build.AppendLine($"Content: {rdr["content"]}\n");
-                        }
-                    }
-                }
-
-                var tagIds = new List<int>();
-
-                using (var cmd = new NpgsqlCommand("SELECT * FROM posts_tags WHERE post_id=@i", conn))
-                {
-                    cmd.Parameters.AddWithValue("i", id);
-
-                    using (var rdr = cmd.ExecuteReader())
-                    {
-                        while (rdr.Read())
-                        {
-                            tagIds.Add(int.Parse(rdr["tag_id"].ToString()));
-                        }
-                    }
-                }
-
-                foreach (int tagId in tagIds)
-                {
-                    using (var cmd = new NpgsqlCommand("SELECT * FROM tags WHERE tag_id=@i", conn))
-                    {
-                        cmd.Parameters.AddWithValue("i", tagId);
-
-                        using (var rdr = cmd.ExecuteReader())
-                        {
-                            while (rdr.Read())
-                            {
-                                build.Append($"#{rdr["name"]} ");
-                            }
-                        }
-                    }
-                }
-
-                Console.WriteLine(build);
-                CurrentPost = id;
-                CurrentPostUserId = userId;
-
 
                 conn.Dispose();
             }
+
+            Console.WriteLine("Great you edited this comment!");
+            return newComment;
         }
+
 
         public static void ChoosePost(int id)
         {
-            ViewPost(id);
+            Post.ViewPost(id);
             PostInterface(CurrentPostUserId);
         }
 
@@ -414,6 +165,7 @@ namespace Blog
 
             while (true)
             {
+                Console.WriteLine("Type 'return' to return to the blog!");
                 Console.Write("Blog -->#Post: ");
                 string line = Console.ReadLine();
                 if (line.ToLowerInvariant().Trim() == "return")
@@ -424,7 +176,7 @@ namespace Blog
                 switch (line)
                 {
                     case "refresh":
-                        ViewPost(CurrentPost);
+                        Post.ViewPost(CurrentPost);
                         break;
                     case "comment-post":
                         CreateCommentInterface();
@@ -433,11 +185,11 @@ namespace Blog
                         ShowUserComments();
                         break;
                     case "edit-help":
-                        ShowEditCommands();
+                        Commands.ShowPostEdits();
                         break;
                     case "edit-title":
                         Console.Write("New title: ");
-                        EditPostTitle(CurrentPost, Console.ReadLine());
+                        Post.EditPostTitle(CurrentPost, Console.ReadLine());
                         break;
                     case "edit-content":
                         Console.Write("New content: ");
@@ -454,7 +206,7 @@ namespace Blog
                             buildContent.AppendLine(input);
                         }
 
-                        EditPostContent(CurrentPost, buildContent.ToString());
+                        Post.EditPostContent(CurrentPost, buildContent.ToString());
                         break;
                 }
             }
@@ -500,6 +252,7 @@ namespace Blog
 
             while (true)
             {
+                Console.WriteLine("Type 'return' to return to the post!!");
                 Console.Write("Select comment: ");
                 try
                 {
@@ -516,7 +269,30 @@ namespace Blog
                         continue;
                     }
 
-                    Console.WriteLine(commentContents[selectedComment]);
+                    Console.WriteLine("Please choose between viewing or editing the comment!");
+                    Console.WriteLine("To view the comment type view");
+                    Console.WriteLine("To edit the comment type edit");
+                    Console.WriteLine("Return to choosing comment by typing 'return'");
+                    while (true)
+                    {
+                        Console.Write("You choosed: ");
+                        string input = Console.ReadLine();
+                        if (input.ToLowerInvariant().Trim() == "view")
+                        {
+                            Console.WriteLine(commentContents[selectedComment]);
+                        } else if (input.ToLowerInvariant().Trim() == "edit")
+                        {
+                            string editedComment = EditComment(commentIds[selectedComment]);
+                            commentContents[selectedComment] = editedComment;
+                        } else if (input.ToLowerInvariant().Trim() == "return")
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Please choose between view,edit and return!");
+                        }
+                    }
                 }
                 catch (Exception e)
                 {
@@ -525,41 +301,9 @@ namespace Blog
             }
         }
 
-        public static void EditPostContent(int postId, string content)
-        {
-            using (var conn = new NpgsqlConnection(ConnectionPath))
-            {
-                conn.Open();
+        
 
-                using (var cmd = new NpgsqlCommand($"UPDATE posts SET content=@c WHERE post_id=@p",conn))
-                {
-                    cmd.Parameters.AddWithValue("c", content);
-                    cmd.Parameters.AddWithValue("p", postId);
-                    cmd.ExecuteNonQuery();
-                }
-
-                conn.Dispose();
-            }
-        }
-
-        public static void EditPostTitle(int postId, string title)
-        {
-            using (var conn = new NpgsqlConnection(ConnectionPath))
-            {
-                conn.Open();
-
-                using (var cmd = new NpgsqlCommand($"UPDATE posts SET title=@t WHERE post_id=@p",conn))
-                {
-                    cmd.Parameters.AddWithValue("t", title);
-                    cmd.Parameters.AddWithValue("p", postId);
-                    cmd.ExecuteNonQuery();
-                }
-
-                Console.WriteLine("You succesfully edited this post title!");
-
-                conn.Dispose();
-            }
-        }
+        
 
         public static void ShowLatests()
         {

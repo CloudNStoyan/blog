@@ -17,6 +17,20 @@ namespace Blog
             Console.WriteLine("post Some random Title:Thiis a very informative post:guides,lol,stuff,memes");
 
 
+            while (true)
+            {
+                Console.Write("Do you have an existing account! (Y/N) ");
+                string line = Console.ReadLine();
+                if (line.ToLowerInvariant().Trim() == "n")
+                {
+                    Account.Create();
+                    break;
+                } else if (line.ToLowerInvariant().Trim() == "y")
+                {
+                    break;
+                }
+            }
+
             while (!Account.Logged)
             {
                 Account.AskForLogin();
@@ -34,19 +48,19 @@ namespace Blog
                 switch (input)
                 {
                     case "help":
-                        Blog.ShowAllCommands();
+                        Commands.ShowAll();
                         break;
                     case "help-post":
-                        Blog.ShowPostCommands();
+                        Commands.ShowPosts();
                         break;
                     case "help-comment":
-                        Blog.ShowCommentCommands();
+                        Commands.ShowComments();
                         break;
                     case "help-account":
-                        Blog.ShowAccountCommands();
+                        Commands.ShowAccounts();
                         break;
                     case "post-create":
-                        Blog.BeginCreatingPost();
+                        Post.BeginCreatingPost();
                         break;
                     case "my-posts":
                         Blog.ViewAccountPosts();
@@ -60,7 +74,7 @@ namespace Blog
                     switch (inputCommand[0])
                     {
                         case "help":
-                            Blog.ShowAllCommands();
+                            Blog.ShowAll();
                             break;
                         case "latests":
                             Blog.ShowLatests();

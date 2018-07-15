@@ -61,8 +61,29 @@ namespace Blog
            Login(name,password);
         }
 
-       public static void Create(string name, string password)
+       public static void Create()
        {
+           Console.WriteLine("You are creating new account please fill the fields!");
+           string name;
+           string password;
+           while (true)
+           {
+               Console.Write("Username: ");
+               name = Console.ReadLine();
+
+               Console.Write("Password: ");
+               password = Console.ReadLine();
+               Console.Write("Confirm Password: ");
+               if (Console.ReadLine() == password)
+               {
+                   break;
+               }
+               else
+               {
+                   Console.WriteLine("Your password confirmation was incorrect!");
+               }
+           }
+
            using (var conn = new NpgsqlConnection(Blog.ConnectionPath))
            {
                conn.Open();
@@ -73,6 +94,9 @@ namespace Blog
                cmd.Dispose();
                conn.Dispose();
            }
+
+
+           Login(name,password);
        }
    }
 }
