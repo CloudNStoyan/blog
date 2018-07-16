@@ -65,6 +65,9 @@ namespace Blog
                     case "my-posts":
                         Blog.ViewAccountPosts();
                         break;
+                    case "clear":
+                        Console.Clear();
+                        break;
                 }
 
                 /*string[] inputCommand = input.Split(' ');
