@@ -42,7 +42,7 @@ namespace Blog
                conn.Dispose();
            }
 
-           if (Name != "" && Password != "")
+           if (!String.IsNullOrWhiteSpace(Name) && !String.IsNullOrWhiteSpace(Password))
            {
                Logged = true;
                Console.WriteLine($"Sucesfully logged as {Name}");
@@ -103,6 +103,137 @@ namespace Blog
 
 
            Login(name,password);
+       }
+
+       public static void AccountOptions()
+       {
+           Console.WriteLine("Account Options:");
+           Console.Write("Do you want to rename your account? (Y/N): ");
+           string renameInput = Console.ReadLine();
+           if (renameInput.ToLowerInvariant().Trim() == "y")
+           {
+               Console.Write("New name: ");
+               string newName = Console.ReadLine();
+               Rename(Name, newName);
+               Console.WriteLine("Do you want to change another thing? (Y/N): ");
+               while (true)
+               {
+                   string option = Console.ReadLine();
+                   if (option.ToLowerInvariant().Trim() == "n")
+                   {
+                       return;
+                   }
+                   else if (option.ToLowerInvariant().Trim() == "y")
+                   {
+                       Console.WriteLine("Ok!");
+                       break;
+                   }
+                   else
+                   {
+                       Console.WriteLine("Choose between Y for yes and N for no!");
+                   }
+               }
+           }
+
+           Console.Write("Do you want to change your account password? (Y/N): ");
+           string passwordChangeInput = Console.ReadLine();
+
+           if (passwordChangeInput.ToLowerInvariant().Trim() == "y")
+           {
+               while (true)
+               {
+                   Console.Write("Current password: ");
+                   string currentPassword = Console.ReadLine();
+                   if (currentPassword == Password)
+                   {
+                       Console.Write("New password: ");
+                       string newPassword = Console.ReadLine();
+                       Console.Write("Confirm new password: ");
+                       string confirmedNewPassword = Console.ReadLine();
+                       if (newPassword == confirmedNewPassword)
+                       {
+                            ChangePassword(Id,newPassword);
+                           break;
+                       }
+                   }
+                   else
+                   {
+                       Console.WriteLine("Invalid password!");
+                    }
+               }
+           }
+       }
+
+       public static void Rename(string oldName, string newName)
+       {
+           using (var conn = new NpgsqlConnection(Blog.ConnectionPath))
+           {
+               conn.Open();
+
+               using (var cmd = new NpgsqlCommand("UPDATE users SET name=@n WHERE user_id=@i", conn))
+               {
+                   cmd.Parameters.AddWithValue("n", newName);
+                   cmd.Parameters.AddWithValue("i", Id);
+                   cmd.ExecuteNonQuery();
+               }
+
+               conn.Dispose();
+           }
+
+           RenameComments(oldName, newName);
+
+           Console.WriteLine("You succsefully renamed your account!\n");
+       }
+
+       public static void RenameComments(string oldName, string newName)
+       {
+
+           var commentIds = new List<int>();
+
+           using (var conn = new NpgsqlConnection(Blog.ConnectionPath))
+           {
+               conn.Open();
+               using (var cmd = new NpgsqlCommand("SELECT * FROM comments WHERE author_name=@n", conn))
+               {
+                   cmd.Parameters.AddWithValue("n", oldName);
+                   using (var rdr = cmd.ExecuteReader())
+                   {
+                       while (rdr.Read())
+                       {
+                            commentIds.Add(int.Parse($"{rdr["comment_id"]}"));
+                       }
+                   }
+               }
+
+               foreach (int commentId in commentIds)
+               {
+                   using (var cmd = new NpgsqlCommand("UPDATE comments SET author_name=@n WHERE comment_id=@i", conn))
+                   {
+                       cmd.Parameters.AddWithValue("n", newName);
+                       cmd.Parameters.AddWithValue("i", commentId);
+                       cmd.ExecuteNonQuery();
+                   }
+               }
+
+               conn.Dispose();
+           }
+        }
+
+       public static void ChangePassword(int userId, string newPassword)
+       {
+           using (var conn = new NpgsqlConnection(Blog.ConnectionPath))
+           {
+               conn.Open();
+               using (var cmd = new NpgsqlCommand("UPDATE users SET password=@p WHERE user_id=@i", conn))
+               {
+                   cmd.Parameters.AddWithValue("p", newPassword);
+                   cmd.Parameters.AddWithValue("i", userId);
+                   cmd.ExecuteNonQuery();
+               }
+               conn.Dispose();
+           }
+
+           Console.WriteLine("You successfully changed your password!\n");
        }
    }
 }

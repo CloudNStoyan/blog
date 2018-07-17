@@ -160,6 +160,66 @@ namespace Blog
 
         }
 
+        public static void ViewAllPosts()
+        {
+            var postIds = new List<int>();
+            var postTitles = new List<string>();
+
+            using (var conn = new NpgsqlConnection(Blog.ConnectionPath))
+            {
+                conn.Open();
+                using (var cmd = new NpgsqlCommand("SELECT * FROM posts", conn))
+                {
+                    using (var rdr = cmd.ExecuteReader())
+                    {
+                        while (rdr.Read())
+                        {
+                            postIds.Add(int.Parse(rdr["post_id"].ToString()));
+                            postTitles.Add(rdr["title"].ToString());
+                        }
+                    }
+                }
+
+                for (int i = 0; i < postIds.Count; i++)
+                {
+                    Console.WriteLine($"{i + 1}| {postTitles[i]}");
+                }
+
+                if (postIds.Count > 0)
+                {
+                    while (true)
+                    {
+                        Console.WriteLine("Type 'return' to return to the blog!\n");
+                        Console.Write("Post number: ");
+                        string line = Console.ReadLine();
+                        if (line.ToLowerInvariant().Trim() == "return")
+                        {
+                            break;
+                        }
+
+                        int id = 0;
+
+                        try
+                        {
+                            id = int.Parse(line.Trim()) - 1;
+                        }
+                        catch (Exception exc)
+                        {
+                            Console.WriteLine("You need to type number!");
+                        }
+
+                        Blog.ChoosePost(postIds[id]);
+
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("You don't have any posts yet! Create your first by typing 'post-create' !\n");
+                }
+
+                conn.Dispose();
+            }
+            }
 
         public static void ViewPost(int id)
         {
@@ -181,7 +241,7 @@ namespace Blog
                         while (rdr.Read())
                         {
                             userId = Int32.Parse($"{rdr["user_id"]}");
-                            build.AppendLine($"Title: {rdr["title"]}\n");
+                            build.AppendLine($"\n######################\nTitle: {rdr["title"]}\n");
                             build.AppendLine($"Content: {rdr["content"]}\n");
                         }
                     }
@@ -217,6 +277,8 @@ namespace Blog
                         }
                     }
                 }
+
+                build.AppendLine("\n######################");
 
                 Console.WriteLine(build);
                 Blog.CurrentPost = id;

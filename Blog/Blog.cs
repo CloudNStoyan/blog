@@ -232,25 +232,21 @@ namespace Blog
         }
         public static void PostInterface(int userId)
         {
+            Console.WriteLine("Type 'return' to return to the blog!");
+
             if (Account.Id == userId)
             {
                 var buildDisclaimer = new StringBuilder();
-                buildDisclaimer.AppendLine("\nDISCLAIMER: You can comment and edit this post!");
+                buildDisclaimer.AppendLine("\nDISCLAIMER: You can edit this post!");
                 buildDisclaimer.AppendLine("Type: edit-help to see how to edit!");
-                buildDisclaimer.AppendLine("Type: comment-post to see how to comment!");
-                buildDisclaimer.AppendLine("Type: refresh to view again ths post!");
                 Console.WriteLine(buildDisclaimer);
             }
-            else
-            {
-                Console.WriteLine("\nDISCLAIMER: You can only comment to this post!\n");
-            }
-
             while (true)
             {
-                Console.WriteLine("Type 'return' to return to the blog!");
                 Console.WriteLine("Type 'all-comments' to see all comments on this post! (If any)");
                 Console.WriteLine("Type 'my-comments' to see your comments on this post! (If any)");
+                Console.WriteLine("Type 'comment-post' to comment on this post!");
+                Console.WriteLine("Type 'refresh' to view again this post!\n");
                 Console.Write("Blog -->#Post: ");
                 string line = Console.ReadLine();
                 if (line.ToLowerInvariant().Trim() == "return")
@@ -493,27 +489,61 @@ namespace Blog
 
         }
 
-        
-
-        
-
         public static void ShowLatests()
         {
-            using (var conn = new NpgsqlConnection(ConnectionPath))
+            var postIds = new List<int>();
+            var postTitles = new List<string>();
+
+            using (var conn = new NpgsqlConnection(Blog.ConnectionPath))
             {
                 conn.Open();
                 using (var cmd = new NpgsqlCommand("SELECT * FROM posts LIMIT 10", conn))
                 {
-                    var rdr = cmd.ExecuteReader();
-                    var buildOutput = new StringBuilder();
-                    while (rdr.Read())
+                    using (var rdr = cmd.ExecuteReader())
                     {
-                        buildOutput.AppendLine($"{rdr["title"]}");
-                        buildOutput.AppendLine($"{rdr["content"]}");
+                        while (rdr.Read())
+                        {
+                            postIds.Add(int.Parse(rdr["post_id"].ToString()));
+                            postTitles.Add(rdr["title"].ToString());
+                        }
                     }
+                }
 
-                    Console.WriteLine(buildOutput);
-                    cmd.Dispose();
+                for (int i = 0; i < postIds.Count; i++)
+                {
+                    Console.WriteLine($"{i + 1}| {postTitles[i]}");
+                }
+
+                if (postIds.Count > 0)
+                {
+                    Console.WriteLine("Type 'return' to return to the blog!\n");
+                    while (true)
+                    {
+                        Console.Write("Post number: ");
+                        string line = Console.ReadLine();
+                        if (line.ToLowerInvariant().Trim() == "return")
+                        {
+                            break;
+                        }
+
+                        int id = 0;
+
+                        try
+                        {
+                            id = int.Parse(line.Trim()) - 1;
+                        }
+                        catch (Exception exc)
+                        {
+                            Console.WriteLine("You need to type number!");
+                        }
+
+                        Blog.ChoosePost(postIds[id]);
+
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("They aren't any posts yet!\n");
                 }
 
                 conn.Dispose();
