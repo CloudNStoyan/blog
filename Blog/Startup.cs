@@ -26,6 +26,10 @@ namespace Blog
                 {
                     break;
                 }
+                else
+                {
+                    Console.WriteLine("Thats not a valid answer use only 'Y' for yes and 'N' for no!");
+                }
             }
 
             while (!Account.Logged)
@@ -42,7 +46,7 @@ namespace Blog
                     break;
                 }
 
-                switch (input)
+                switch (input.ToLowerInvariant().Trim())
                 {
                     case "help":
                         Commands.ShowAll();
@@ -68,7 +72,7 @@ namespace Blog
                     case "all-posts":
                         Post.ViewAllPosts();
                         break;
-                    case "latests":
+                    case "new-posts":
                         Blog.ShowLatests();
                         break;
                     case "settings":
@@ -76,6 +80,9 @@ namespace Blog
                         break;
                     case "clear":
                         Console.Clear();
+                        break;
+                    default:
+                        Console.WriteLine("Thats not valid command!");
                         break;
                 }
             }

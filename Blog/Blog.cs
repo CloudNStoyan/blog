@@ -36,16 +36,17 @@ namespace Blog
                     }
                 }
 
+                Console.WriteLine("|Number|   Title   |");
                 for (int i = 0; i < postIds.Count; i++)
                 {
-                    Console.WriteLine($"{i + 1}| {postTitles[i]}");
+                    Console.WriteLine($"|{i + 1,5} | {postTitles[i],10}|");
                 }
 
                 if (postIds.Count > 0)
                 {
+                    Console.WriteLine("Type 'return' to return to the blog!\n");
                     while (true)
                     {
-                        Console.WriteLine("Type 'return' to return to the blog!\n");
                         Console.Write("Post number: ");
                         string line = Console.ReadLine();
                         if (line.ToLowerInvariant().Trim() == "return")
@@ -62,6 +63,7 @@ namespace Blog
                         catch (Exception exc)
                         {
                             Console.WriteLine("You need to type number!");
+                            continue;
                         }
 
                         ChoosePost(postIds[id]);
@@ -86,6 +88,11 @@ namespace Blog
                 string line = Console.ReadLine();
                 if (line.ToLowerInvariant().Trim() == "done")
                 {
+                    if (String.IsNullOrEmpty(buildComment.ToString().Trim()))
+                    {
+                        Console.WriteLine("Your comment needs to be at least 1 char long!");
+                        continue;
+                    }
                     break;
                 }
 
@@ -232,21 +239,20 @@ namespace Blog
         }
         public static void PostInterface(int userId)
         {
-            Console.WriteLine("Type 'return' to return to the blog!");
-
             if (Account.Id == userId)
             {
-                var buildDisclaimer = new StringBuilder();
-                buildDisclaimer.AppendLine("\nDISCLAIMER: You can edit this post!");
-                buildDisclaimer.AppendLine("Type: edit-help to see how to edit!");
-                Console.WriteLine(buildDisclaimer);
+                Console.WriteLine("DISCLAIMER: You can edit this post!");
+                Console.WriteLine("Type: edit-help to see how to edit!");
             }
+
+            Console.WriteLine("Type 'all-comments' to see all comments on this post! (If any)");
+            Console.WriteLine("Type 'my-comments' to see your comments on this post! (If any)");
+            Console.WriteLine("Type 'comment-post' to comment on this post!");
+            Console.WriteLine("Type 'return' to return to the blog!");
+            Console.WriteLine("Type 'refresh' to view again this post!\n");
+
             while (true)
             {
-                Console.WriteLine("Type 'all-comments' to see all comments on this post! (If any)");
-                Console.WriteLine("Type 'my-comments' to see your comments on this post! (If any)");
-                Console.WriteLine("Type 'comment-post' to comment on this post!");
-                Console.WriteLine("Type 'refresh' to view again this post!\n");
                 Console.Write("Blog -->#Post: ");
                 string line = Console.ReadLine();
                 if (line.ToLowerInvariant().Trim() == "return")
@@ -254,7 +260,7 @@ namespace Blog
                     break;
                 }
 
-                switch (line)
+                switch (line.ToLowerInvariant().Trim())
                 {
                     case "clear":
                         Console.Clear();
@@ -297,6 +303,9 @@ namespace Blog
                         }
 
                         Post.EditPostContent(CurrentPost, buildContent.ToString());
+                        break;
+                    default:
+                        Console.WriteLine("Your command was invalid!");
                         break;
                 }
             }
@@ -509,9 +518,9 @@ namespace Blog
                     }
                 }
 
-                for (int i = 0; i < postIds.Count; i++)
+                for (int i = postIds.Count - 1; i >= 0; i--)
                 {
-                    Console.WriteLine($"{i + 1}| {postTitles[i]}");
+                    Console.WriteLine($"{Math.Abs(i - postIds.Count)}| {postTitles[i]}");
                 }
 
                 if (postIds.Count > 0)
@@ -530,7 +539,7 @@ namespace Blog
 
                         try
                         {
-                            id = int.Parse(line.Trim()) - 1;
+                            id = postIds.Count - int.Parse(line.Trim());
                         }
                         catch (Exception exc)
                         {

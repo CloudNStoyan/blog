@@ -66,7 +66,7 @@ namespace Blog
             Console.Write("Tags(Split tags by ',')!: ");
             string[] tags = Console.ReadLine().Split(',');
             CreatePost(title, content, tags);
-            Console.WriteLine("Done! if you want to view your post type view-latest");
+            Console.WriteLine("Done! if you want to view your post type new-posts");
 
         }
 
