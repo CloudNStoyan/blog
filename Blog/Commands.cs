@@ -8,67 +8,93 @@ namespace Blog
 {
     public class Commands
     {
+        private const int commandRange = -15;
+        private const int explanationRange = -84;
+
+        public static void PrintCommand(string command, string explanation)
+        {
+            Console.WriteLine($"|{command,commandRange} | {explanation,explanationRange} |");
+        }
+
+        public static void PrintCommands(Dictionary<string, string> commands)
+        {
+            Console.WriteLine("|".PadRight(17, '-') + '|' + "|".PadLeft(87, '-'));
+            Console.WriteLine("| " + "Command".PadRight(15, ' ') + "|".PadRight(39, ' ') + "Explanation" + "|".PadLeft(38, ' '));
+            Console.WriteLine("|".PadRight(17, '-') + '|' + "|".PadLeft(87, '-'));
+            foreach (var command in commands)
+            {
+                Console.WriteLine($"|{command.Key,commandRange} | {command.Value,explanationRange} |");
+            }
+            Console.WriteLine("|".PadRight(17, '-') + '|' + "|".PadLeft(87, '-'));
+        }
+
+        public static void PrintLine()
+        {
+            Console.WriteLine("|".PadRight(17, '-') + '|' + "|".PadLeft(87, '-'));
+        }
+
+        public static void PrintQuote()
+        {
+            Console.WriteLine("| " + "Command".PadRight(15, ' ') + "|".PadRight(39, ' ') + "Explanation" + "|".PadLeft(38, ' '));
+        }
+
         public static void ShowAll()
         {
-            Console.WriteLine("|----------------|--------------------------------------------------------------------------------------|");
-            Console.WriteLine("| Command        |                                      Explanation                                     |");
-            Console.WriteLine("|----------------|--------------------------------------------------------------------------------------|");
-            Console.WriteLine(String.Format("|{0,-15} | {1,-84} |", "help-post", "This command gives you information on how to post a new post!"));
-            Console.WriteLine(String.Format("|{0,-15} | {1,-84} |", "help-comment", "This command gives you information on how to comment on a post!"));
-            Console.WriteLine(String.Format("|{0,-15} | {1,-84} |", "help-view", "This command gives you information on how to view material on the blog!"));
-            Console.WriteLine(String.Format("|{0,-15} | {1,-84} |", "help-account", "This command gives you information on what profile commands you have!"));
-            Console.WriteLine("|-------------------------------------------------------------------------------------------------------|");
+            var showAllDic = new SortedDictionary<string, string>();
+            showAllDic.Add("help-post", "This command gives you information on how to post a new post!");
+            showAllDic.Add("help-comment", "This command gives you information on how to comment on a post!");
+            showAllDic.Add("help-view", "This command gives you information on how to view material on the blog!");
+            showAllDic.Add("help-account", "This command gives you information on what profile commands you have!");
+            //PrintCommands(showAllDic);
         }
 
         public static void ShowPosts()
         {
-            Console.WriteLine("|----------------|--------------------------------------------------------------------------------------|");
-            Console.WriteLine("| Command        |                                      Explanation                                     |");
-            Console.WriteLine("|----------------|--------------------------------------------------------------------------------------|");
-            Console.WriteLine(String.Format("|{0,-15} | {1,-84} |", "post-create", "This command walks you through a procces for making a new post!"));
-            Console.WriteLine(String.Format("|{0,-15} | {1,-84} |", "all-posts", "This command will show you list of all posts and a way to choose which one to view!"));
-            Console.WriteLine("|-------------------------------------------------------------------------------------------------------|");
+            var showPostsDic = new SortedDictionary<string,string>();
+            PrintCommand("post-create","This command walk you through a process for making a new post!");
+            PrintCommand("all-posts","This command will show you list of all posts and a way to choose which one to view!");
+            PrintLine();
         }
 
         public static void ShowComments()
         {
-            Console.WriteLine("|----------------|--------------------------------------------------------------------------------------|");
-            Console.WriteLine("| Command        |                                      Explanation                                     |");
-            Console.WriteLine("|----------------|--------------------------------------------------------------------------------------|");
-            Console.WriteLine(String.Format("|{0,-15} | {1,-84} |", "comment-create", "This command walks you through a procces for commenting on a existing post!"));
-            Console.WriteLine(String.Format("|{0,-15} | {1,-84} |", "comment-edit", "This command walks you through a procces for editing an existing comment!"));
-            Console.WriteLine("|-------------------------------------------------------------------------------------------------------|");
+            PrintLine();
+            PrintQuote();
+            PrintLine();
+            PrintCommand("comment-create","This command walks you through a process for commenting on an existing post!");
+            PrintCommand("comment-edit","This command walks you through a process for editing an existing comment!");
+            PrintLine();
         }
 
         public static void ShowAccounts()
         {
-            Console.WriteLine("|----------------|--------------------------------------------------------------------------------------|");
-            Console.WriteLine("| Command        |                                      Explanation                                     |");
-            Console.WriteLine("|----------------|--------------------------------------------------------------------------------------|");
-            Console.WriteLine(String.Format("|{0,-15} | {1,-84} |", "my-posts", "This command let you choose which of your posts you want to view!"));
-            Console.WriteLine(String.Format("|{0,-15} | {1,-84} |", "settings", "This command let you edit your profile settings!"));
-            Console.WriteLine("|-------------------------------------------------------------------------------------------------------|");
+            PrintLine();
+            PrintQuote();
+            PrintLine();
+            PrintCommand("my-posts","This command let you choose which of your posts you want to view!");
+            PrintCommand("settings","This command let you edit your profile settings!");
+            PrintLine();
         }
 
         public static void ShowPostEdits()
         {
-            Console.WriteLine("|----------------|--------------------------------------------------------------------------------------|");
-            Console.WriteLine("| Command        |                                      Explanation                                     |");
-            Console.WriteLine("|----------------|--------------------------------------------------------------------------------------|");
-            Console.WriteLine(String.Format("|{0,-15} | {1,-84} |", "edit-title", "This command is giving you the opportunity to edit the title of the post!"));
-            Console.WriteLine(String.Format("|{0,-15} | {1,-84} |", "edit-content", "This command is giving you the opportunity to edit the content of the post!"));
-            Console.WriteLine("|-------------------------------------------------------------------------------------------------------|");
+            PrintLine();
+            PrintQuote();
+            PrintLine();
+            PrintCommand("edit-title","This command is giving you the opportunity to edit the title of the post!");
+            PrintCommand("edit-content","This command is giving you the opportunity to edit the content of the post!");
+            PrintLine();
         }
 
         public static void ShowView()
         {
-            Console.WriteLine("|----------------|--------------------------------------------------------------------------------------|");
-            Console.WriteLine("| Command        |                                      Explanation                                     |");
-            Console.WriteLine("|----------------|--------------------------------------------------------------------------------------|");
-            Console.WriteLine(String.Format("|{0,-15} | {1,-84} |", "my-posts", "This command is letting you choose from your posts to view!"));
-            Console.WriteLine(String.Format("|{0,-15} | {1,-84} |", "all-posts", "This command is letting you choose from all posts to view!"));
-            Console.WriteLine(String.Format("|{0,-15} | {1,-84} |", "new-posts", "This command is letting you choose from the new posts!"));
-            Console.WriteLine("|-------------------------------------------------------------------------------------------------------|");
+            PrintLine();
+            PrintQuote();
+            PrintLine();
+            PrintCommand("my-posts","This command is letting you to choose from your posts to view!");
+            PrintCommand("all-posts","This command is letting you to choose from all posts to view!");
+            PrintCommand("new-posts","This command is letting youto choose from the new posts!");
+            PrintLine();
         }
     }
 }

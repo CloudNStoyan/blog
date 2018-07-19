@@ -184,12 +184,12 @@ namespace Blog
                 {
                     Console.WriteLine($"{i + 1}| {postTitles[i]}");
                 }
-
+                
+                Console.WriteLine("Type 'return' to return to the blog!\n");
                 if (postIds.Count > 0)
                 {
                     while (true)
                     {
-                        Console.WriteLine("Type 'return' to return to the blog!\n");
                         Console.Write("Post number: ");
                         string line = Console.ReadLine();
                         if (line.ToLowerInvariant().Trim() == "return")
@@ -206,7 +206,15 @@ namespace Blog
                         catch (Exception exc)
                         {
                             Console.WriteLine("You need to type number!");
+                            continue;
                         }
+
+                        if (id < 0 || id > postIds.Count - 1)
+                        {
+                            Console.WriteLine($"Invalid number. the number must be in range of 1 and {postIds.Count}");
+                            continue;
+                        }
+
 
                         Blog.ChoosePost(postIds[id]);
 

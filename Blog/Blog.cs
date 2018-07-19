@@ -59,6 +59,11 @@ namespace Blog
                         try
                         {
                             id = int.Parse(line.Trim()) - 1;
+                            if (id < 1 || id > postIds.Count - 1)
+                            {
+                                Console.WriteLine($"Invalid number. Number must be in range of 1 to {postIds.Count}");
+                                continue;
+                            }
                         }
                         catch (Exception exc)
                         {
@@ -463,9 +468,10 @@ namespace Blog
                 try
                 {
                     selectedIndex = int.Parse(line) - 1;
-                    if (selectedIndex == -1 || selectedIndex > commentsContent.Count - 1)
+                    if (selectedIndex < 1 || selectedIndex > commentsContent.Count - 1)
                     {
-                        Console.WriteLine($"Please choose between 1 and {commentsContent.Count - 1}\n");
+                        Console.WriteLine($"Please choose between 1 and {commentsContent.Count}\n");
+                        continue;
                     }
                 }
                 catch (Exception e)
@@ -540,6 +546,11 @@ namespace Blog
                         try
                         {
                             id = postIds.Count - int.Parse(line.Trim());
+                            if (id < 1 || id > postIds.Count - 1)
+                            {
+                                Console.WriteLine($"Invalid number. Number must be in range 1 and {postIds.Count}");
+                                continue;
+                            }
                         }
                         catch (Exception exc)
                         {
