@@ -17,7 +17,14 @@ namespace Blog
             while (true)
             {
                 Console.Write("Do you have an existing account! (Y/N) ");
-                string line = Console.ReadLine();
+                string line = Console.ReadLine() ?? " ";
+
+                if (String.IsNullOrEmpty(line))
+                {
+                    Console.WriteLine("Thats not a valid answer use only 'Y' for yes and 'N' for no!");
+                    continue;
+                }
+
                 if (line.ToLowerInvariant().Trim() == "n")
                 {
                     Account.Create();
@@ -40,7 +47,14 @@ namespace Blog
             while (true)
             {
                 Console.Write("Blog --> ");
-                string input = Console.ReadLine();
+                string input = Console.ReadLine() ?? " ";
+
+                if (string.IsNullOrEmpty(input))
+                {
+                    Console.WriteLine("Thats not valid command!");
+                    continue;
+                }
+
                 if (input.ToLowerInvariant().Trim() == "exit")
                 {
                     break;
@@ -49,19 +63,19 @@ namespace Blog
                 switch (input.ToLowerInvariant().Trim())
                 {
                     case "help":
-                        Commands.ShowAll();
+                        CommandPrinter.ShowAll();
                         break;
                     case "help-post":
-                        Commands.ShowPosts();
+                        CommandPrinter.ShowPosts();
                         break;
                     case "help-comment":
-                        Commands.ShowComments();
+                        CommandPrinter.ShowComments();
                         break;
                     case "help-account":
-                        Commands.ShowAccounts();
+                        CommandPrinter.ShowAccounts();
                         break;
                     case "help-view":
-                        Commands.ShowView();
+                        CommandPrinter.ShowView();
                         break;
                     case "post-create":
                         Post.BeginCreatingPost();

@@ -48,7 +48,14 @@ namespace Blog
                     while (true)
                     {
                         Console.Write("Post number: ");
-                        string line = Console.ReadLine();
+                        string line = Console.ReadLine() ?? " ";
+
+                        if (String.IsNullOrEmpty(line))
+                        {
+                            Console.WriteLine("Please type a number!");
+                            continue;
+                        }
+
                         if (line.ToLowerInvariant().Trim() == "return")
                         {
                             break;
@@ -59,7 +66,7 @@ namespace Blog
                         try
                         {
                             id = int.Parse(line.Trim()) - 1;
-                            if (id < 1 || id > postIds.Count - 1)
+                            if (id < 0 || id > postIds.Count - 1)
                             {
                                 Console.WriteLine($"Invalid number. Number must be in range of 1 to {postIds.Count}");
                                 continue;
@@ -90,7 +97,12 @@ namespace Blog
             var buildComment = new StringBuilder();
             while (true)
             {
-                string line = Console.ReadLine();
+                string line = Console.ReadLine() ?? " ";
+                if (String.IsNullOrEmpty(line))
+                {
+                    Console.WriteLine("Your comment needs to be at least 1 char long!");
+                    continue;
+                }
                 if (line.ToLowerInvariant().Trim() == "done")
                 {
                     if (String.IsNullOrEmpty(buildComment.ToString().Trim()))
@@ -131,7 +143,7 @@ namespace Blog
             var buildNewComment = new StringBuilder();
             while (true)
             {
-                string line = Console.ReadLine();
+                string line = Console.ReadLine() ?? " ";
                 if (line.ToLowerInvariant().Trim() == "done")
                 {
                     break;
@@ -171,12 +183,12 @@ namespace Blog
         {
             Console.WriteLine("Once you've deleted a post it can't never be restored!");
             Console.Write("Are you sure you want to delete this post? (Y/N): ");
-            string option = Console.ReadLine();
+            string option = Console.ReadLine() ?? " ";
             if (option.ToLowerInvariant().Trim() == "y")
             {
                 Console.WriteLine("This requires your password!");
                 Console.Write("Your password: ");
-                string password = Console.ReadLine();
+                string password = Console.ReadLine() ?? " ";
                 if (password != Account.Password)
                 {
                     Console.WriteLine("Password incorrect returning to the post!");
@@ -259,7 +271,14 @@ namespace Blog
             while (true)
             {
                 Console.Write("Blog -->#Post: ");
-                string line = Console.ReadLine();
+                string line = Console.ReadLine() ?? " ";
+
+                if (String.IsNullOrEmpty(line))
+                {
+                    Console.WriteLine("Invalid command!");
+                    continue;
+                }
+
                 if (line.ToLowerInvariant().Trim() == "return")
                 {
                     break;
@@ -286,11 +305,11 @@ namespace Blog
                         Blog.DeleteProcess(CurrentPost);
                         break;
                     case "edit-help":
-                        Commands.ShowPostEdits();
+                        CommandPrinter.ShowPostEdits();
                         break;
                     case "edit-title":
                         Console.Write("New title: ");
-                        Post.EditPostTitle(CurrentPost, Console.ReadLine());
+                        Post.EditPostTitle(CurrentPost, Console.ReadLine() ?? " ");
                         break;
                     case "edit-content":
                         Console.Write("New content: ");
@@ -298,7 +317,7 @@ namespace Blog
 
                         while (true)
                         {
-                            string input = Console.ReadLine();
+                            string input = Console.ReadLine() ?? " ";
                             if (input.ToLowerInvariant().Trim() == "done")
                             {
                                 break;
@@ -367,7 +386,7 @@ namespace Blog
                 Console.Write("Select comment: ");
                 try
                 {
-                    string line = Console.ReadLine();
+                    string line = Console.ReadLine() ?? " ";
                     if (line.ToLowerInvariant().Trim() == "return")
                     {
                         break;
@@ -387,7 +406,7 @@ namespace Blog
                     while (true)
                     {
                         Console.Write("You choosed: ");
-                        string input = Console.ReadLine();
+                        string input = Console.ReadLine() ?? " ";
                         if (input.ToLowerInvariant().Trim() == "view")
                         {
                             Console.WriteLine(commentContents[selectedComment] + "\n");
@@ -456,7 +475,7 @@ namespace Blog
 
                 Console.Write("You choosed: ");
 
-                string line = Console.ReadLine();
+                string line = Console.ReadLine() ?? " ";
 
                 if (line.ToLowerInvariant().Trim() == "return")
                 {
@@ -485,7 +504,7 @@ namespace Blog
                 Console.WriteLine("Type 'edit' to edit this comment (Only if you have the right to do it)\n");
 
                 Console.Write("You want to: ");
-                string option = Console.ReadLine();
+                string option = Console.ReadLine() ?? " ";
                 if (option.ToLowerInvariant().Trim() == "view")
                 {
                     Console.WriteLine($"\n{commentsContent[selectedIndex]}\n\nAuthor:{authorNames[selectedIndex]}\n");
@@ -535,7 +554,7 @@ namespace Blog
                     while (true)
                     {
                         Console.Write("Post number: ");
-                        string line = Console.ReadLine();
+                        string line = Console.ReadLine() ?? " ";
                         if (line.ToLowerInvariant().Trim() == "return")
                         {
                             break;

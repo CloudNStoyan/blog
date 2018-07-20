@@ -60,11 +60,21 @@ namespace Blog
        public static void AskForLogin()
        {
            Console.Write("Username: ");
-           string name = Console.ReadLine();
+           string name = Console.ReadLine() ?? " ";
+           if (String.IsNullOrEmpty(name))
+           {
+               Console.WriteLine("Thats not valid login information!");
+               return;
+           }
            Console.Write("Password: ");
-           string password = Console.ReadLine();
+           string password = Console.ReadLine() ?? " ";
+           if (String.IsNullOrEmpty(password))
+           {
+               Console.WriteLine("Thats not valid login information!");
+               return;
+           }
 
-           Login(name,password);
+            Login(name,password);
         }
 
        public static void Create()
@@ -75,12 +85,30 @@ namespace Blog
            while (true)
            {
                Console.Write("Username: ");
-               name = Console.ReadLine();
+               name = Console.ReadLine() ?? " ";
+               if (String.IsNullOrEmpty(name))
+               {
+                   Console.WriteLine("Invalid username!");
+                   continue;
+               }
 
                Console.Write("Password: ");
-               password = Console.ReadLine();
+               password = Console.ReadLine() ?? " ";
+               if (String.IsNullOrEmpty(password))
+               {
+                   Console.WriteLine("Invalid password!");
+                   continue;
+               }
+
                Console.Write("Confirm Password: ");
-               if (Console.ReadLine() == password)
+               string confirmPass = Console.ReadLine() ?? " ";
+               if (String.IsNullOrEmpty(confirmPass))
+               {
+                   Console.WriteLine("Invalid confirm password!");
+                   continue;
+               }
+
+               if (confirmPass == password)
                {
                    break;
                }
@@ -109,63 +137,96 @@ namespace Blog
        {
            Console.WriteLine("Account Options:");
            Console.Write("Do you want to rename your account? (Y/N): ");
-           string renameInput = Console.ReadLine();
-           if (renameInput.ToLowerInvariant().Trim() == "y")
+           while (true)
            {
-               Console.Write("New name: ");
-               string newName = Console.ReadLine();
-               Rename(Name, newName);
-               Console.WriteLine("Do you want to change another thing? (Y/N): ");
-               while (true)
+               string renameInput = Console.ReadLine() ?? " ";
+               if (String.IsNullOrEmpty(renameInput))
                {
-                   string option = Console.ReadLine();
-                   if (option.ToLowerInvariant().Trim() == "n")
-                   {
-                       return;
-                   }
-                   else if (option.ToLowerInvariant().Trim() == "y")
-                   {
-                       Console.WriteLine("Ok!");
-                       break;
-                   }
-                   else
-                   {
-                       Console.WriteLine("Choose between Y for yes and N for no!");
-                   }
+                   Console.WriteLine("Invalid input choose between 'Y' for yes and 'N' for no!");
+                   continue;
+
                }
-           }
-
-           Console.Write("Do you want to change your account password? (Y/N): ");
-           string passwordChangeInput = Console.ReadLine();
-
-           if (passwordChangeInput.ToLowerInvariant().Trim() == "y")
-           {
-               while (true)
+               if (renameInput.ToLowerInvariant().Trim() == "y")
                {
-                   Console.Write("Current password: ");
-                   string currentPassword = Console.ReadLine();
-                   if (currentPassword == Password)
+                   Console.Write("New name: ");
+                   string newName = Console.ReadLine() ?? " ";
+                   Rename(Name, newName);
+                   Console.WriteLine("Do you want to change another thing? (Y/N): ");
+                   while (true)
                    {
-                       Console.Write("New password: ");
-                       string newPassword = Console.ReadLine();
-                       Console.Write("Confirm new password: ");
-                       string confirmedNewPassword = Console.ReadLine();
-                       if (newPassword == confirmedNewPassword)
+                       string option = Console.ReadLine() ?? " ";
+                       if (option.ToLowerInvariant().Trim() == "n")
                        {
-                            ChangePassword(Id,newPassword);
+                           return;
+                       }
+                       else if (option.ToLowerInvariant().Trim() == "y")
+                       {
                            break;
                        }
+                       else
+                       {
+                           Console.WriteLine("Choose between Y for yes and N for no!");
+                       }
                    }
-                   else
+
+                   break;
+               }
+            }
+
+
+
+
+           while (true)
+           {
+               Console.Write("Do you want to change your account password? (Y/N): ");
+               string passwordChangeInput = Console.ReadLine() ?? " ";
+               if (!String.IsNullOrEmpty(passwordChangeInput) && passwordChangeInput.ToLowerInvariant().Trim() == "y")
+               {
+                   while (true)
                    {
-                       Console.WriteLine("Invalid password!");
-                    }
+                       Console.Write("Current password: ");
+                       string currentPassword = Console.ReadLine() ?? " ";
+                       if (currentPassword == Password)
+                       {
+                           Console.Write("New password: ");
+                           string newPassword = Console.ReadLine() ?? " ";
+                           Console.Write("Confirm new password: ");
+                           string confirmedNewPassword = Console.ReadLine() ?? " ";
+                           if (newPassword == confirmedNewPassword)
+                           {
+                               ChangePassword(Id, newPassword);
+                               break;
+                           }
+                       }
+                       else
+                       {
+                           Console.WriteLine("Invalid password!");
+                       }
+                   }
+
+                   break;
+               }
+               else
+               {
+                   Console.WriteLine("Invalid input you must type 'Y' for yes and 'N' for no!");
                }
            }
        }
 
        public static void Rename(string oldName, string newName)
        {
+           if (String.IsNullOrEmpty(newName))
+           {
+               Console.WriteLine("Invalid new name!");
+               return;
+           }
+
+           if (String.IsNullOrEmpty(oldName))
+           {
+                Console.WriteLine("Invalid old name!");
+               return;
+           }
+
            using (var conn = new NpgsqlConnection(Blog.ConnectionPath))
            {
                conn.Open();

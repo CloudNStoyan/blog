@@ -48,12 +48,12 @@ namespace Blog
         public static void BeginCreatingPost()
         {
             Console.Write("Title: ");
-            string title = Console.ReadLine();
+            string title = Console.ReadLine() ?? " ";
             Console.Write("Content(Type done when you are done!): ");
             var buildContent = new StringBuilder();
             while (true)
             {
-                string line = Console.ReadLine();
+                string line = Console.ReadLine() ?? " ";
                 if (line.ToLowerInvariant().Trim() == "done")
                 {
                     break;
@@ -191,7 +191,7 @@ namespace Blog
                     while (true)
                     {
                         Console.Write("Post number: ");
-                        string line = Console.ReadLine();
+                        string line = Console.ReadLine() ?? " ";
                         if (line.ToLowerInvariant().Trim() == "return")
                         {
                             break;
