@@ -60,33 +60,33 @@ namespace Blog
                     break;
                 }
 
-                switch (input.ToLowerInvariant().Trim())
+                switch (input.ToLowerInvariant().Replace(" ", String.Empty))
                 {
                     case "help":
                         CommandPrinter.ShowAll();
                         break;
-                    case "help-post":
+                    case "helppost":
                         CommandPrinter.ShowPosts();
                         break;
-                    case "help-comment":
+                    case "helpcomment":
                         CommandPrinter.ShowComments();
                         break;
-                    case "help-account":
+                    case "helpaccount":
                         CommandPrinter.ShowAccounts();
                         break;
-                    case "help-view":
+                    case "helpview":
                         CommandPrinter.ShowView();
                         break;
-                    case "post-create":
+                    case "postcreate":
                         Post.BeginCreatingPost();
                         break;
-                    case "my-posts":
+                    case "myposts":
                         Blog.ViewAccountPosts();
                         break;
-                    case "all-posts":
+                    case "allposts":
                         Post.ViewAllPosts();
                         break;
-                    case "new-posts":
+                    case "newposts":
                         Blog.ShowLatests();
                         break;
                     case "settings":

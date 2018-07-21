@@ -27,10 +27,10 @@ namespace Blog
         {
             var showAllDic = new Dictionary<string, string>
             {
-                { "help-post", "This command gives you information on how to post a new post!" },
-                { "help-comment", "This command gives you information on how to comment on a post!" },
-                { "help-view", "This command gives you information on how to view material on the blog!" },
-                { "help-account", "This command gives you information on what profile commandDic you have!" }
+                { "help post", "This command gives you information on how to post a new post!" },
+                { "help comment", "This command gives you information on how to comment on a post!" },
+                { "help view", "This command gives you information on how to view material on the blog!" },
+                { "help account", "This command gives you information on what profile commandDic you have!" }
             };
             PrintCommands(showAllDic);
         }
@@ -39,8 +39,8 @@ namespace Blog
         {
             var showPostsDic = new Dictionary<string, string>
             {
-                { "post-create", "This command walk you through a process for making a new post!" },
-                { "all-posts", "This command will show you list of all posts and a way to choose which one to view!" }
+                { "post create", "This command walk you through a process for making a new post!" },
+                { "all posts", "This command will show you list of all posts and a way to choose which one to view!" }
             };
             PrintCommands(showPostsDic);
         }
@@ -49,8 +49,8 @@ namespace Blog
         {
             var showCommentsDic = new Dictionary<string, string>
             {
-                { "comment-create", "This command walks you through a process for commenting on an existing post!" },
-                { "comment-edit", "This command walks you through a process for editing an existing comment!" }
+                { "comment create", "This command walks you through a process for commenting on an existing post!" },
+                { "comment edit", "This command walks you through a process for editing an existing comment!" }
             };
             PrintCommands(showCommentsDic);
         }
@@ -59,7 +59,7 @@ namespace Blog
         {
             var showAccountsDic = new Dictionary<string, string>
             {
-                { "my-posts", "This command let you choose which of your posts you want to view!" },
+                { "my posts", "This command let you choose which of your posts you want to view!" },
                 { "settings", "This command let you edit your profile settings!" }
             };
             PrintCommands(showAccountsDic);
@@ -70,8 +70,8 @@ namespace Blog
         {
             var showPostsDic = new Dictionary<string, string>
             {
-                { "edit-title", "This command is giving you the opportunity to edit the title of the post!" },
-                { "edit-content", "This command is giving you the opportunity to edit the content of the post!" }
+                { "edit title", "This command is giving you the opportunity to edit the title of the post!" },
+                { "edit content", "This command is giving you the opportunity to edit the content of the post!" }
             };
             PrintCommands(showPostsDic);
         }
@@ -80,9 +80,9 @@ namespace Blog
         {
             var showViewDic = new Dictionary<string, string>
             {
-                {"my-posts", "This command is letting you to choose from your posts to view!"},
-                {"all-posts", "This command is letting you to choose from all posts to view!"},
-                {"new-posts", "This command is letting youto choose from the new posts!"}
+                {"my posts", "This command is letting you to choose from your posts to view!"},
+                {"all posts", "This command is letting you to choose from all posts to view!"},
+                {"new posts", "This command is letting youto choose from the new posts!"}
             };
             PrintCommands(showViewDic);
         }

@@ -284,7 +284,7 @@ namespace Blog
                     break;
                 }
 
-                switch (line.ToLowerInvariant().Trim())
+                switch (line.ToLowerInvariant().Replace(" ", String.Empty))
                 {
                     case "clear":
                         Console.Clear();
@@ -292,26 +292,26 @@ namespace Blog
                     case "refresh":
                         Post.ViewPost(CurrentPost);
                         break;
-                    case "comment-post":
+                    case "commentpost":
                         CreateCommentInterface();
                         break;
-                    case "my-comments":
+                    case "mycomments":
                         ShowUserComments();
                         break;
-                    case "all-comments":
+                    case "allcomments":
                         Blog.AllComments(CurrentPost);
                         break;
                     case "delete":
                         Blog.DeleteProcess(CurrentPost);
                         break;
-                    case "edit-help":
+                    case "edithelp":
                         CommandPrinter.ShowPostEdits();
                         break;
-                    case "edit-title":
+                    case "edittitle":
                         Console.Write("New title: ");
                         Post.EditPostTitle(CurrentPost, Console.ReadLine() ?? " ");
                         break;
-                    case "edit-content":
+                    case "editcontent":
                         Console.Write("New content: ");
                         var buildContent = new StringBuilder();
 
