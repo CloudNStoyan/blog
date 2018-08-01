@@ -14,6 +14,7 @@ namespace Blog
             Console.WriteLine("#==========================================================#");
             Console.WriteLine("#===========================BLOG===========================#");
             Console.WriteLine("#==========================================================#");
+            Database.StartTesting();
             while (true)
             {
                 Console.Write("Do you have an existing account! (Y/N) ");

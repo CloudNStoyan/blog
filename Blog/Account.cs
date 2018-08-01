@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using Npgsql;
 
 namespace Blog
@@ -242,7 +238,8 @@ namespace Blog
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.Message);
+                    Console.WriteLine("Invalid name. This name is already being used!");
+                    return;
                 }
 
                 conn.Dispose();

@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="Account.cs" />
     <Compile Include="CommandPrinter.cs" />
+    <Compile Include="Database.cs" />
     <Compile Include="Post.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
