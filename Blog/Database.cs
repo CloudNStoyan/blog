@@ -1,70 +1,98 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Npgsql;
 
 namespace Blog
 {
-    public static class Database
+    public class Database
     {
-        private static string ConnectionString =
-            @"Server=vm5;Port=5437;Database=postgres;Uid=postgres;Pwd=9ae51c68-c9d6-40e8-a1d6-a71be968ba3e;";
+        private NpgsqlConnection Connection { get; }
 
-        public static void StartTesting()
+        public Database(NpgsqlConnection conn)
         {
-            var a = Database.Query<User>(@"SELECT * FROM users;");
-            foreach (var user in a)
-            {
-                Console.WriteLine(user.Name);   
-            }
+            this.Connection = conn;
         }
 
-        public static List<T> Query<T>(string sql)
+        public List<T> Query<T>(string sql, params object[] parametars) where T : class , new ()
         {
-            List<T> result = new List<T>();
+            var dbResult = new List<T>();
 
-            using (var conn = new NpgsqlConnection(ConnectionString))
+            this.Connection.Open();
+
+            var paramatarNames = this.GetParametarNames(sql);
+
+            using (var cmd = new NpgsqlCommand(sql, this.Connection))
             {
-                conn.Open();
-                using (var cmd = new NpgsqlCommand(sql, conn))
+                for (int i = 0; i < paramatarNames.Length; i++)
                 {
-                    using (var rdr = cmd.ExecuteReader())
+                    cmd.Parameters.AddWithValue(paramatarNames[i], parametars[i]);
+                }
+
+                using (var rdr = cmd.ExecuteReader())
+                {
+                    while (rdr.Read())
                     {
-                        while (rdr.Read())
+                        var constructorArguments = new object[rdr.FieldCount];
+
+                        for (int i = 0; i < rdr.FieldCount; i++)
                         {
-                            var args = new object[rdr.FieldCount];
+                            Type sqlType = rdr[i].GetType();
 
-                            for (int i = 0; i < rdr.FieldCount; i++)
+                            var properties = typeof(T).GetProperties();
+
+                            for (int j = 0; j < properties.Length; j++)
                             {
-                                Type sqlType = rdr[i].GetType();
-
-                                var properties = typeof(T).GetProperties();
-
-                                for (int j = 0; j < properties.Length; j++)
+                                var property = properties[j];
+                                if (property.PropertyType == sqlType && property.Name.ToLowerInvariant().Trim() ==
+                                    rdr.GetName(i).ToLowerInvariant().Trim())
                                 {
-                                    var property = properties[j];
-                                    if (property.PropertyType == sqlType && property.Name.ToLowerInvariant().Trim() == rdr.GetName(i).ToLowerInvariant().Trim())
-                                    {
-                                        args[j] = rdr[i];
-                                        break;
-                                    }
+                                    constructorArguments[j] = rdr[i];
+                                    break;
                                 }
                             }
-                            var instance = (T) Activator.CreateInstance(typeof(T),args);
-
-                            result.Add(instance);
                         }
+
+                         
+
+                        List<Type> consturctorTypes = new List<Type>();
+
+                        foreach (object constructorArgument in constructorArguments)
+                        {
+                            consturctorTypes.Add(constructorArgument.GetType());
+                        }
+
+                        ConstructorInfo constructor =
+                            typeof(T).GetConstructor(consturctorTypes.ToArray());
+
+                        var instance = constructor.Invoke(constructorArguments);
+
+                        //var instance = (T) Activator.CreateInstance(typeof(T), constructorArguments);
+
+                        dbResult.Add((T)instance);
                     }
                 }
-                conn.Close();
+
             }
 
-            return result;
+            return dbResult;
+        }
+
+        private string[] GetParametarNames(string sql)
+        {
+            var paramNames = new List<string>();
+
+            string[] splitedSql = sql.Split('@');
+
+            for (int i = 1; i < splitedSql.Length; i++)
+            {
+                paramNames.Add(splitedSql[i][0].ToString());
+            }
+
+            return paramNames.ToArray();
         }
     }
+    
 
     public class User
     {

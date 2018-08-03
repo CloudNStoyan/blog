@@ -25,7 +25,7 @@ namespace Blog
                 conn.Open();
                 using (var cmd = new NpgsqlCommand("SELECT * FROM posts WHERE user_id=@i", conn))
                 {
-                    cmd.Parameters.AddWithValue("i", Account.Id);
+                    cmd.Parameters.Add(new NpgsqlParameter("i", Account.Id));
                     using (var rdr = cmd.ExecuteReader())
                     {
                         while (rdr.Read())

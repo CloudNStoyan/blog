@@ -14,7 +14,17 @@ namespace Blog
             Console.WriteLine("#==========================================================#");
             Console.WriteLine("#===========================BLOG===========================#");
             Console.WriteLine("#==========================================================#");
-            Database.StartTesting();
+
+            using (var conn = new NpgsqlConnection(@"Server=vm5;Port=5437;Database=postgres;Uid=postgres;Pwd=9ae51c68-c9d6-40e8-a1d6-a71be968ba3e;"))
+            {
+                conn.Open();
+                var myDatabase = new Database(conn);
+
+                var result = myDatabase.Query<User>("SELECT * FROM users");
+
+                Console.WriteLine(result[0].Name);
+            }
+
             while (true)
             {
                 Console.Write("Do you have an existing account! (Y/N) ");
