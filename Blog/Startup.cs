@@ -22,7 +22,10 @@ namespace Blog
 
                 var result = myDatabase.Query<User>("SELECT * FROM users");
 
-                Console.WriteLine(result[0].Name);
+                foreach (var user in result)
+                {
+                    Console.WriteLine(user.name);
+                }
             }
 
             while (true)

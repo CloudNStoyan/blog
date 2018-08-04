@@ -14,99 +14,51 @@ namespace Blog
             this.Connection = conn;
         }
 
-        public List<T> Query<T>(string sql, params object[] parametars) where T : class , new ()
+        public List<T> Query<T>(string sql, params NpgsqlParameter[] parametars) where T : class, new()
         {
             var dbResult = new List<T>();
 
-            this.Connection.Open();
-
-            var paramatarNames = this.GetParametarNames(sql);
-
-            using (var cmd = new NpgsqlCommand(sql, this.Connection))
+            using (var npgsqlCommand = new NpgsqlCommand(sql, this.Connection))
             {
-                for (int i = 0; i < paramatarNames.Length; i++)
+                foreach (var parametar in parametars)
                 {
-                    cmd.Parameters.AddWithValue(paramatarNames[i], parametars[i]);
+                    npgsqlCommand.Parameters.Add(parametar);
                 }
 
-                using (var rdr = cmd.ExecuteReader())
+
+                using (var dataReader = npgsqlCommand.ExecuteReader())
                 {
-                    while (rdr.Read())
+                    while (dataReader.Read())
                     {
-                        var constructorArguments = new object[rdr.FieldCount];
+                        var instance = new T();
+                        var typeOfInstance = instance.GetType();
 
-                        for (int i = 0; i < rdr.FieldCount; i++)
+                        for (int i = 0; i < dataReader.FieldCount; i++)
                         {
-                            Type sqlType = rdr[i].GetType();
-
-                            var properties = typeof(T).GetProperties();
-
-                            for (int j = 0; j < properties.Length; j++)
-                            {
-                                var property = properties[j];
-                                if (property.PropertyType == sqlType && property.Name.ToLowerInvariant().Trim() ==
-                                    rdr.GetName(i).ToLowerInvariant().Trim())
-                                {
-                                    constructorArguments[j] = rdr[i];
-                                    break;
-                                }
-                            }
+                            typeOfInstance.GetProperty(dataReader.GetName(i))?.SetValue(instance, dataReader[i]);
                         }
 
-                         
-
-                        List<Type> consturctorTypes = new List<Type>();
-
-                        foreach (object constructorArgument in constructorArguments)
-                        {
-                            consturctorTypes.Add(constructorArgument.GetType());
-                        }
-
-                        ConstructorInfo constructor =
-                            typeof(T).GetConstructor(consturctorTypes.ToArray());
-
-                        var instance = constructor.Invoke(constructorArguments);
-
-                        //var instance = (T) Activator.CreateInstance(typeof(T), constructorArguments);
-
-                        dbResult.Add((T)instance);
+                        dbResult.Add(instance);
                     }
                 }
-
             }
 
             return dbResult;
         }
-
-        private string[] GetParametarNames(string sql)
-        {
-            var paramNames = new List<string>();
-
-            string[] splitedSql = sql.Split('@');
-
-            for (int i = 1; i < splitedSql.Length; i++)
-            {
-                paramNames.Add(splitedSql[i][0].ToString());
-            }
-
-            return paramNames.ToArray();
-        }
     }
-    
+
 
     public class User
     {
-        public int User_id { get; private set; }
+        public int user_id { get; private set; }
 
-        public string Name { get; private set; }
+        public string name { get; private set; }
 
-        public string Password { get; private set; }
+        public string password { get; private set; }
 
-        public User(int user_id,string name,string password)
+        public User()
         {
-            this.User_id = user_id;
-            this.Name = name;
-            this.Password = password;
+
         }
     }
 }
