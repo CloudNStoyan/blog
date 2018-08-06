@@ -16,34 +16,34 @@ namespace Blog
 
         public List<T> Query<T>(string sql, params NpgsqlParameter[] parametars) where T : class, new()
         {
-            var dbResult = new List<T>();
+            var result = new List<T>();
 
-            using (var npgsqlCommand = new NpgsqlCommand(sql, this.Connection))
+            using (var command = new NpgsqlCommand(sql, this.Connection))
             {
                 foreach (var parametar in parametars)
                 {
-                    npgsqlCommand.Parameters.Add(parametar);
+                    command.Parameters.Add(parametar);
                 }
 
+                var instanceType = typeof(T);
 
-                using (var dataReader = npgsqlCommand.ExecuteReader())
+                using (var reader = command.ExecuteReader())
                 {
-                    while (dataReader.Read())
+                    while (reader.Read())
                     {
                         var instance = new T();
-                        var typeOfInstance = instance.GetType();
 
-                        for (int i = 0; i < dataReader.FieldCount; i++)
+                        for (int i = 0; i < reader.FieldCount; i++)
                         {
-                            typeOfInstance.GetProperty(dataReader.GetName(i))?.SetValue(instance, dataReader[i]);
+                            instanceType.GetProperty(reader.GetName(i))?.SetValue(instance, reader[i]);
                         }
 
-                        dbResult.Add(instance);
+                        result.Add(instance);
                     }
                 }
             }
 
-            return dbResult;
+            return result;
         }
     }
 
