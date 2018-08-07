@@ -24,7 +24,7 @@ namespace Blog
 
                 foreach (var user in result)
                 {
-                    Console.WriteLine(user.name);
+                    Console.WriteLine(user.Name);
                 }
             }
 
