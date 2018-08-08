@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Npgsql;
 
 namespace Blog
@@ -10,12 +11,6 @@ namespace Blog
     {
         private NpgsqlConnection Connection { get; }
 
-
-        private List<string> GetCatNames()
-        {
-            return null;
-        }
-
         public Database(NpgsqlConnection conn)
         {
             this.Connection = conn;
@@ -23,32 +18,40 @@ namespace Blog
 
         public List<T> Query<T>(string sql, params NpgsqlParameter[] parametars) where T : class, new()
         {
-            var result = new List<T>();
+            if (this.SqlOrParamsIsNull(sql, parametars))
+            {
+                throw new Exception("You can't pass null in the query!");
+            }
 
+
+            var result = new List<T>();
             using (var command = new NpgsqlCommand(sql, this.Connection))
             {
                 command.Parameters.AddRange(parametars);
 
-                var instanceType = typeof(T);
-
                 using (var reader = command.ExecuteReader())
                 {
+                    var instanceType = typeof(T);
+                    var properties = instanceType.GetProperties();
+
                     while (reader.Read())
                     {
                         var instance = new T();
 
                         for (int i = 0; i < reader.FieldCount; i++)
                         {
-                            var propertyType = instanceType.GetProperty(this.ConvertConventionForProperty(reader.GetName(i)))?.PropertyType;
+                            string propertyName = this.ConvertConventionForProperty(reader.GetName(i));
+                            var property = properties.First(p => p.Name == propertyName);
 
+                            var propertyType = property?.PropertyType;
                             var sqlColumnType = reader[i].GetType();
 
                             if (propertyType != sqlColumnType)
                             {
-                                throw new Exception("Property type and sql return type are not the same!");
+                                throw new Exception($"Property type and sql return type are not the same! Property Type {propertyType}, Sql Return Type {sqlColumnType}");
                             }
 
-                            instanceType.GetProperty(this.ConvertConventionForProperty(reader.GetName(i)))?.SetValue(instance, reader[i]);
+                            property.SetValue(instance, reader[i]);
                         }
 
                         result.Add(instance);
@@ -59,44 +62,41 @@ namespace Blog
             return result;
         }
 
-        public T QueryRow<T>(string sql, params NpgsqlParameter[] parametars) where T : class, new()
+        public T QueryOne<T>(string sql, params NpgsqlParameter[] parametars) where T : class, new()
         {
-            T result = null;
 
             var queryResult = this.Query<T>(sql, parametars);
 
+            if (queryResult.Count < 1)
+            {
+                return null;
+            }
+
             if (queryResult.Count > 1)
             {
-                throw new Exception("Returned more than one row!");
+                throw new Exception($"Returned more than one row! Rows returned: {queryResult.Count}");
             }
 
-            if (queryResult.Count > 0)
-            {
-                result = queryResult[0];
-            }
-
-            return result;
+            return queryResult[0];
         }
 
-        public T QueryElement<T>(string sql, params NpgsqlParameter[] parametars)
+        public T Execute<T>(string sql, params NpgsqlParameter[] parametars)
         {
             T result = default(T);
-            bool filled = false;
 
             using (var command = new NpgsqlCommand(sql, this.Connection))
             {
-                foreach (var parametar in parametars)
-                {
-                    command.Parameters.Add(parametar);
-                }
+                command.Parameters.AddRange(parametars);
 
                 using (var reader = command.ExecuteReader())
                 {
+                    bool valueWasExtracted = false;
+
                     while (reader.Read())
                     {
                         if (reader.FieldCount > 1)
                         {
-                            throw new Exception("There are more than one collumn!");
+                            throw new Exception($"There are more than one collumn! Collumn returned: {reader.FieldCount}");
                         }
 
                         if (reader[0].GetType() != typeof(T))
@@ -104,13 +104,13 @@ namespace Blog
                             throw new Exception("Given type and sql return type are not matching!");
                         }
 
-                        if (filled)
+                        if (valueWasExtracted)
                         {
-                            throw new Exception("There is more than one value!");
+                            throw new Exception($"There is more than one value!");
                         }
 
                         result = (T)reader[0];
-                        filled = true;
+                        valueWasExtracted = true;
                     }
                 }
             }
@@ -118,33 +118,33 @@ namespace Blog
             return result;
         }
 
-        public void Execute(string sql, params NpgsqlParameter[] parametars)
+        public int ExecuteNonQuery(string sql, params NpgsqlParameter[] parametars)
         {
             using (var command = new NpgsqlCommand(sql, this.Connection))
             {
                 command.Parameters.AddRange(parametars);
-                command.ExecuteNonQuery();
+
+                return command.ExecuteNonQuery();
             }
         }
 
-        private string ConvertConventionForField(string variableName)
+        private bool SqlOrParamsIsNull(string sql, NpgsqlParameter[] parametars)
         {
-            string[] words = variableName.Split('_');
-            string convertedWord = String.Empty;
-
-            for (int i = 0; i < words.Length; i++)
+            if (sql.Contains("null"))
             {
-                if (i != 0)
+                return true;
+            }
+
+            foreach (var parametar in parametars)
+            {
+                if (parametar.IsNullable)
                 {
-                    convertedWord += char.ToUpper(words[i][0]) + words[i].Substring(1);
-                }
-                else
-                {
-                    convertedWord += words[i];
+                    return true;
                 }
             }
 
-            return convertedWord;
+            return false;
+
         }
 
         private string ConvertConventionForProperty(string variableName)
