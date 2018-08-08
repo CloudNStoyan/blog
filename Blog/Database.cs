@@ -4,9 +4,17 @@ using Npgsql;
 
 namespace Blog
 {
+    //Unhandled Exception: System.ArgumentException: Object of type 'System.DBNull' cannot be converted to type 'System.Int32'.
+
     public class Database
     {
         private NpgsqlConnection Connection { get; }
+
+
+        private List<string> GetCatNames()
+        {
+            return null;
+        }
 
         public Database(NpgsqlConnection conn)
         {
@@ -32,9 +40,10 @@ namespace Blog
                         for (int i = 0; i < reader.FieldCount; i++)
                         {
                             var propertyType = instanceType.GetProperty(this.ConvertConventionForProperty(reader.GetName(i)))?.PropertyType;
-                            var sqlReturnType = reader[i].GetType();
 
-                            if (propertyType != sqlReturnType)
+                            var sqlColumnType = reader[i].GetType();
+
+                            if (propertyType != sqlColumnType)
                             {
                                 throw new Exception("Property type and sql return type are not the same!");
                             }
