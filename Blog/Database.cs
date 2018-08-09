@@ -18,11 +18,7 @@ namespace Blog
 
         public List<T> Query<T>(string sql, params NpgsqlParameter[] parametars) where T : class, new()
         {
-            if (this.SqlOrParamsIsNull(sql, parametars))
-            {
-                throw new Exception("You can't pass null in the query!");
-            }
-
+            ThrowIfSqlOrParamsAreNull(sql, parametars);
 
             var result = new List<T>();
             using (var command = new NpgsqlCommand(sql, this.Connection))
@@ -32,7 +28,7 @@ namespace Blog
                 using (var reader = command.ExecuteReader())
                 {
                     var instanceType = typeof(T);
-                    var properties = instanceType.GetProperties();
+                    var properties = instanceType.GetProperties().ToDictionary(x => x.Name, x => x);
 
                     while (reader.Read())
                     {
@@ -40,18 +36,24 @@ namespace Blog
 
                         for (int i = 0; i < reader.FieldCount; i++)
                         {
+                            var returnedElement = reader[i];
+                            if (returnedElement.GetType().Name == "DBNull")
+                            {
+                                returnedElement = null;
+                            }
                             string propertyName = this.ConvertConventionForProperty(reader.GetName(i));
-                            var property = properties.First(p => p.Name == propertyName);
+
+                            var property = properties[propertyName];
 
                             var propertyType = property?.PropertyType;
-                            var sqlColumnType = reader[i].GetType();
+                            var sqlColumnType = returnedElement?.GetType();
 
                             if (propertyType != sqlColumnType)
                             {
                                 throw new Exception($"Property type and sql return type are not the same! Property Type {propertyType}, Sql Return Type {sqlColumnType}");
                             }
 
-                            property.SetValue(instance, reader[i]);
+                            property?.SetValue(instance, returnedElement);
                         }
 
                         result.Add(instance);
@@ -62,9 +64,19 @@ namespace Blog
             return result;
         }
 
+        public List<T> Query<T>(string sql, Dictionary<string, object> parametars) where T : class, new()
+        {
+            var listOfParametars = new List<NpgsqlParameter>();
+            foreach (var pair in parametars)
+            {
+                listOfParametars.Add(new NpgsqlParameter(pair.Key,pair.Value));
+            }
+
+            return this.Query<T>(sql, listOfParametars.ToArray());
+        }
+
         public T QueryOne<T>(string sql, params NpgsqlParameter[] parametars) where T : class, new()
         {
-
             var queryResult = this.Query<T>(sql, parametars);
 
             if (queryResult.Count < 1)
@@ -80,9 +92,20 @@ namespace Blog
             return queryResult[0];
         }
 
+        public T QueryOne<T>(string sql, Dictionary<string, object> parametars) where T : class,new()
+        {
+            var listOfParametars = new List<NpgsqlParameter>();
+            foreach (var pair in parametars)
+            {
+                listOfParametars.Add(new NpgsqlParameter(pair.Key, pair.Value));
+            }
+
+            return this.QueryOne<T>(sql, listOfParametars.ToArray());
+        }
+
         public T Execute<T>(string sql, params NpgsqlParameter[] parametars)
         {
-            T result = default(T);
+            T result = default;
 
             using (var command = new NpgsqlCommand(sql, this.Connection))
             {
@@ -94,28 +117,46 @@ namespace Blog
 
                     while (reader.Read())
                     {
+                        var returnedElement = reader[0];
+
+                        if (returnedElement.GetType().Name == "DBNull")
+                        {
+                            returnedElement = null;
+                        }
+
                         if (reader.FieldCount > 1)
                         {
                             throw new Exception($"There are more than one collumn! Collumn returned: {reader.FieldCount}");
                         }
 
-                        if (reader[0].GetType() != typeof(T))
+                        if (returnedElement?.GetType() != typeof(T))
                         {
-                            throw new Exception("Given type and sql return type are not matching!");
+                            throw new Exception($"Given type and sql return type are not matching! Returned type from sql '{returnedElement?.GetType()}', given type '{typeof(T)}'");
                         }
 
                         if (valueWasExtracted)
                         {
-                            throw new Exception($"There is more than one value!");
+                            throw new Exception("There is more than one rows!");
                         }
 
-                        result = (T)reader[0];
+                        result = (T)returnedElement;
                         valueWasExtracted = true;
                     }
                 }
             }
 
             return result;
+        }
+
+        public T Execute<T>(string sql, Dictionary<string, object> parametars)
+        {
+            var listOfParametars = new List<NpgsqlParameter>();
+            foreach (var pair in parametars)
+            {
+                listOfParametars.Add(new NpgsqlParameter(pair.Key, pair.Value));
+            }
+
+            return this.Execute<T>(sql, listOfParametars.ToArray());
         }
 
         public int ExecuteNonQuery(string sql, params NpgsqlParameter[] parametars)
@@ -128,47 +169,59 @@ namespace Blog
             }
         }
 
-        private bool SqlOrParamsIsNull(string sql, NpgsqlParameter[] parametars)
+        public int ExecuteNonQuery(string sql, Dictionary<string, object> parametars)
         {
-            if (sql.Contains("null"))
+            var listOfParametars = new List<NpgsqlParameter>();
+            foreach (var pair in parametars)
             {
-                return true;
+                listOfParametars.Add(new NpgsqlParameter(pair.Key, pair.Value));
             }
 
-            foreach (var parametar in parametars)
+            return this.ExecuteNonQuery(sql, listOfParametars.ToArray());
+        }
+
+        private static void ThrowIfSqlOrParamsAreNull(string sql, NpgsqlParameter[] parameters)
+        {
+            if (sql == null)
             {
-                if (parametar.IsNullable)
+                throw new ArgumentNullException(nameof(sql));
+            }
+
+            if (parameters == null)
+            {
+                throw new ArgumentNullException(nameof(parameters));
+            }
+
+            for (var i = 0; i < parameters.Length; i++)
+            {
+                if (parameters[i] == null)
                 {
-                    return true;
+                    throw new Exception($"An element of the `params` array {parameters} is null. " +
+                                        $"Element index: {i}.");
                 }
             }
-
-            return false;
-
         }
 
         private string ConvertConventionForProperty(string variableName)
         {
             string[] words = variableName.Split('_');
-            string convertedWord = String.Empty;
-
-            for (int i = 0; i < words.Length; i++)
+            string convertedWord = string.Empty;
+            
+            foreach (var word in words)
             {
-                convertedWord += char.ToUpper(words[i][0]) + words[i].Substring(1);
+                convertedWord += char.ToUpper(word[0]) + word.Substring(1);
             }
 
             return convertedWord;
         }
     }
-
-
-    public class User
+    
+    public class UserPoco
     {
         public int UserId { get; set; }
 
         public string Name { get; set; }
 
         public string Password { get; set; }
-
     }
 }

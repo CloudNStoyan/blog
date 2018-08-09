@@ -20,7 +20,7 @@ namespace Blog
                 conn.Open();
                 var myDatabase = new Database(conn);
 
-                var result = myDatabase.Query<User>("SELECT * FROM users");
+                var result = myDatabase.Query<UserPoco>("SELECT * FROM users");
 
                 foreach (var user in result)
                 {
