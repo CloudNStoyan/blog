@@ -33,7 +33,7 @@ namespace Blog
                 Console.Write("Do you have an existing account! (Y/N) ");
                 string line = Console.ReadLine() ?? " ";
 
-                if (String.IsNullOrEmpty(line))
+                if (string.IsNullOrEmpty(line))
                 {
                     Console.WriteLine("Thats not a valid answer use only 'Y' for yes and 'N' for no!");
                     continue;
@@ -74,7 +74,7 @@ namespace Blog
                     break;
                 }
 
-                switch (input.ToLowerInvariant().Replace(" ", String.Empty))
+                switch (input.ToLowerInvariant().Replace(" ", string.Empty))
                 {
                     case "help":
                         CommandPrinter.ShowAll();

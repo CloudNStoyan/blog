@@ -5,8 +5,6 @@ using Npgsql;
 
 namespace Blog
 {
-    //Unhandled Exception: System.ArgumentException: Object of type 'System.DBNull' cannot be converted to type 'System.Int32'.
-
     public class Database
     {
         private NpgsqlConnection Connection { get; }
@@ -37,23 +35,27 @@ namespace Blog
                         for (int i = 0; i < reader.FieldCount; i++)
                         {
                             var returnedElement = reader[i];
-                            if (returnedElement.GetType().Name == "DBNull")
+
+                            if (returnedElement is DBNull)
                             {
                                 returnedElement = null;
                             }
-                            string propertyName = this.ConvertConventionForProperty(reader.GetName(i));
 
-                            var property = properties[propertyName];
+                            string propertyName = ConvertConventionForProperty(reader.GetName(i));
 
-                            var propertyType = property?.PropertyType;
-                            var sqlColumnType = returnedElement?.GetType();
-
-                            if (propertyType != sqlColumnType)
+                            if (properties.ContainsKey(propertyName))
                             {
-                                throw new Exception($"Property type and sql return type are not the same! Property Type {propertyType}, Sql Return Type {sqlColumnType}");
-                            }
+                                var property = properties[propertyName];
+                                var propertyType = property?.PropertyType;
+                                var sqlColumnType = returnedElement?.GetType();
 
-                            property?.SetValue(instance, returnedElement);
+                                if (propertyType != sqlColumnType)
+                                {
+                                    throw new Exception($"Property type and sql return type are not the same! Property Type {propertyType}, Sql Return Type {sqlColumnType}");
+                                }
+
+                                property?.SetValue(instance, returnedElement);
+                            }
                         }
 
                         result.Add(instance);
@@ -119,7 +121,7 @@ namespace Blog
                     {
                         var returnedElement = reader[0];
 
-                        if (returnedElement.GetType().Name == "DBNull")
+                        if (returnedElement is DBNull)
                         {
                             returnedElement = null;
                         }
@@ -202,7 +204,7 @@ namespace Blog
             }
         }
 
-        private string ConvertConventionForProperty(string variableName)
+        private static string ConvertConventionForProperty(string variableName)
         {
             string[] words = variableName.Split('_');
             string convertedWord = string.Empty;
@@ -214,14 +216,5 @@ namespace Blog
 
             return convertedWord;
         }
-    }
-    
-    public class UserPoco
-    {
-        public int UserId { get; set; }
-
-        public string Name { get; set; }
-
-        public string Password { get; set; }
     }
 }

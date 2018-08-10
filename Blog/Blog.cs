@@ -11,83 +11,71 @@ namespace Blog
     
     public static class Blog
     {
-        public const string ConnectionPath = @"Server=vm5;Port=5437;Database=postgres;Uid=postgres;Pwd=9ae51c68-c9d6-40e8-a1d6-a71be968ba3e;";
+        public const string ConnectionString = @"Server=vm5;Port=5437;Database=postgres;Uid=postgres;Pwd=9ae51c68-c9d6-40e8-a1d6-a71be968ba3e;";
         public static int CurrentPost;
         public static int CurrentPostUserId;
 
         public static void ViewAccountPosts()
         {
-            var postIds = new List<int>();
-            var postTitles = new List<string>();
-
-            using (var conn = new NpgsqlConnection(ConnectionPath))
+            List<PostPoco> posts;
+            using (var conn = new NpgsqlConnection(ConnectionString))
             {
                 conn.Open();
-                using (var cmd = new NpgsqlCommand("SELECT * FROM posts WHERE user_id=@i", conn))
+                var database = new Database(conn);
+                posts = database.Query<PostPoco>("SELECT * FROM posts WHERE user_id=@i",
+                    new NpgsqlParameter("i", Account.Id));
+            }
+
+
+            Console.WriteLine("|Number|   Title   |");
+            for (int i = 0; i < posts.Count; i++)
+            {
+                Console.WriteLine($"|{i + 1,5} | {posts[i].Title,10}|");
+            }
+
+            if (posts.Count > 0)
+            {
+                Console.WriteLine("Type 'return' to return to the blog!\n");
+                while (true)
                 {
-                    cmd.Parameters.Add(new NpgsqlParameter("i", Account.Id));
-                    using (var rdr = cmd.ExecuteReader())
+                    Console.Write("Post number: ");
+                    string line = Console.ReadLine() ?? " ";
+
+                    if (string.IsNullOrEmpty(line))
                     {
-                        while (rdr.Read())
-                        {
-                            postIds.Add(int.Parse(rdr["post_id"].ToString()));
-                            postTitles.Add(rdr["title"].ToString());
-                        }
+                        Console.WriteLine("Please type a number!");
+                        continue;
                     }
-                }
 
-                Console.WriteLine("|Number|   Title   |");
-                for (int i = 0; i < postIds.Count; i++)
-                {
-                    Console.WriteLine($"|{i + 1,5} | {postTitles[i],10}|");
-                }
-
-                if (postIds.Count > 0)
-                {
-                    Console.WriteLine("Type 'return' to return to the blog!\n");
-                    while (true)
+                    if (line.ToLowerInvariant().Trim() == "return")
                     {
-                        Console.Write("Post number: ");
-                        string line = Console.ReadLine() ?? " ";
+                        break;
+                    }
 
-                        if (String.IsNullOrEmpty(line))
+                    int id;
+
+                    try
+                    {
+                        id = int.Parse(line.Trim()) - 1;
+                        if (id < 0 || id > posts.Count - 1)
                         {
-                            Console.WriteLine("Please type a number!");
+                            Console.WriteLine($"Invalid number. Number must be in range of 1 to {posts.Count}");
                             continue;
                         }
-
-                        if (line.ToLowerInvariant().Trim() == "return")
-                        {
-                            break;
-                        }
-
-                        int id = 0;
-
-                        try
-                        {
-                            id = int.Parse(line.Trim()) - 1;
-                            if (id < 0 || id > postIds.Count - 1)
-                            {
-                                Console.WriteLine($"Invalid number. Number must be in range of 1 to {postIds.Count}");
-                                continue;
-                            }
-                        }
-                        catch (Exception exc)
-                        {
-                            Console.WriteLine("You need to type number!");
-                            continue;
-                        }
-
-                        ChoosePost(postIds[id]);
-
                     }
-                }
-                else
-                {
-                    Console.WriteLine("You don't have any posts yet! Create your first by typing 'post-create' !\n");
-                }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("You need to type number!");
+                        continue;
+                    }
 
-                conn.Dispose();
+                    ChoosePost(posts[id].PostId);
+
+                }
+            }
+            else
+            {
+                Console.WriteLine("You don't have any posts yet! Create your first by typing 'post-create' !\n");
             }
         }
 
@@ -98,14 +86,14 @@ namespace Blog
             while (true)
             {
                 string line = Console.ReadLine() ?? " ";
-                if (String.IsNullOrEmpty(line))
+                if (string.IsNullOrEmpty(line))
                 {
                     Console.WriteLine("Your comment needs to be at least 1 char long!");
                     continue;
                 }
                 if (line.ToLowerInvariant().Trim() == "done")
                 {
-                    if (String.IsNullOrEmpty(buildComment.ToString().Trim()))
+                    if (string.IsNullOrEmpty(buildComment.ToString().Trim()))
                     {
                         Console.WriteLine("Your comment needs to be at least 1 char long!");
                         continue;
@@ -118,20 +106,21 @@ namespace Blog
 
             string comment = buildComment.ToString().Trim();
 
-            using (var conn = new NpgsqlConnection(ConnectionPath))
+            using (var conn = new NpgsqlConnection(ConnectionString))
             {
                 conn.Open();
-                using (var cmd = new NpgsqlCommand("INSERT INTO comments (author_name,content,post_id) VALUES (@a,@c,@p)", conn))
+                var database = new Database(conn);
+                var parametars = new[]
                 {
-                    cmd.Parameters.AddWithValue("a", Account.Name);
-                    cmd.Parameters.AddWithValue("c", comment);
-                    cmd.Parameters.AddWithValue("p", CurrentPost);
-                    cmd.ExecuteNonQuery();
-                    cmd.Dispose();
-                }
-
-                conn.Dispose();
+                    new NpgsqlParameter("a", Account.Name),
+                    new NpgsqlParameter("c", comment),
+                    new NpgsqlParameter("p", CurrentPost),
+                    new NpgsqlParameter("i", Account.Id)
+                };
+                database.ExecuteNonQuery("INSERT INTO comments (author_name,content,post_id,user_id) VALUES (@a,@c,@p,@i)", parametars);
             }
+
+
 
             Console.WriteLine("You successfully commented!\n");
         }
@@ -154,18 +143,19 @@ namespace Blog
 
             string newComment = buildNewComment.ToString();
 
-            using (var conn = new NpgsqlConnection(ConnectionPath))
+            using (var conn = new NpgsqlConnection(ConnectionString))
             {
                 conn.Open();
 
-                using (var cmd = new NpgsqlCommand("UPDATE comments SET content=@c WHERE comment_id=@i", conn))
-                {
-                    cmd.Parameters.AddWithValue("c", newComment);
-                    cmd.Parameters.AddWithValue("i", commentId);
-                    cmd.ExecuteNonQuery();
-                }
+                var database = new Database(conn);
 
-                conn.Dispose();
+                var parametars = new[]
+                {
+                    new NpgsqlParameter("c", newComment),
+                    new NpgsqlParameter("i", commentId)
+                };
+
+                database.ExecuteNonQuery("UPDATE comments SET content=@c WHERE comment_id@i", parametars);
             }
 
             Console.WriteLine("Great you edited this comment!\n");
@@ -204,56 +194,22 @@ namespace Blog
 
         public static void DeletePost(int postId)
         {
-            DeleteAllCommentsFromPost(postId);
-            DeleteAllConnectedTags(postId);
-
-            using (var conn = new NpgsqlConnection(ConnectionPath))
+            using (var conn = new NpgsqlConnection(ConnectionString))
             {
                 conn.Open();
 
-                using (var cmd = new NpgsqlCommand("DELETE FROM posts WHERE post_id=@i", conn))
-                {
-                    cmd.Parameters.AddWithValue("i", postId);
-                    cmd.ExecuteNonQuery();
-                }
+                var database = new Database(conn);
 
-                conn.Dispose();
+                var parametar = new Dictionary<string, object> {{"i", postId}};
+
+                database.ExecuteNonQuery("DELETE FROM comments WHERE post_id=@i", parametar);
+                database.ExecuteNonQuery("DELETE FROM posts_tags WHERE post_id=@i", parametar);
+                database.ExecuteNonQuery("DELETE FROM posts WHERE post_id=@i", parametar);
             }
 
             Console.WriteLine("You sucesfully deleted this post!");
         }
 
-        public static void DeleteAllCommentsFromPost(int postId)
-        {
-            using (var conn = new NpgsqlConnection(ConnectionPath))
-            {
-                conn.Open();
-
-                using (var cmd = new NpgsqlCommand("DELETE FROM comments WHERE post_id=@i",conn))
-                {
-                    cmd.Parameters.AddWithValue("i", postId);
-                    cmd.ExecuteNonQuery();
-                }
-
-                conn.Dispose();
-            }
-        }
-
-        public static void DeleteAllConnectedTags(int postId)
-        {
-            using (var conn = new NpgsqlConnection(ConnectionPath))
-            {
-                conn.Open();
-
-                using (var cmd = new NpgsqlCommand("DELETE FROM posts_tags WHERE post_id=@i", conn))
-                {
-                    cmd.Parameters.AddWithValue("i", postId);
-                    cmd.ExecuteNonQuery();
-                }
-
-                conn.Dispose();
-            }
-        }
         public static void PostInterface(int userId)
         {
             if (Account.Id == userId)
@@ -273,7 +229,7 @@ namespace Blog
                 Console.Write("Blog -->#Post: ");
                 string line = Console.ReadLine() ?? " ";
 
-                if (String.IsNullOrEmpty(line))
+                if (string.IsNullOrEmpty(line))
                 {
                     Console.WriteLine("Invalid command!");
                     continue;
@@ -284,7 +240,7 @@ namespace Blog
                     break;
                 }
 
-                switch (line.ToLowerInvariant().Replace(" ", String.Empty))
+                switch (line.ToLowerInvariant().Replace(" ", string.Empty))
                 {
                     case "clear":
                         Console.Clear();
@@ -337,45 +293,29 @@ namespace Blog
 
         public static void ShowUserComments()
         {
-            var commentIds = new List<int>();
-            var commentContents = new List<string>();
+            List<CommentPoco> comments;
 
-            using (var conn = new NpgsqlConnection(ConnectionPath))
+            using (var conn = new NpgsqlConnection(ConnectionString))
             {
                 conn.Open();
 
-                using (var cmd = new NpgsqlCommand("SELECT * FROM comments WHERE author_name=@n", conn))
-                {
-                    cmd.Parameters.AddWithValue("n", Account.Name);
-
-                    using (var rdr = cmd.ExecuteReader())
-                    {
-                        while (rdr.Read())
-                        {
-                            commentIds.Add(int.Parse($"{rdr["comment_id"]}"));
-                            commentContents.Add($"{rdr["content"]}");
-                        }
-                    }
-                }
-
-                conn.Dispose();
+                var database = new Database(conn);
+                comments = database.Query<CommentPoco>("SELECT * FROM comments WHERE author_name=@n",
+                    new NpgsqlParameter("n", Account.Name));
             }
 
-            if (commentContents.Count < 1)
+            if (comments.Count < 1)
             {
                 Console.WriteLine("You dont have any comments on this post!");
                 return;
             }
 
 
-            for (int i = 0; i < commentIds.Count; i++)
+            for (int i = 0; i < comments.Count; i++)
             {
-                var shortContent = new StringBuilder();
-                for (int j = 0; j < commentContents[i].Length || j < 7; j++)
-                {
-                    shortContent.Append(commentContents[i][j]);
-                }
-                Console.WriteLine($"{i + 1} | {shortContent}...");
+                string commentContent = comments[i].Content;
+                string shortContent = commentContent.Length > 7 ? commentContent.Substring(0, 7) + "..." : commentContent;
+                Console.WriteLine($"{i + 1} | {shortContent}");
             }
 
 
@@ -393,9 +333,9 @@ namespace Blog
                     }
 
                     int selectedComment = int.Parse(line) - 1;
-                    if (selectedComment > commentContents.Count - 1)
+                    if (selectedComment > comments.Count - 1)
                     {
-                        Console.WriteLine($"Please select comments from 1 to {commentContents.Count - 1}\n");
+                        Console.WriteLine($"Please select comments from 1 to {comments.Count - 1}\n");
                         continue;
                     }
 
@@ -409,11 +349,11 @@ namespace Blog
                         string input = Console.ReadLine() ?? " ";
                         if (input.ToLowerInvariant().Trim() == "view")
                         {
-                            Console.WriteLine(commentContents[selectedComment] + "\n");
+                            Console.WriteLine(comments[selectedComment].Content + "\n");
                         } else if (input.ToLowerInvariant().Trim() == "edit")
                         {
-                            string editedComment = EditComment(commentIds[selectedComment]);
-                            commentContents[selectedComment] = editedComment;
+                            string editedComment = EditComment(comments[selectedComment].CommentId);
+                            comments[selectedComment].Content = editedComment;
                         } else if (input.ToLowerInvariant().Trim() == "return")
                         {
                             break;
@@ -434,41 +374,30 @@ namespace Blog
 
         public static void AllComments(int postId)
         {
-            var commentsContent = new List<string>();
-            var authorNames = new List<string>();
-            var commentIds = new List<int>();
+            List<CommentPoco> comments;
 
-            using (var conn = new NpgsqlConnection(ConnectionPath))
+            using (var conn = new NpgsqlConnection(ConnectionString))
             {
                 conn.Open();
-                using (var cmd = new NpgsqlCommand("SELECT * FROM comments WHERE post_id=@i",conn))
-                {
-                    cmd.Parameters.AddWithValue("i", postId);
 
-                    using (var rdr = cmd.ExecuteReader())
-                    {
-                        while (rdr.Read())
-                        {
-                            commentIds.Add(int.Parse($"{rdr["comment_id"]}"));
-                            commentsContent.Add($"{rdr["content"]}");
-                            authorNames.Add($"{rdr["author_name"]}");
-                        }
-                    }
-                }
+                var database = new Database(conn);
+                comments = database.Query<CommentPoco>("SELECT * FROM comments WHERE post_id=@i", new NpgsqlParameter("i", postId));
 
-                conn.Dispose();
             }
 
-            if (commentIds.Count < 1)
+            if (comments.Count < 1)
             {
                 Console.WriteLine("They aren't any comments on this post!");
             }
 
             while (true)
             {
-                for (int i = 0; i < commentsContent.Count; i++)
+                for (int i = 0; i < comments.Count; i++)
                 {
-                    Console.WriteLine($"{i + 1} | {commentsContent[i].Substring(0, 7)}... | {authorNames[i]}");
+                    string shortContent = comments[i].Content.Length > 7
+                        ? comments[i].Content.Substring(0, 7) + "..."
+                        : comments[i].Content;
+                    Console.WriteLine($"{i + 1} | {shortContent} | {comments[i].AuthorName}");
                 }
 
                 Console.WriteLine("Choose a comment to view or edit!\n");
@@ -482,14 +411,14 @@ namespace Blog
                     break;
                 }
 
-                int selectedIndex = -1;
+                int selectedIndex;
 
                 try
                 {
                     selectedIndex = int.Parse(line) - 1;
-                    if (selectedIndex < 1 || selectedIndex > commentsContent.Count - 1)
+                    if (selectedIndex < 1 || selectedIndex > comments.Count - 1)
                     {
-                        Console.WriteLine($"Please choose between 1 and {commentsContent.Count}\n");
+                        Console.WriteLine($"Please choose between 1 and {comments.Count}\n");
                         continue;
                     }
                 }
@@ -507,12 +436,12 @@ namespace Blog
                 string option = Console.ReadLine() ?? " ";
                 if (option.ToLowerInvariant().Trim() == "view")
                 {
-                    Console.WriteLine($"\n{commentsContent[selectedIndex]}\n\nAuthor:{authorNames[selectedIndex]}\n");
+                    Console.WriteLine($"\n{comments[selectedIndex].Content}\n\nAuthor:{comments[selectedIndex].AuthorName}\n");
                 } else if (option.ToLowerInvariant().Trim() == "edit")
                 {
-                    if (authorNames[selectedIndex] == Account.Name)
+                    if (comments[selectedIndex].AuthorName == Account.Name)
                     {
-                        EditComment(commentIds[selectedIndex]);
+                        EditComment(comments[selectedIndex].CommentId);
                     }
                     else
                     {
@@ -525,30 +454,19 @@ namespace Blog
 
         public static void ShowLatests()
         {
-            var postIds = new List<int>();
-            var postTitles = new List<string>();
-
-            using (var conn = new NpgsqlConnection(Blog.ConnectionPath))
+            using (var conn = new NpgsqlConnection(ConnectionString))
             {
                 conn.Open();
-                using (var cmd = new NpgsqlCommand("SELECT * FROM posts LIMIT 10", conn))
+
+                var database = new Database(conn);
+                var posts = database.Query<PostPoco>("SELECT * FROM posts ORDER BY post_id LIMIT 10");
+
+                for (int i = posts.Count - 1; i >= 0; i--)
                 {
-                    using (var rdr = cmd.ExecuteReader())
-                    {
-                        while (rdr.Read())
-                        {
-                            postIds.Add(int.Parse(rdr["post_id"].ToString()));
-                            postTitles.Add(rdr["title"].ToString());
-                        }
-                    }
+                    Console.WriteLine($"{Math.Abs(i - posts.Count)}| {posts[i].Title}");
                 }
 
-                for (int i = postIds.Count - 1; i >= 0; i--)
-                {
-                    Console.WriteLine($"{Math.Abs(i - postIds.Count)}| {postTitles[i]}");
-                }
-
-                if (postIds.Count > 0)
+                if (posts.Count > 0)
                 {
                     Console.WriteLine("Type 'return' to return to the blog!\n");
                     while (true)
@@ -564,19 +482,19 @@ namespace Blog
 
                         try
                         {
-                            id = postIds.Count - int.Parse(line.Trim());
-                            if (id < 1 || id > postIds.Count - 1)
+                            id = posts.Count - int.Parse(line.Trim());
+                            if (id < 1 || id > posts.Count - 1)
                             {
-                                Console.WriteLine($"Invalid number. Number must be in range 1 and {postIds.Count}");
+                                Console.WriteLine($"Invalid number. Number must be in range 1 and {posts.Count}");
                                 continue;
                             }
                         }
-                        catch (Exception exc)
+                        catch (Exception ex)
                         {
                             Console.WriteLine("You need to type number!");
                         }
 
-                        Blog.ChoosePost(postIds[id]);
+                        Blog.ChoosePost(posts[id].PostId);
 
                     }
                 }

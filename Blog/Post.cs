@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Npgsql;
 
 namespace Blog
@@ -11,37 +10,38 @@ namespace Blog
     {
         public static void EditPostContent(int postId, string content)
         {
-            using (var conn = new NpgsqlConnection(Blog.ConnectionPath))
+            using (var conn = new NpgsqlConnection(Blog.ConnectionString))
             {
                 conn.Open();
+                
+                var database = new Database(conn);
 
-                using (var cmd = new NpgsqlCommand($"UPDATE posts SET content=@c WHERE post_id=@p", conn))
+                var parametars = new Dictionary<string,object>
                 {
-                    cmd.Parameters.AddWithValue("c", content);
-                    cmd.Parameters.AddWithValue("p", postId);
-                    cmd.ExecuteNonQuery();
-                }
+                    {"c", content},
+                    {"i", postId}
+                };
 
-                conn.Dispose();
+                database.ExecuteNonQuery("UPDATE posts SET content=@c WHERE post_id=@i", parametars);
             }
         }
 
         public static void EditPostTitle(int postId, string title)
         {
-            using (var conn = new NpgsqlConnection(Blog.ConnectionPath))
+            using (var conn = new NpgsqlConnection(Blog.ConnectionString))
             {
                 conn.Open();
 
-                using (var cmd = new NpgsqlCommand($"UPDATE posts SET title=@t WHERE post_id=@p", conn))
+                var database = new Database(conn);
+                var parametars = new Dictionary<string, object>
                 {
-                    cmd.Parameters.AddWithValue("t", title);
-                    cmd.Parameters.AddWithValue("p", postId);
-                    cmd.ExecuteNonQuery();
-                }
+                    {"t", title},
+                    {"i", postId}
+                };
+
+                database.ExecuteNonQuery("UPDATE posts SET title=@t WHERE post_id=@i", parametars);
 
                 Console.WriteLine("You succesfully edited this post title!");
-
-                conn.Dispose();
             }
         }
 
@@ -49,11 +49,14 @@ namespace Blog
         {
             Console.Write("Title: ");
             string title = Console.ReadLine() ?? " ";
+
             Console.Write("Content(Type done when you are done!): ");
             var buildContent = new StringBuilder();
+
             while (true)
             {
                 string line = Console.ReadLine() ?? " ";
+
                 if (line.ToLowerInvariant().Trim() == "done")
                 {
                     break;
@@ -64,140 +67,77 @@ namespace Blog
 
             string content = buildContent.ToString();
             Console.Write("Tags(Split tags by ',')!: ");
-            string[] tags = Console.ReadLine().Split(',');
-            CreatePost(title, content, tags);
-            Console.WriteLine("Done! if you want to view your post type new-posts");
 
+            string[] tags = Console.ReadLine()?.Split(',');
+            CreatePost(title, content, tags);
+
+            Console.WriteLine("Done! if you want to view your post type new-posts");
         }
 
         public static void CreatePost(string title, string content, string[] tags)
         {
-            var ids = new List<int>();
-
-            using (var conn = new NpgsqlConnection(Blog.ConnectionPath))
+            using (var conn = new NpgsqlConnection(Blog.ConnectionString))
             {
                 conn.Open();
-                using (var cmd = new NpgsqlCommand("INSERT INTO posts (title,content,user_id) VALUES (@t,@c,@u)", conn))
+
+                var database = new Database(conn);
+                var parametars = new Dictionary<string,object>
                 {
-                    cmd.Parameters.AddWithValue("t", title);
-                    cmd.Parameters.AddWithValue("c", content);
-                    cmd.Parameters.AddWithValue("u", Account.Id);
-                    cmd.ExecuteNonQuery();
-                }
+                    {"t", title},
+                    {"c", content},
+                    {"u", Account.Id}
+                };
 
+                int postId = database.Execute<int>("INSERT INTO posts (title,content,user_id) VALUES (@t,@c,@u) RETURNING post_id", parametars);
 
-                var build = new StringBuilder();
-                string buildId = String.Empty;
-
-                foreach (string tag in tags)
+                foreach (string tagName in tags)
                 {
-                    using (var cmd = new NpgsqlCommand("SELECT * FROM tags WHERE name=@n", conn))
-                    {
-                        cmd.Parameters.AddWithValue("n", tag);
-                        using (var rdr = cmd.ExecuteReader())
-                        {
-                            while (rdr.Read())
-                            {
-                                build.AppendLine($"{rdr["name"]}");
-                                buildId = $"{rdr["tag_id"]}";
-                            }
-                        }
-                    }
+                    var tag = database.QueryOne<TagPoco>("SELECT * FROM tags WHERE name=@n", new NpgsqlParameter("n", tagName));
 
-                    if (build.ToString().Length == 0)
-                    {
-                        using (var cmd = new NpgsqlCommand("INSERT INTO tags (name) VALUES (@n)", conn))
-                        {
-                            cmd.Parameters.AddWithValue("n", tag);
-                            cmd.ExecuteNonQuery();
-                        }
+                    int id = tag?.TagId ?? database.Execute<int>("INSERT INTO tags (name) VALUES (@n) RETURNING tag_id", new NpgsqlParameter("n", tagName));
 
-                        using (var cmd = new NpgsqlCommand("SELECT * FROM tags WHERE name=@t", conn))
-                        {
-                            cmd.Parameters.AddWithValue("t", tag);
-                            using (var rdr = cmd.ExecuteReader())
-                            {
-                                while (rdr.Read())
-                                {
-                                    ids.Add(Int32.Parse(rdr["tag_id"].ToString()));
-                                }
-                            }
-                        }
-                    }
-                    else
+                    parametars = new Dictionary<string,object>
                     {
-                        ids.Add(Int32.Parse(buildId));
-                    }
+                        {"p", postId},
+                        {"t", id}
+                    };
+
+                    database.ExecuteNonQuery("INSERT INTO posts_tags (post_id,tag_id) VALUES (@p,@t)", parametars);
                 }
-
-
-                int postId = 0;
-                using (var cmd = new NpgsqlCommand("SELECT * FROM posts WHERE title=@t", conn))
-                {
-                    cmd.Parameters.AddWithValue("t", title);
-                    using (var rdr = cmd.ExecuteReader())
-                    {
-                        while (rdr.Read())
-                        {
-                            postId = Int32.Parse(rdr["post_id"].ToString());
-                        }
-                    }
-                }
-
-
-                foreach (int id in ids)
-                {
-                    using (var cmd = new NpgsqlCommand("INSERT INTO posts_tags (post_id,tag_id) VALUES (@p,@t)", conn))
-                    {
-                        cmd.Parameters.AddWithValue("p", postId);
-                        cmd.Parameters.AddWithValue("t", id);
-                        cmd.ExecuteNonQuery();
-                    }
-                }
-
-                conn.Dispose();
             }
 
         }
 
         public static void ViewAllPosts()
         {
-            var postIds = new List<int>();
-            var postTitles = new List<string>();
-
-            using (var conn = new NpgsqlConnection(Blog.ConnectionPath))
+            using (var conn = new NpgsqlConnection(Blog.ConnectionString))
             {
                 conn.Open();
-                using (var cmd = new NpgsqlCommand("SELECT * FROM posts", conn))
+                var database = new Database(conn);
+                var posts = database.Query<PostPoco>("SELECT * FROM posts");
+
+
+                for (int i = 0; i < posts.Count; i++)
                 {
-                    using (var rdr = cmd.ExecuteReader())
-                    {
-                        while (rdr.Read())
-                        {
-                            postIds.Add(int.Parse(rdr["post_id"].ToString()));
-                            postTitles.Add(rdr["title"].ToString());
-                        }
-                    }
+                    Console.WriteLine($"{i + 1}| {posts[i].Title}");
                 }
 
-                for (int i = 0; i < postIds.Count; i++)
-                {
-                    Console.WriteLine($"{i + 1}| {postTitles[i]}");
-                }
-                
                 Console.WriteLine("Type 'return' to return to the blog!\n");
-                if (postIds.Count > 0)
+
+                if (posts.Count > 0)
                 {
                     while (true)
                     {
                         Console.Write("Post number: ");
+
                         string line = Console.ReadLine() ?? " ";
+
                         if (line.ToLowerInvariant().Trim() == "return")
                         {
                             break;
                         }
 
-                        int id = 0;
+                        int id;
 
                         try
                         {
@@ -209,14 +149,14 @@ namespace Blog
                             continue;
                         }
 
-                        if (id < 0 || id > postIds.Count - 1)
+                        if (id < 0 || id > posts.Count - 1)
                         {
-                            Console.WriteLine($"Invalid number. the number must be in range of 1 and {postIds.Count}");
+                            Console.WriteLine($"Invalid number. the number must be in range of 1 and {posts.Count}");
                             continue;
                         }
 
 
-                        Blog.ChoosePost(postIds[id]);
+                        Blog.ChoosePost(posts[id].PostId);
 
                     }
                 }
@@ -224,76 +164,35 @@ namespace Blog
                 {
                     Console.WriteLine("You don't have any posts yet! Create your first by typing 'post-create' !\n");
                 }
-
-                conn.Dispose();
             }
-            }
+        }
 
         public static void ViewPost(int id)
         {
-            using (var conn = new NpgsqlConnection(Blog.ConnectionPath))
+            using (var conn = new NpgsqlConnection(Blog.ConnectionString))
             {
                 conn.Open();
-                StringBuilder build;
 
-                int userId = 0;
+                var database = new Database(conn);
+                var post = database.QueryOne<PostPoco>("SELECT * FROM posts WHERE post_id=@i", new NpgsqlParameter("i", id));
+                var postsTagsConnections = database.Query<PostsTagsPoco>("SELECT * FROM posts_tags WHERE post_id=@i", new NpgsqlParameter("i", post.PostId));
 
-                using (var cmd = new NpgsqlCommand("SELECT * FROM posts WHERE post_id=@i", conn))
+                var tags = new List<TagPoco>();
+                foreach (var tagsConnection in postsTagsConnections)
                 {
-                    cmd.Parameters.AddWithValue("i", id);
-
-                    using (var rdr = cmd.ExecuteReader())
-                    {
-                        build = new StringBuilder();
-
-                        while (rdr.Read())
-                        {
-                            userId = Int32.Parse($"{rdr["user_id"]}");
-                            build.AppendLine($"\n######################\nTitle: {rdr["title"]}\n");
-                            build.AppendLine($"Content: {rdr["content"]}\n");
-                        }
-                    }
+                    tags.Add(database.QueryOne<TagPoco>("SELECT * FROM tags WHERE tag_id=@i", new NpgsqlParameter("i", tagsConnection.TagId)));
                 }
 
-                var tagIds = new List<int>();
+                Console.WriteLine("|------------------------------------------------------------------------------------------|");
+                Console.WriteLine($"Title: {post.Title.Trim()}");
+                Console.WriteLine("|------------------------------------------------------------------------------------------|");
+                Console.WriteLine($"Content: {post.Content.Trim()}");
+                Console.WriteLine("|------------------------------------------------------------------------------------------|");
+                Console.WriteLine($"Tags: {string.Join(", ", tags.Select(t => t.Name)).Trim()}");
+                Console.WriteLine("|------------------------------------------------------------------------------------------|");
 
-                using (var cmd = new NpgsqlCommand("SELECT * FROM posts_tags WHERE post_id=@i", conn))
-                {
-                    cmd.Parameters.AddWithValue("i", id);
-
-                    using (var rdr = cmd.ExecuteReader())
-                    {
-                        while (rdr.Read())
-                        {
-                            tagIds.Add(Int32.Parse(rdr["tag_id"].ToString()));
-                        }
-                    }
-                }
-
-                foreach (int tagId in tagIds)
-                {
-                    using (var cmd = new NpgsqlCommand("SELECT * FROM tags WHERE tag_id=@i", conn))
-                    {
-                        cmd.Parameters.AddWithValue("i", tagId);
-
-                        using (var rdr = cmd.ExecuteReader())
-                        {
-                            while (rdr.Read())
-                            {
-                                build.Append($"#{rdr["name"]} ");
-                            }
-                        }
-                    }
-                }
-
-                build.AppendLine("\n######################");
-
-                Console.WriteLine(build);
-                Blog.CurrentPost = id;
-                Blog.CurrentPostUserId = userId;
-
-
-                conn.Dispose();
+                Blog.CurrentPost = post.PostId;
+                Blog.CurrentPostUserId = post.UserId;
             }
         }
     }

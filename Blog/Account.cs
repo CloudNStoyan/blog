@@ -15,7 +15,7 @@ namespace Blog
 
         public static void Login(string name, string password)
         {
-            using (var conn = new NpgsqlConnection(Blog.ConnectionPath))
+            using (var conn = new NpgsqlConnection(Blog.ConnectionString))
             {
                 conn.Open();
 
@@ -38,7 +38,7 @@ namespace Blog
                 conn.Dispose();
             }
 
-            if (!String.IsNullOrWhiteSpace(Name) && !String.IsNullOrWhiteSpace(Password))
+            if (!string.IsNullOrWhiteSpace(Name) && !string.IsNullOrWhiteSpace(Password))
             {
                 Logged = true;
                 Console.WriteLine($"Sucesfully logged as {Name}");
@@ -57,7 +57,7 @@ namespace Blog
         {
             Console.Write("Username: ");
             string name = Console.ReadLine() ?? " ";
-            if (String.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(name))
             {
                 Console.WriteLine("Thats not valid login information!");
                 return;
@@ -65,7 +65,7 @@ namespace Blog
 
             Console.Write("Password: ");
             string password = Console.ReadLine() ?? " ";
-            if (String.IsNullOrEmpty(password))
+            if (string.IsNullOrEmpty(password))
             {
                 Console.WriteLine("Thats not valid login information!");
                 return;
@@ -83,7 +83,7 @@ namespace Blog
             {
                 Console.Write("Username: ");
                 name = Console.ReadLine() ?? " ";
-                if (String.IsNullOrEmpty(name))
+                if (string.IsNullOrEmpty(name))
                 {
                     Console.WriteLine("Invalid username!");
                     continue;
@@ -91,7 +91,7 @@ namespace Blog
 
                 Console.Write("Password: ");
                 password = Console.ReadLine() ?? " ";
-                if (String.IsNullOrEmpty(password))
+                if (string.IsNullOrEmpty(password))
                 {
                     Console.WriteLine("Invalid password!");
                     continue;
@@ -99,7 +99,7 @@ namespace Blog
 
                 Console.Write("Confirm Password: ");
                 string confirmPass = Console.ReadLine() ?? " ";
-                if (String.IsNullOrEmpty(confirmPass))
+                if (string.IsNullOrEmpty(confirmPass))
                 {
                     Console.WriteLine("Invalid confirm password!");
                     continue;
@@ -115,7 +115,7 @@ namespace Blog
                 }
             }
 
-            using (var conn = new NpgsqlConnection(Blog.ConnectionPath))
+            using (var conn = new NpgsqlConnection(Blog.ConnectionString))
             {
                 conn.Open();
                 var cmd = new NpgsqlCommand("INSERT INTO users (name,password) VALUES (@n,@p)", conn);
@@ -137,7 +137,7 @@ namespace Blog
             while (true)
             {
                 string renameInput = Console.ReadLine() ?? " ";
-                if (String.IsNullOrEmpty(renameInput))
+                if (string.IsNullOrEmpty(renameInput))
                 {
                     Console.WriteLine("Invalid input choose between 'Y' for yes and 'N' for no!");
                     continue;
@@ -175,7 +175,7 @@ namespace Blog
             {
                 Console.Write("Do you want to change your account password? (Y/N): ");
                 string passwordChangeInput = Console.ReadLine() ?? " ";
-                if (!String.IsNullOrEmpty(passwordChangeInput) && passwordChangeInput.ToLowerInvariant().Trim() == "y")
+                if (!string.IsNullOrEmpty(passwordChangeInput) && passwordChangeInput.ToLowerInvariant().Trim() == "y")
                 {
                     while (true)
                     {
@@ -210,19 +210,19 @@ namespace Blog
 
         public static void Rename(string oldName, string newName)
         {
-            if (String.IsNullOrEmpty(newName))
+            if (string.IsNullOrEmpty(newName))
             {
                 Console.WriteLine("Invalid new name!");
                 return;
             }
 
-            if (String.IsNullOrEmpty(oldName))
+            if (string.IsNullOrEmpty(oldName))
             {
                 Console.WriteLine("Invalid old name!");
                 return;
             }
 
-            using (var conn = new NpgsqlConnection(Blog.ConnectionPath))
+            using (var conn = new NpgsqlConnection(Blog.ConnectionString))
             {
                 conn.Open();
 
@@ -253,7 +253,7 @@ namespace Blog
 
             var commentIds = new List<int>();
 
-            using (var conn = new NpgsqlConnection(Blog.ConnectionPath))
+            using (var conn = new NpgsqlConnection(Blog.ConnectionString))
             {
                 conn.Open();
                 using (var cmd = new NpgsqlCommand("SELECT * FROM comments WHERE user_id=@i", conn))
@@ -284,7 +284,7 @@ namespace Blog
 
         public static void ChangePassword(int userId, string newPassword)
         {
-            using (var conn = new NpgsqlConnection(Blog.ConnectionPath))
+            using (var conn = new NpgsqlConnection(Blog.ConnectionString))
             {
                 conn.Open();
                 using (var cmd = new NpgsqlCommand("UPDATE users SET password=@p WHERE user_id=@i", conn))
