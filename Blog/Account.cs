@@ -19,37 +19,27 @@ namespace Blog
             {
                 conn.Open();
 
-                using (var cmd = new NpgsqlCommand("SELECT * FROM users WHERE name=@n AND password=@p", conn))
+                var database = new Database(conn);
+                var parametars = new Dictionary<string, object>
                 {
-                    cmd.Parameters.AddWithValue("n", name);
-                    cmd.Parameters.AddWithValue("p", password);
-
-                    using (var rdr = cmd.ExecuteReader())
-                    {
-                        while (rdr.Read())
-                        {
-                            Name = $"{rdr["name"]}";
-                            Password = $"{rdr["password"]}";
-                            Id = int.Parse($"{rdr["user_id"]}");
-                        }
-                    }
+                    {"n", name},
+                    {"p", password}
+                };
+                var user = database.QueryOne<UserPoco>("SELECT * FROM users WHERE name=@n AND password=@p", parametars);
+                if (user != null)
+                {
+                    Name = user.Name;
+                    Password = user.Password;
+                    Id = user.UserId;
+                    Logged = true;
+                    Console.WriteLine($"Sucesfully logged as {Name}");
+                    Console.WriteLine("Type help for more information!\n");
+                }
+                else
+                {
+                    Console.WriteLine("Invalid login information!\n");
                 }
 
-                conn.Dispose();
-            }
-
-            if (!string.IsNullOrWhiteSpace(Name) && !string.IsNullOrWhiteSpace(Password))
-            {
-                Logged = true;
-                Console.WriteLine($"Sucesfully logged as {Name}");
-                Console.WriteLine("Type help for more information!\n");
-            }
-            else
-            {
-                Console.WriteLine("Invalid login information!\n");
-                Name = "";
-                Password = "";
-                Id = -1;
             }
         }
 
@@ -118,12 +108,15 @@ namespace Blog
             using (var conn = new NpgsqlConnection(Blog.ConnectionString))
             {
                 conn.Open();
-                var cmd = new NpgsqlCommand("INSERT INTO users (name,password) VALUES (@n,@p)", conn);
-                cmd.Parameters.AddWithValue("n", name);
-                cmd.Parameters.AddWithValue("p", password);
-                cmd.ExecuteNonQuery();
-                cmd.Dispose();
-                conn.Dispose();
+
+                var database = new Database(conn);
+                var parametars = new Dictionary<string,object>
+                {
+                    {"n", name},
+                    {"p", password}
+                };
+
+                database.ExecuteNonQuery("INSERT INTO users (name,password) VALUES (@n,@p)",parametars);
             }
 
 
@@ -228,57 +221,21 @@ namespace Blog
 
                 try
                 {
-                    using (var cmd = new NpgsqlCommand("UPDATE users SET name=@n WHERE user_id=@i", conn))
-                    {
-                        cmd.Parameters.AddWithValue("n", newName);
-                        cmd.Parameters.AddWithValue("i", Id);
-                        cmd.ExecuteNonQuery();
-                    }
 
+                    var database = new Database(conn);
+                    var parametars = new Dictionary<string,object>()
+                    {
+                        {"n", newName},
+                        {"i", Id}
+                    };
+                    database.ExecuteNonQuery("UPDATE users SET name=@n WHERE user_id=@i",parametars);
+                    database.ExecuteNonQuery("UPDATE comments SET author_name=@n WHERE user_id=@i", parametars);
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine("Invalid name. This name is already being used!");
                     return;
                 }
-
-                conn.Dispose();
-            }
-
-            RenameComments(Id, newName);
-        }
-
-        public static void RenameComments(int userId, string newName)
-        {
-
-            var commentIds = new List<int>();
-
-            using (var conn = new NpgsqlConnection(Blog.ConnectionString))
-            {
-                conn.Open();
-                using (var cmd = new NpgsqlCommand("SELECT * FROM comments WHERE user_id=@i", conn))
-                {
-                    cmd.Parameters.AddWithValue("i", userId);
-                    using (var rdr = cmd.ExecuteReader())
-                    {
-                        while (rdr.Read())
-                        {
-                            commentIds.Add(int.Parse($"{rdr["comment_id"]}"));
-                        }
-                    }
-                }
-
-                foreach (int commentId in commentIds)
-                {
-                    using (var cmd = new NpgsqlCommand("UPDATE comments SET author_name=@n WHERE comment_id=@i", conn))
-                    {
-                        cmd.Parameters.AddWithValue("n", newName);
-                        cmd.Parameters.AddWithValue("i", commentId);
-                        cmd.ExecuteNonQuery();
-                    }
-                }
-
-                conn.Dispose();
             }
         }
 
@@ -287,14 +244,15 @@ namespace Blog
             using (var conn = new NpgsqlConnection(Blog.ConnectionString))
             {
                 conn.Open();
-                using (var cmd = new NpgsqlCommand("UPDATE users SET password=@p WHERE user_id=@i", conn))
-                {
-                    cmd.Parameters.AddWithValue("p", newPassword);
-                    cmd.Parameters.AddWithValue("i", userId);
-                    cmd.ExecuteNonQuery();
-                }
 
-                conn.Dispose();
+                var database = new Database(conn);
+                var parametars = new Dictionary<string,object>()
+                {
+                    {"p" , newPassword},
+                    {"i", userId}
+                };
+
+                database.ExecuteNonQuery("UPDATE users SET password=@p WHERE user_id=@i", parametars);
             }
 
             Console.WriteLine("You successfully changed your password!\n");
