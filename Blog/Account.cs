@@ -25,7 +25,7 @@ namespace Blog
                     {"n", name},
                     {"p", password}
                 };
-                var user = database.QueryOne<UserPoco>("SELECT * FROM users WHERE name=@n AND password=@p", parametars);
+                var user = database.QueryOne<UserPoco>("SELECT * FROM users WHERE name=@n AND password=@p;", parametars);
                 if (user != null)
                 {
                     Name = user.Name;
@@ -116,7 +116,7 @@ namespace Blog
                     {"p", password}
                 };
 
-                database.ExecuteNonQuery("INSERT INTO users (name,password) VALUES (@n,@p)",parametars);
+                database.ExecuteNonQuery("INSERT INTO users (name,password) VALUES (@n,@p);",parametars);
             }
 
 
@@ -228,8 +228,8 @@ namespace Blog
                         {"n", newName},
                         {"i", Id}
                     };
-                    database.ExecuteNonQuery("UPDATE users SET name=@n WHERE user_id=@i",parametars);
-                    database.ExecuteNonQuery("UPDATE comments SET author_name=@n WHERE user_id=@i", parametars);
+                    database.ExecuteNonQuery("UPDATE users SET name=@n WHERE user_id=@i;",parametars);
+                    database.ExecuteNonQuery("UPDATE comments SET author_name=@n WHERE user_id=@i;", parametars);
                 }
                 catch (Exception e)
                 {
@@ -252,7 +252,7 @@ namespace Blog
                     {"i", userId}
                 };
 
-                database.ExecuteNonQuery("UPDATE users SET password=@p WHERE user_id=@i", parametars);
+                database.ExecuteNonQuery("UPDATE users SET password=@p WHERE user_id=@i;", parametars);
             }
 
             Console.WriteLine("You successfully changed your password!\n");

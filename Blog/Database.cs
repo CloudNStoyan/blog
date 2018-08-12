@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Npgsql;
+using Npgsql.PostgresTypes;
 
 namespace Blog
 {
@@ -211,17 +212,125 @@ namespace Blog
 
         public int Insert<T>(T poco) where T : class,new ()
         {
-            if (typeof(T).GetCustomAttribute<TableAttribute>() == null)
+            var pocoType = typeof(T);
+
+            var tableAttribute = pocoType.GetCustomAttribute<TableAttribute>();
+
+            if (tableAttribute == null)
             {
-                throw new Exception($"This class must have table attribute! class: '{typeof(T)}'");
+                throw new Exception($"This class must have table attribute! class: '{pocoType}'");
             }
 
-            string table = poco.GetType().GetCustomAttribute<TableAttribute>().Name;
-            var columns = poco.GetType().GetProperties().ToDictionary(x => x.GetCustomAttribute<ColumnAttribute>().Name).ToList();
-            var values = poco.GetType().GetProperties().ToDictionary(x => x.GetValue(poco,null)).ToList();
+            var properties = pocoType.GetProperties();
 
-            using (var command = new NpgsqlCommand($"INSERT INTO {table} ({String.Join(",", columns)}) VALUES ({String.Join(",", values)})",this.Connection))
+            var columnAttributes = properties.Select(x =>
+                x.GetCustomAttribute<ColumnAttribute>() != null
+                    ? x.GetCustomAttribute<ColumnAttribute>()
+                    : throw new Exception($"Property doesnt have attribute '{nameof(ColumnAttribute)}'")).ToList();
+
+            var columns = columnAttributes.Where(c => !c.IsPrimaryKey).Select(c => c.Name).ToList();
+
+            var values = properties.Where(x => !x.GetCustomAttribute<ColumnAttribute>().IsPrimaryKey).Select(x => x.GetValue(poco, null)).ToList();
+            var parametars = new List<NpgsqlParameter>();
+
+            for (int i = 0; i < values.Count; i++)
             {
+                parametars.Add(new NpgsqlParameter("p" + i, values[i]));
+            }
+
+            var parametarNames = new List<string>();
+
+            foreach (var npgsqlParameter in parametars)
+            {
+                parametarNames.Add($"@{npgsqlParameter.ParameterName}");
+            }
+
+            string primaryKeyColumnName = columnAttributes.FirstOrDefault(c => c.IsPrimaryKey)?.Name;
+
+            if (primaryKeyColumnName == null)
+            {
+                throw new Exception($"There wasn't any primary key found with in property attributes");
+            }
+
+            string sql = $"INSERT INTO \"{tableAttribute.Schema}\".\"{tableAttribute.Name}\" ({String.Join(",", columns)}) VALUES ({String.Join(",", parametarNames)}) RETURNING {primaryKeyColumnName};";
+
+            using (var command = new NpgsqlCommand(sql, this.Connection))
+            {
+                command.Parameters.AddRange(parametars.ToArray());
+                return (int)command.ExecuteScalar();
+            }
+        }
+
+        public void Update<T>(T poco)
+        {
+            var pocoType = typeof(T);
+
+            var tableAttribute = pocoType.GetCustomAttribute<TableAttribute>();
+
+            if (tableAttribute == null)
+            {
+                throw new Exception($"This class must have table attribute! class: '{pocoType}'");
+            }
+
+            var properties = pocoType.GetProperties();
+
+            var columnAttributes = properties.Select(x =>
+                x.GetCustomAttribute<ColumnAttribute>() != null
+                    ? x.GetCustomAttribute<ColumnAttribute>()
+                    : throw new Exception($"Property doesnt have attribute '{nameof(ColumnAttribute)}'")).ToList();
+
+            string table = tableAttribute.Name;
+            string schema = tableAttribute.Schema;
+
+            var values = properties.Select(x => x.GetValue(poco, null)).ToList();
+
+            var columns = columnAttributes.Where(c => !c.IsPrimaryKey).Select(c => c.Name).ToList();
+
+            var columnsAndValues = columns.Select((x, i) => $"{x}=@a{i}");
+
+            string primaryKeyColumnName = columnAttributes.FirstOrDefault(c => c.IsPrimaryKey)?.Name;
+            object primaryKeyColumnValue = properties
+                .FirstOrDefault(p => p.GetCustomAttribute<ColumnAttribute>().IsPrimaryKey)
+                ?.GetValue(poco, null);
+
+            var parametars = new List<NpgsqlParameter>();
+
+            parametars.Add(new NpgsqlParameter("i", primaryKeyColumnValue));
+
+            for (int i = 0; i < columns.Count; i++)
+            {
+                parametars.Add(new NpgsqlParameter($"a{i}", values[i]));
+            }
+            
+
+            string sql = $"UPDATE \"{schema}\".\"{table}\" SET {String.Join(",", columnsAndValues)} WHERE {primaryKeyColumnName}=@i;";
+
+            using (var command = new NpgsqlCommand(sql, this.Connection))
+            {
+                command.Parameters.AddRange(parametars.ToArray());
+                command.ExecuteNonQuery(); 
+            }
+        }
+
+        public int Delete<T>(T poco)
+        {
+            var pocoType = typeof(T);
+            var properties = pocoType.GetProperties();
+            var columnAttributes = properties.Select(x =>
+                x.GetCustomAttribute<ColumnAttribute>() ??
+                throw new Exception($"Property doesnt have attribute '{nameof(ColumnAttribute)}'")).ToList();
+            var tableAttributes = pocoType.GetCustomAttribute<TableAttribute>();
+
+            var primaryKey = properties.FirstOrDefault(x => x.GetCustomAttribute<ColumnAttribute>().IsPrimaryKey);
+            string primaryKeyColumnName = columnAttributes.FirstOrDefault(x => x.IsPrimaryKey)?.Name;
+
+            var parametar = new NpgsqlParameter("i", primaryKey.GetValue(poco,null));
+           
+            string sql = $"DELETE FROM {tableAttributes.Schema}.{tableAttributes.Name} WHERE {primaryKeyColumnName}=@i;";
+
+            using (var command = new NpgsqlCommand(sql, this.Connection))
+            {
+                command.Parameters.Add(parametar);
                 return command.ExecuteNonQuery();
             }
         }

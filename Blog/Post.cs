@@ -22,7 +22,7 @@ namespace Blog
                     {"i", postId}
                 };
 
-                database.ExecuteNonQuery("UPDATE posts SET content=@c WHERE post_id=@i", parametars);
+                database.ExecuteNonQuery("UPDATE posts SET content=@c WHERE post_id=@i;", parametars);
             }
         }
 
@@ -39,7 +39,7 @@ namespace Blog
                     {"i", postId}
                 };
 
-                database.ExecuteNonQuery("UPDATE posts SET title=@t WHERE post_id=@i", parametars);
+                database.ExecuteNonQuery("UPDATE posts SET title=@t WHERE post_id=@i;", parametars);
 
                 Console.WriteLine("You succesfully edited this post title!");
             }
@@ -88,13 +88,13 @@ namespace Blog
                     {"u", Account.Id}
                 };
 
-                int postId = database.Execute<int>("INSERT INTO posts (title,content,user_id) VALUES (@t,@c,@u) RETURNING post_id", parametars);
+                int postId = database.Execute<int>("INSERT INTO posts (title,content,user_id) VALUES (@t,@c,@u) RETURNING post_id;", parametars);
 
                 foreach (string tagName in tags)
                 {
-                    var tag = database.QueryOne<TagPoco>("SELECT * FROM tags WHERE name=@n", new NpgsqlParameter("n", tagName));
+                    var tag = database.QueryOne<TagPoco>("SELECT * FROM tags WHERE name=@n;", new NpgsqlParameter("n", tagName));
 
-                    int id = tag?.TagId ?? database.Execute<int>("INSERT INTO tags (name) VALUES (@n) RETURNING tag_id", new NpgsqlParameter("n", tagName));
+                    int id = tag?.TagId ?? database.Execute<int>("INSERT INTO tags (name) VALUES (@n) RETURNING tag_id;", new NpgsqlParameter("n", tagName));
 
                     parametars = new Dictionary<string,object>
                     {
@@ -102,7 +102,7 @@ namespace Blog
                         {"t", id}
                     };
 
-                    database.ExecuteNonQuery("INSERT INTO posts_tags (post_id,tag_id) VALUES (@p,@t)", parametars);
+                    database.ExecuteNonQuery("INSERT INTO posts_tags (post_id,tag_id) VALUES (@p,@t);", parametars);
                 }
             }
 
@@ -114,7 +114,7 @@ namespace Blog
             {
                 conn.Open();
                 var database = new Database(conn);
-                var posts = database.Query<PostPoco>("SELECT * FROM posts");
+                var posts = database.Query<PostPoco>("SELECT * FROM posts;");
 
 
                 for (int i = 0; i < posts.Count; i++)
@@ -174,8 +174,8 @@ namespace Blog
                 conn.Open();
 
                 var database = new Database(conn);
-                var post = database.QueryOne<PostPoco>("SELECT * FROM posts WHERE post_id=@i", new NpgsqlParameter("i", id));
-                var postsTagsConnections = database.Query<PostsTagsPoco>("SELECT * FROM posts_tags WHERE post_id=@i", new NpgsqlParameter("i", post.PostId));
+                var post = database.QueryOne<PostPoco>("SELECT * FROM posts WHERE post_id=@i;", new NpgsqlParameter("i", id));
+                var postsTagsConnections = database.Query<PostsTagsPoco>("SELECT * FROM posts_tags WHERE post_id=@i;", new NpgsqlParameter("i", post.PostId));
 
                 var tags = new List<TagPoco>();
                 foreach (var tagsConnection in postsTagsConnections)

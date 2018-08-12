@@ -22,7 +22,7 @@ namespace Blog
             {
                 conn.Open();
                 var database = new Database(conn);
-                posts = database.Query<PostPoco>("SELECT * FROM posts WHERE user_id=@i",
+                posts = database.Query<PostPoco>("SELECT * FROM posts WHERE user_id=@i;",
                     new NpgsqlParameter("i", Account.Id));
             }
 
@@ -117,7 +117,7 @@ namespace Blog
                     new NpgsqlParameter("p", CurrentPost),
                     new NpgsqlParameter("i", Account.Id)
                 };
-                database.ExecuteNonQuery("INSERT INTO comments (author_name,content,post_id,user_id) VALUES (@a,@c,@p,@i)", parametars);
+                database.ExecuteNonQuery("INSERT INTO comments (author_name,content,post_id,user_id) VALUES (@a,@c,@p,@i);", parametars);
             }
 
 
@@ -155,7 +155,7 @@ namespace Blog
                     new NpgsqlParameter("i", commentId)
                 };
 
-                database.ExecuteNonQuery("UPDATE comments SET content=@c WHERE comment_id@i", parametars);
+                database.ExecuteNonQuery("UPDATE comments SET content=@c WHERE comment_id@i;", parametars);
             }
 
             Console.WriteLine("Great you edited this comment!\n");
@@ -202,9 +202,9 @@ namespace Blog
 
                 var parametar = new Dictionary<string, object> {{"i", postId}};
 
-                database.ExecuteNonQuery("DELETE FROM comments WHERE post_id=@i", parametar);
-                database.ExecuteNonQuery("DELETE FROM posts_tags WHERE post_id=@i", parametar);
-                database.ExecuteNonQuery("DELETE FROM posts WHERE post_id=@i", parametar);
+                database.ExecuteNonQuery("DELETE FROM comments WHERE post_id=@i;", parametar);
+                database.ExecuteNonQuery("DELETE FROM posts_tags WHERE post_id=@i;", parametar);
+                database.ExecuteNonQuery("DELETE FROM posts WHERE post_id=@i;", parametar);
             }
 
             Console.WriteLine("You sucesfully deleted this post!");
@@ -300,7 +300,7 @@ namespace Blog
                 conn.Open();
 
                 var database = new Database(conn);
-                comments = database.Query<CommentPoco>("SELECT * FROM comments WHERE author_name=@n",
+                comments = database.Query<CommentPoco>("SELECT * FROM comments WHERE author_name=@n;",
                     new NpgsqlParameter("n", Account.Name));
             }
 
@@ -381,7 +381,7 @@ namespace Blog
                 conn.Open();
 
                 var database = new Database(conn);
-                comments = database.Query<CommentPoco>("SELECT * FROM comments WHERE post_id=@i", new NpgsqlParameter("i", postId));
+                comments = database.Query<CommentPoco>("SELECT * FROM comments WHERE post_id=@i;", new NpgsqlParameter("i", postId));
 
             }
 
@@ -459,7 +459,7 @@ namespace Blog
                 conn.Open();
 
                 var database = new Database(conn);
-                var posts = database.Query<PostPoco>("SELECT * FROM posts ORDER BY post_id LIMIT 10");
+                var posts = database.Query<PostPoco>("SELECT * FROM posts ORDER BY post_id LIMIT 10;");
 
                 for (int i = posts.Count - 1; i >= 0; i--)
                 {

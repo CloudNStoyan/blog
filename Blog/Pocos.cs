@@ -1,9 +1,9 @@
 ﻿namespace Blog
 {
-    [Table(Name = "users")]
+    [Table(Name = "users", Schema = "public")]
     public class UserPoco
     {
-        [Column(Name = "user_id")]
+        [Column(Name = "user_id", IsPrimaryKey = true)]
         public int UserId { get; set; }
 
         [Column(Name = "name")]
@@ -13,10 +13,10 @@
         public string Password { get; set; }
     }
 
-    [Table(Name = "posts")]
+    [Table(Name = "posts", Schema = "public")]
     public class PostPoco
     {
-        [Column(Name = "post_id")]
+        [Column(Name = "post_id", IsPrimaryKey = true)]
         public int PostId { get; set; }
 
         [Column(Name = "title")]
@@ -29,20 +29,20 @@
         public int UserId { get; set; }
     }
 
-    [Table(Name = "tags")]
+    [Table(Name = "tags", Schema = "public")]
     public class TagPoco
     {
-        [Column(Name = "tag_id")]
+        [Column(Name = "tag_id", IsPrimaryKey = true)]
         public int TagId { get; set; }
 
         [Column(Name = "name")]
         public string Name { get; set; }
     }
 
-    [Table(Name = "comments")]
+    [Table(Name = "comments", Schema = "public")]
     public class CommentPoco
     {
-        [Column(Name = "comment_id")]
+        [Column(Name = "comment_id", IsPrimaryKey = true)]
         public int CommentId { get; set; }
 
         [Column(Name = "author_name")]
@@ -58,10 +58,10 @@
         public int UserId { get; set; }
     }
 
-    [Table(Name = "posts_tags")]
+    [Table(Name = "posts_tags", Schema = "public")]
     public class PostsTagsPoco
     {
-        [Column(Name = "posts_tags_id")]
+        [Column(Name = "posts_tags_id", IsPrimaryKey = true)]
         public int PostsTagsId { get; set; }
 
         [Column(Name = "post_id")]
