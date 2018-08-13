@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Npgsql;
-using Npgsql.PostgresTypes;
 
 namespace Blog
 {
@@ -210,7 +209,7 @@ namespace Blog
             return this.ExecuteNonQuery(sql, ConvertDictionaryToParametars(parametars));
         }
 
-        public int Insert<T>(T poco) where T : class,new ()
+        public int Insert<T>(T poco) where T : class, new ()
         {
             var pocoType = typeof(T);
 
@@ -231,25 +230,16 @@ namespace Blog
             var columns = columnAttributes.Where(c => !c.IsPrimaryKey).Select(c => c.Name).ToList();
 
             var values = properties.Where(x => !x.GetCustomAttribute<ColumnAttribute>().IsPrimaryKey).Select(x => x.GetValue(poco, null)).ToList();
-            var parametars = new List<NpgsqlParameter>();
 
-            for (int i = 0; i < values.Count; i++)
-            {
-                parametars.Add(new NpgsqlParameter("p" + i, values[i]));
-            }
+            var parametars = values.Select((x, i) => new NpgsqlParameter("p" + i, x)).ToArray();
 
-            var parametarNames = new List<string>();
-
-            foreach (var npgsqlParameter in parametars)
-            {
-                parametarNames.Add($"@{npgsqlParameter.ParameterName}");
-            }
+            var parametarNames = parametars.Select(x => "@" +  x.ParameterName).ToArray();
 
             string primaryKeyColumnName = columnAttributes.FirstOrDefault(c => c.IsPrimaryKey)?.Name;
 
             if (primaryKeyColumnName == null)
             {
-                throw new Exception($"There wasn't any primary key found with in property attributes");
+                throw new Exception("There wasn't any primary key found with in property attributes");
             }
 
             string sql = $"INSERT INTO \"{tableAttribute.Schema}\".\"{tableAttribute.Name}\" ({String.Join(",", columns)}) VALUES ({String.Join(",", parametarNames)}) RETURNING {primaryKeyColumnName};";
@@ -289,19 +279,14 @@ namespace Blog
             var columnsAndValues = columns.Select((x, i) => $"{x}=@a{i}");
 
             string primaryKeyColumnName = columnAttributes.FirstOrDefault(c => c.IsPrimaryKey)?.Name;
+
             object primaryKeyColumnValue = properties
                 .FirstOrDefault(p => p.GetCustomAttribute<ColumnAttribute>().IsPrimaryKey)
                 ?.GetValue(poco, null);
 
-            var parametars = new List<NpgsqlParameter>();
+            var parametars = values.Select((x,i) => new NpgsqlParameter($"a{i}", x)).ToList();
 
             parametars.Add(new NpgsqlParameter("i", primaryKeyColumnValue));
-
-            for (int i = 0; i < columns.Count; i++)
-            {
-                parametars.Add(new NpgsqlParameter($"a{i}", values[i]));
-            }
-            
 
             string sql = $"UPDATE \"{schema}\".\"{table}\" SET {String.Join(",", columnsAndValues)} WHERE {primaryKeyColumnName}=@i;";
 
@@ -315,16 +300,20 @@ namespace Blog
         public int Delete<T>(T poco)
         {
             var pocoType = typeof(T);
+
             var properties = pocoType.GetProperties();
+
             var columnAttributes = properties.Select(x =>
                 x.GetCustomAttribute<ColumnAttribute>() ??
                 throw new Exception($"Property doesnt have attribute '{nameof(ColumnAttribute)}'")).ToList();
+
             var tableAttributes = pocoType.GetCustomAttribute<TableAttribute>();
 
             var primaryKey = properties.FirstOrDefault(x => x.GetCustomAttribute<ColumnAttribute>().IsPrimaryKey);
+
             string primaryKeyColumnName = columnAttributes.FirstOrDefault(x => x.IsPrimaryKey)?.Name;
 
-            var parametar = new NpgsqlParameter("i", primaryKey.GetValue(poco,null));
+            var parametar = new NpgsqlParameter("i", primaryKey.GetValue(poco, null));
            
             string sql = $"DELETE FROM {tableAttributes.Schema}.{tableAttributes.Name} WHERE {primaryKeyColumnName}=@i;";
 
@@ -367,19 +356,6 @@ namespace Blog
                                         $"Element index: {i}.");
                 }
             }
-        }
-
-        private static string ConvertConventionForProperty(string variableName)
-        {
-            string[] words = variableName.Split('_');
-            string convertedWord = string.Empty;
-            
-            foreach (var word in words)
-            {
-                convertedWord += char.ToUpper(word[0]) + word.Substring(1);
-            }
-
-            return convertedWord;
         }
     }
 }
