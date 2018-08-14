@@ -209,6 +209,10 @@ namespace Blog
             return this.ExecuteNonQuery(sql, ConvertDictionaryToParametars(parametars));
         }
 
+        /// <summary>
+        /// Insert something with poco class to the database.
+        /// </summary>
+        /// <returns>How many rows are changed.</returns>
         public int Insert<T>(T poco) where T : class, new ()
         {
             var pocoType = typeof(T);
@@ -219,6 +223,8 @@ namespace Blog
             {
                 throw new Exception($"This class must have table attribute! class: '{pocoType}'");
             }
+
+            // Оправи редът
 
             var properties = pocoType.GetProperties();
 
@@ -251,6 +257,9 @@ namespace Blog
             }
         }
 
+        /// <summary>
+        /// Update something in the database using poco class.
+        /// </summary>
         public void Update<T>(T poco)
         {
             var pocoType = typeof(T);
@@ -297,6 +306,10 @@ namespace Blog
             }
         }
 
+        /// <summary>
+        /// Deletes something from the database using poco class.
+        /// </summary>
+        /// <returns>How many rows are changed</returns>
         public int Delete<T>(T poco)
         {
             var pocoType = typeof(T);
@@ -315,7 +328,7 @@ namespace Blog
 
             var parametar = new NpgsqlParameter("i", primaryKey.GetValue(poco, null));
            
-            string sql = $"DELETE FROM {tableAttributes.Schema}.{tableAttributes.Name} WHERE {primaryKeyColumnName}=@i;";
+            string sql = $"DELETE FROM \"{tableAttributes.Schema}\".\"{tableAttributes.Name}\" WHERE {primaryKeyColumnName}=@i;";
 
             using (var command = new NpgsqlCommand(sql, this.Connection))
             {

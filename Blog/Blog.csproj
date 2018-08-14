@@ -57,15 +57,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Account.cs" />
-    <Compile Include="ColumnAttribute.cs" />
+    <Compile Include="DAL\ColumnAttribute.cs" />
     <Compile Include="CommandPrinter.cs" />
-    <Compile Include="Database.cs" />
-    <Compile Include="Pocos.cs" />
+    <Compile Include="DAL\Database.cs" />
+    <Compile Include="DAL\Pocos.cs" />
     <Compile Include="Post.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Blog.cs" />
-    <Compile Include="TableAttribute.cs" />
+    <Compile Include="DAL\TableAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

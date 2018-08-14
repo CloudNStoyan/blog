@@ -15,39 +15,6 @@ namespace Blog
             Console.WriteLine("#===========================BLOG===========================#");
             Console.WriteLine("#==========================================================#");
 
-            var parametarName = new NpgsqlParameter("p0", 1).ParameterName;
-            Console.WriteLine(parametarName);
-
-            using (var conn = new NpgsqlConnection(@"Server=vm5;Port=5437;Database=postgres;Uid=postgres;Pwd=9ae51c68-c9d6-40e8-a1d6-a71be968ba3e;"))
-            {
-                conn.Open();
-                var myDatabase = new Database(conn);
-                var a = new int[] {1,2,3,4,5,6,7,8,9};
-
-
-                Console.WriteLine(a.FirstOrDefault(v => v == 10));
-
-                //var result = myDatabase.Query<UserPoco>("SELECT * FROM users");
-                
-
-                //fo//reach (var user in result)
-                //{
-                //    Console.WriteLine(user.Name);
-                //}
-                var myPoco = new UserPoco
-                {
-                    UserId = 0,
-                    Name = "Stoyan3",
-                    Password = "Stoyan2"
-                };
-
-
-
-                myDatabase.Update(myPoco);
-            }
-
-
-
             while (true)
             {
                 Console.Write("Do you have an existing account! (Y/N) ");
@@ -61,7 +28,7 @@ namespace Blog
 
                 if (line.ToLowerInvariant().Trim() == "n")
                 {
-                    Account.Create();
+                    Account.CreateInterface();
                     break;
                 } else if (line.ToLowerInvariant().Trim() == "y")
                 {
@@ -75,7 +42,7 @@ namespace Blog
 
             while (!Account.Logged)
             {
-                Account.AskForLogin();
+                Account.LoginInterface();
             }
 
             while (true)

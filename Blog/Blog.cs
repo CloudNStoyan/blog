@@ -23,85 +23,44 @@ namespace Blog
                     new NpgsqlParameter("i", Account.Id));
             }
 
-
-            Console.WriteLine("|Number|   Title   |");
-            for (int i = 0; i < posts.Count; i++)
-            {
-                Console.WriteLine($"|{i + 1,5} | {posts[i].Title,10}|");
-            }
-
             if (posts.Count > 0)
             {
-                Console.WriteLine("Type 'return' to return to the blog!\n");
-                while (true)
-                {
-                    Console.Write("Post number: ");
-                    string line = Console.ReadLine() ?? " ";
-
-                    if (string.IsNullOrEmpty(line))
-                    {
-                        Console.WriteLine("Please type a number!");
-                        continue;
-                    }
-
-                    if (line.ToLowerInvariant().Trim() == "return")
-                    {
-                        break;
-                    }
-
-                    int id;
-
-                    try
-                    {
-                        id = int.Parse(line.Trim()) - 1;
-                        if (id < 0 || id > posts.Count - 1)
-                        {
-                            Console.WriteLine($"Invalid number. Number must be in range of 1 to {posts.Count}");
-                            continue;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("You need to type number!");
-                        continue;
-                    }
-
-                    ChoosePost(posts[id].PostId);
-
-                }
+                int choosedPost = Post.ChoosePostInterface(posts);
+                if (choosedPost >= 0)
+                ChoosePost(posts[choosedPost].PostId);
             }
             else
             {
-                Console.WriteLine("You don't have any posts yet! Create your first by typing 'post-create' !\n");
+                Console.WriteLine("You don't have any posts yet! create your first post by typing 'post-create' !\n");
             }
         }
 
         public static void CreateCommentInterface()
         {
             Console.Write("Your comment(Type 'done' when you are done!): ");
-            var buildComment = new StringBuilder();
-            while (true)
+            string comment = string.Empty;
+            bool creatingComment = true;
+            while (creatingComment)
             {
-                string line = Console.ReadLine() ?? " ";
-                if (string.IsNullOrEmpty(line))
+                string line = Console.ReadLine()?.Trim();
+
+                if (line?.ToLowerInvariant() == "done")
                 {
-                    Console.WriteLine("Your comment needs to be at least 1 char long!");
-                    continue;
-                }
-                if (line.ToLowerInvariant().Trim() == "done")
-                {
-                    if (string.IsNullOrEmpty(buildComment.ToString().Trim()))
+                    if (!string.IsNullOrEmpty(comment.Trim()))
                     {
-                        Console.WriteLine("Your comment needs to be at least 1 char long!");
-                        continue;
+                        creatingComment = false;
                     }
-                    break;
+                    else
+                    {
+                        Console.WriteLine("The comment needs to be at least 1 char long!");
+
+                    }
                 }
-
-                buildComment.AppendLine(line);
+                else
+                {
+                    comment += line;
+                }
             }
-
-            string comment = buildComment.ToString().Trim();
 
             using (var conn = new NpgsqlConnection(ConnectionString))
             {
@@ -122,23 +81,26 @@ namespace Blog
             Console.WriteLine("You successfully commented!\n");
         }
 
-        public static string EditComment(int commentId)
+        private static string EditComment(int commentId)
         {
             Console.Write("Edit comment(Type 'done' when you are done):");
 
-            var buildNewComment = new StringBuilder();
-            while (true)
+            string newComment = string.Empty;
+
+            bool creatingComment = true;
+
+            while (creatingComment)
             {
-                string line = Console.ReadLine() ?? " ";
-                if (line.ToLowerInvariant().Trim() == "done")
+                string line = Console.ReadLine();
+                if (line?.ToLowerInvariant().Trim() == "done")
                 {
-                    break;
+                    creatingComment = false;
                 }
-
-                buildNewComment.AppendLine(line);
+                else
+                {
+                    newComment += line;
+                }
             }
-
-            string newComment = buildNewComment.ToString();
 
             using (var conn = new NpgsqlConnection(ConnectionString))
             {
@@ -166,30 +128,28 @@ namespace Blog
             PostInterface(CurrentPostUserId);
         }
 
-        public static void DeleteProcess(int postId)
+        private static void DeleteProcess(int postId)
         {
             Console.WriteLine("Once you've deleted a post it can't never be restored!");
             Console.Write("Are you sure you want to delete this post? (Y/N): ");
-            string option = Console.ReadLine() ?? " ";
-            if (option.ToLowerInvariant().Trim() == "y")
+            string option = Console.ReadLine()?.ToLowerInvariant().Trim();
+            if (option == "y")
             {
                 Console.WriteLine("This requires your password!");
                 Console.Write("Your password: ");
-                string password = Console.ReadLine() ?? " ";
-                if (password != Account.Password)
+                string password = Console.ReadLine();
+                if (password == Account.Password)
+                {
+                    DeletePost(postId);
+                }
+                else
                 {
                     Console.WriteLine("Password incorrect returning to the post!");
-                    return;
                 }
-
-                DeletePost(postId);
-            } else if (option.ToLowerInvariant().Trim() == "n")
-            {
-                return;
             }
         }
 
-        public static void DeletePost(int postId)
+        private static void DeletePost(int postId)
         {
             using (var conn = new NpgsqlConnection(ConnectionString))
             {
@@ -207,88 +167,96 @@ namespace Blog
             Console.WriteLine("You sucesfully deleted this post!");
         }
 
-        public static void PostInterface(int userId)
+        private static void PostInterface(int userId)
         {
             if (Account.Id == userId)
             {
                 Console.WriteLine("DISCLAIMER: You can edit this post!");
-                Console.WriteLine("Type: edit-help to see how to edit!");
+                Console.WriteLine("Type: edit help to see how to edit!");
             }
 
-            Console.WriteLine("Type 'all-comments' to see all comments on this post! (If any)");
-            Console.WriteLine("Type 'my-comments' to see your comments on this post! (If any)");
-            Console.WriteLine("Type 'comment-post' to comment on this post!");
+            Console.WriteLine("Type 'all comments' to see all comments on this post! (If any)");
+            Console.WriteLine("Type 'my comments' to see your comments on this post! (If any)");
+            Console.WriteLine("Type 'comment post' to comment on this post!");
             Console.WriteLine("Type 'return' to return to the blog!");
             Console.WriteLine("Type 'refresh' to view again this post!\n");
 
             while (true)
             {
                 Console.Write("Blog -->#Post: ");
-                string line = Console.ReadLine() ?? " ";
+                string line = Console.ReadLine()?.Trim().ToLowerInvariant().Replace(" ", string.Empty);
 
-                if (string.IsNullOrEmpty(line))
+                if (!string.IsNullOrEmpty(line))
                 {
-                    Console.WriteLine("Invalid command!");
-                    continue;
-                }
 
-                if (line.ToLowerInvariant().Trim() == "return")
-                {
-                    break;
-                }
+                    if (line == "return")
+                    {
+                        break;
+                    }
 
-                switch (line.ToLowerInvariant().Replace(" ", string.Empty))
-                {
-                    case "clear":
-                        Console.Clear();
-                        break;
-                    case "refresh":
-                        Post.ViewPost(CurrentPost);
-                        break;
-                    case "commentpost":
-                        CreateCommentInterface();
-                        break;
-                    case "mycomments":
-                        ShowUserComments();
-                        break;
-                    case "allcomments":
-                        Blog.AllComments(CurrentPost);
-                        break;
-                    case "delete":
-                        Blog.DeleteProcess(CurrentPost);
-                        break;
-                    case "edithelp":
-                        CommandPrinter.ShowPostEdits();
-                        break;
-                    case "edittitle":
-                        Console.Write("New title: ");
-                        Post.EditPostTitle(CurrentPost, Console.ReadLine() ?? " ");
-                        break;
-                    case "editcontent":
-                        Console.Write("New content: ");
-                        var buildContent = new StringBuilder();
-
-                        while (true)
-                        {
-                            string input = Console.ReadLine() ?? " ";
-                            if (input.ToLowerInvariant().Trim() == "done")
-                            {
-                                break;
-                            }
-
-                            buildContent.AppendLine(input);
-                        }
-
-                        Post.EditPostContent(CurrentPost, buildContent.ToString());
-                        break;
-                    default:
-                        Console.WriteLine("Your command was invalid!");
-                        break;
+                    switch (line)
+                    {
+                        case "clear":
+                            Console.Clear();
+                            break;
+                        case "refresh":
+                            Post.ViewPost(CurrentPost);
+                            break;
+                        case "commentpost":
+                            CreateCommentInterface();
+                            break;
+                        case "mycomments":
+                            ShowUserComments();
+                            break;
+                        case "allcomments":
+                            Blog.AllComments(CurrentPost);
+                            break;
+                        case "delete":
+                            Blog.DeleteProcess(CurrentPost);
+                            break;
+                        case "edithelp":
+                            CommandPrinter.ShowPostEdits();
+                            break;
+                        case "edittitle":
+                            Console.Write("New title: ");
+                            Post.EditPostTitle(CurrentPost, Console.ReadLine() ?? " ");
+                            break;
+                        case "editcontent":
+                            EditPostContentInterface();
+                            break;
+                        default:
+                            Console.WriteLine("Your command was invalid!");
+                            break;
+                    }
                 }
             }
         }
 
-        public static void ShowUserComments()
+        private static void EditPostContentInterface()
+        {
+            Console.Write("New content: ");
+            string content = String.Empty;
+
+            bool creatingContent = true;
+
+            while (creatingContent)
+            {
+                string input = Console.ReadLine();
+
+                if (input.Trim().ToLowerInvariant() != "done")
+                {
+                    content += input;
+                }
+                else
+                {
+                    creatingContent = false;
+                }
+            }
+
+            Post.EditPostContent(CurrentPost, content);
+        }
+
+        private static void ShowUserComments()
         {
             List<CommentPoco> comments;
 
@@ -301,75 +269,77 @@ namespace Blog
                     new NpgsqlParameter("n", Account.Name));
             }
 
-            if (comments.Count < 1)
+            if (comments.Count >= 1)
             {
-                Console.WriteLine("You dont have any comments on this post!");
-                return;
-            }
-
-
-            for (int i = 0; i < comments.Count; i++)
-            {
-                string commentContent = comments[i].Content;
-                string shortContent = commentContent.Length > 7 ? commentContent.Substring(0, 7) + "..." : commentContent;
-                Console.WriteLine($"{i + 1} | {shortContent}");
-            }
-
-
-
-            while (true)
-            {
-                Console.WriteLine("Type 'return' to return to the post!!\n");
-                Console.Write("Select comment: ");
-                try
+                for (int i = 0; i < comments.Count; i++)
                 {
-                    string line = Console.ReadLine() ?? " ";
-                    if (line.ToLowerInvariant().Trim() == "return")
-                    {
-                        break;
-                    }
+                    string commentContent = comments[i].Content;
+                    string shortContent = commentContent.Length > 7
+                        ? commentContent.Substring(0, 7) + "..."
+                        : commentContent;
+                    Console.WriteLine($"{i + 1} | {shortContent}");
+                }
 
-                    int selectedComment = int.Parse(line) - 1;
-                    if (selectedComment > comments.Count - 1)
+                while (true)
+                {
+                    Console.WriteLine("Type 'return' to return to the post!!\n");
+                    Console.Write("Select comment: ");
+                    try
                     {
-                        Console.WriteLine($"Please select comments from 1 to {comments.Count - 1}\n");
-                        continue;
-                    }
-
-                    Console.WriteLine("\nPlease choose between viewing or editing the comment!");
-                    Console.WriteLine("To view the comment type view");
-                    Console.WriteLine("To edit the comment type edit");
-                    Console.WriteLine("Return to choosing comment by typing 'return'\n");
-                    while (true)
-                    {
-                        Console.Write("You choosed: ");
-                        string input = Console.ReadLine() ?? " ";
-                        if (input.ToLowerInvariant().Trim() == "view")
-                        {
-                            Console.WriteLine(comments[selectedComment].Content + "\n");
-                        } else if (input.ToLowerInvariant().Trim() == "edit")
-                        {
-                            string editedComment = EditComment(comments[selectedComment].CommentId);
-                            comments[selectedComment].Content = editedComment;
-                        } else if (input.ToLowerInvariant().Trim() == "return")
+                        string line = Console.ReadLine() ?? " ";
+                        if (line.ToLowerInvariant().Trim() == "return")
                         {
                             break;
                         }
-                        else
+
+                        int selectedComment = int.Parse(line) - 1;
+                        if (selectedComment > comments.Count - 1)
                         {
-                            Console.WriteLine("Please choose between view,edit and return!\n");
+                            Console.WriteLine($"Please select comments from 1 to {comments.Count - 1}\n");
+                            continue;
+                        }
+
+                        Console.WriteLine("\nPlease choose between viewing or editing the comment!");
+                        Console.WriteLine("To view the comment type view");
+                        Console.WriteLine("To edit the comment type edit");
+                        Console.WriteLine("Return to choosing comment by typing 'return'\n");
+                        while (true)
+                        {
+                            Console.Write("You choosed: ");
+                            string input = Console.ReadLine() ?? " ";
+                            if (input.ToLowerInvariant().Trim() == "view")
+                            {
+                                Console.WriteLine(comments[selectedComment].Content + "\n");
+                            }
+                            else if (input.ToLowerInvariant().Trim() == "edit")
+                            {
+                                string editedComment = EditComment(comments[selectedComment].CommentId);
+                                comments[selectedComment].Content = editedComment;
+                            }
+                            else if (input.ToLowerInvariant().Trim() == "return")
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                Console.WriteLine("Please choose between view,edit and return!\n");
+                            }
                         }
                     }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Please type number!\n");
+                    }
                 }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Please type number!\n");
-                }
+            }
+            else
+            {
+                Console.WriteLine("You dont have any comments on this post!");
             }
         }
 
 
-        public static void AllComments(int postId)
+        private static void AllComments(int postId)
         {
             List<CommentPoco> comments;
 
@@ -502,12 +472,6 @@ namespace Blog
 
                 conn.Dispose();
             }
-        }
-
-        public static void ShowAccountInformation()
-        {
-            Console.WriteLine($"You are currently logged as: {Account.Name}");
-            Console.WriteLine($"With {Account.PostsCount} posts");
         }
     }
 }

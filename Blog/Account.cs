@@ -8,12 +8,97 @@ namespace Blog
     {
         public static string Name;
         public static string Password;
-        public static int PostsCount;
         public static int Id;
         public static bool Logged;
 
+        public static void LoginInterface()
+        {
+            Console.Write("Username: ");
+            string name = Console.ReadLine();
+            Console.Write("Password: ");
+            string password = Console.ReadLine();
 
-        public static void Login(string name, string password)
+            if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(password))
+            {
+                Console.WriteLine("Thats not valid login information!");
+            }
+            else
+            {
+                Login(name, password);
+
+                if (Logged)
+                {
+                    Console.WriteLine($"Sucesfully logged as {Name}");
+                    Console.WriteLine("Type help for more information!\n");
+                }
+                else
+                {
+                    Console.WriteLine("Invalid login information!");
+                    Console.WriteLine("Try again!");
+                }
+            }
+        }
+
+        public static void CreateInterface()
+        {
+            Console.WriteLine("You are creating new account please fill the fields!");
+            bool creatingAccount = true;
+            while (creatingAccount)
+            {
+                Console.Write("Username: ");
+                string name = Console.ReadLine() ?? " ";
+                Console.Write("Password: ");
+                string password = Console.ReadLine() ?? " ";
+                Console.Write("Confirm Password: ");
+                string confirmPass = Console.ReadLine() ?? " ";
+
+                if (string.IsNullOrEmpty(confirmPass) || string.IsNullOrEmpty(name) || string.IsNullOrEmpty(password))
+                {
+                    Console.WriteLine("Invalid information!");
+                }
+                else
+                {
+                    using (var conn = new NpgsqlConnection(Blog.ConnectionString))
+                    {
+                        conn.Open();
+
+                        var database = new Database(conn);
+
+                        if (UserExist(name))
+                        {
+                            Console.WriteLine("This username is already taken try another one!");
+                            CreateInterface();
+                        }
+
+
+                        var parametars = new Dictionary<string, object>
+                        {
+                            {"n", name},
+                            {"p", password}
+                        };
+
+                        database.ExecuteNonQuery("INSERT INTO users (name,password) VALUES (@n,@p);", parametars);
+
+                        Login(name,password);
+
+                        if (Logged)
+                        {
+                            Console.WriteLine($"Sucesfully created account {Name} now you are logged!");
+                            Console.WriteLine("Type help for more information!\n");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Invalid login information!");
+                            Console.WriteLine("Try again!");
+                        }
+                    }
+
+                    creatingAccount = false;
+                }
+            }
+        }
+
+        private static void Login(string name, string password)
         {
             using (var conn = new NpgsqlConnection(Blog.ConnectionString))
             {
@@ -32,214 +117,91 @@ namespace Blog
                     Password = user.Password;
                     Id = user.UserId;
                     Logged = true;
-                    Console.WriteLine($"Sucesfully logged as {Name}");
-                    Console.WriteLine("Type help for more information!\n");
-                }
-                else
-                {
-                    Console.WriteLine("Invalid login information!\n");
                 }
 
             }
-        }
-
-        public static void AskForLogin()
-        {
-            Console.Write("Username: ");
-            string name = Console.ReadLine() ?? " ";
-            if (string.IsNullOrEmpty(name))
-            {
-                Console.WriteLine("Thats not valid login information!");
-                return;
-            }
-
-            Console.Write("Password: ");
-            string password = Console.ReadLine() ?? " ";
-            if (string.IsNullOrEmpty(password))
-            {
-                Console.WriteLine("Thats not valid login information!");
-                return;
-            }
-
-            Login(name, password);
-        }
-
-        public static void Create()
-        {
-            Console.WriteLine("You are creating new account please fill the fields!");
-            string name;
-            string password;
-            while (true)
-            {
-                Console.Write("Username: ");
-                name = Console.ReadLine() ?? " ";
-                if (string.IsNullOrEmpty(name))
-                {
-                    Console.WriteLine("Invalid username!");
-                    continue;
-                }
-
-                Console.Write("Password: ");
-                password = Console.ReadLine() ?? " ";
-                if (string.IsNullOrEmpty(password))
-                {
-                    Console.WriteLine("Invalid password!");
-                    continue;
-                }
-
-                Console.Write("Confirm Password: ");
-                string confirmPass = Console.ReadLine() ?? " ";
-                if (string.IsNullOrEmpty(confirmPass))
-                {
-                    Console.WriteLine("Invalid confirm password!");
-                    continue;
-                }
-
-                if (confirmPass == password)
-                {
-                    break;
-                }
-                else
-                {
-                    Console.WriteLine("Your password confirmation was incorrect!");
-                }
-            }
-
-            using (var conn = new NpgsqlConnection(Blog.ConnectionString))
-            {
-                conn.Open();
-
-                var database = new Database(conn);
-                var parametars = new Dictionary<string,object>
-                {
-                    {"n", name},
-                    {"p", password}
-                };
-
-                database.ExecuteNonQuery("INSERT INTO users (name,password) VALUES (@n,@p);",parametars);
-            }
-
-
-            Login(name, password);
         }
 
         public static void AccountOptions()
         {
             Console.WriteLine("Account Options:");
-            Console.Write("Do you want to rename your account? (Y/N): ");
-            while (true)
+            Console.Write("Choose between renaming your account and changing your password with 'rename' and 'change' or 'return' to return!");
+            string input = Console.ReadLine()?.Trim().ToLowerInvariant();
+
+            if (input == "rename")
             {
-                string renameInput = Console.ReadLine() ?? " ";
-                if (string.IsNullOrEmpty(renameInput))
-                {
-                    Console.WriteLine("Invalid input choose between 'Y' for yes and 'N' for no!");
-                    continue;
+                Console.Write("New name: ");
+                string newName = Console.ReadLine();
 
-                }
-
-                if (renameInput.ToLowerInvariant().Trim() == "y")
+                if (!UserExist(newName))
                 {
-                    Console.Write("New name: ");
-                    string newName = Console.ReadLine() ?? " ";
                     Rename(Name, newName);
-                    Console.WriteLine("Do you want to change another thing? (Y/N): ");
-                    while (true)
-                    {
-                        string option = Console.ReadLine() ?? " ";
-                        if (option.ToLowerInvariant().Trim() == "n")
-                        {
-                            return;
-                        }
-                        else if (option.ToLowerInvariant().Trim() == "y")
-                        {
-                            break;
-                        }
-                        else
-                        {
-                            Console.WriteLine("Choose between Y for yes and N for no!");
-                        }
-                    }
-
-                    break;
-                }
-            }
-
-            while (true)
-            {
-                Console.Write("Do you want to change your account password? (Y/N): ");
-                string passwordChangeInput = Console.ReadLine() ?? " ";
-                if (!string.IsNullOrEmpty(passwordChangeInput) && passwordChangeInput.ToLowerInvariant().Trim() == "y")
-                {
-                    while (true)
-                    {
-                        Console.Write("Current password: ");
-                        string currentPassword = Console.ReadLine() ?? " ";
-                        if (currentPassword == Password)
-                        {
-                            Console.Write("New password: ");
-                            string newPassword = Console.ReadLine() ?? " ";
-                            Console.Write("Confirm new password: ");
-                            string confirmedNewPassword = Console.ReadLine() ?? " ";
-                            if (newPassword == confirmedNewPassword)
-                            {
-                                ChangePassword(Id, newPassword);
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine("Invalid password!");
-                        }
-                    }
-
-                    break;
                 }
                 else
                 {
-                    Console.WriteLine("Invalid input you must type 'Y' for yes and 'N' for no!");
+                    Console.WriteLine($"There is already user with this name: {newName}. You are returned to the options menu!");
+                    AccountOptions();
+                }
+            } else if (input == "change")
+            {
+                Console.Write("Current password: ");
+                string currentPassword = Console.ReadLine();
+                if (currentPassword == Password)
+                {
+                    Console.Write("New password: ");
+                    string newPassword = Console.ReadLine();
+                    Console.WriteLine("Confirm password: ");
+                    if (newPassword == Console.ReadLine())
+                    {
+                        ChangePassword(Id, newPassword);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid password confirmation you are now returned to the main menu!");
+                    }
                 }
             }
         }
 
-        public static void Rename(string oldName, string newName)
+        private static void Rename(string oldName, string newName)
         {
-            if (string.IsNullOrEmpty(newName))
+            bool namesAreNotEmpty = false;
+            if (string.IsNullOrEmpty(newName) || string.IsNullOrEmpty(oldName))
             {
-                Console.WriteLine("Invalid new name!");
-                return;
+                Console.WriteLine("Invalid name!");
+                namesAreNotEmpty = true;
             }
 
-            if (string.IsNullOrEmpty(oldName))
+            if (namesAreNotEmpty)
             {
-                Console.WriteLine("Invalid old name!");
-                return;
-            }
-
-            using (var conn = new NpgsqlConnection(Blog.ConnectionString))
-            {
-                conn.Open();
-
-                try
+                using (var conn = new NpgsqlConnection(Blog.ConnectionString))
                 {
+                    conn.Open();
 
                     var database = new Database(conn);
-                    var parametars = new Dictionary<string,object>()
+
+                    var parametar = new NpgsqlParameter("n", newName);
+                    bool accountExistWithThisName = database.Query<UserPoco>("SELECT * FROM users WHERE name=@n;", parametar).Count > 0;
+
+                    if (!accountExistWithThisName)
                     {
-                        {"n", newName},
-                        {"i", Id}
-                    };
-                    database.ExecuteNonQuery("UPDATE users SET name=@n WHERE user_id=@i;",parametars);
-                    database.ExecuteNonQuery("UPDATE comments SET author_name=@n WHERE user_id=@i;", parametars);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Invalid name. This name is already being used!");
-                    return;
+                        var parametars = new Dictionary<string, object>()
+                        {
+                            {"n", newName},
+                            {"i", Id}
+                        };
+                        database.ExecuteNonQuery("UPDATE users SET name=@n WHERE user_id=@i;", parametars);
+                        database.ExecuteNonQuery("UPDATE comments SET author_name=@n WHERE user_id=@i;", parametars);
+
+                        Login(newName,Password);
+                    }
                 }
             }
+
+            Console.WriteLine("You succsefuly renamed your account!\n");
         }
 
-        public static void ChangePassword(int userId, string newPassword)
+        private static void ChangePassword(int userId, string newPassword)
         {
             using (var conn = new NpgsqlConnection(Blog.ConnectionString))
             {
@@ -256,6 +218,20 @@ namespace Blog
             }
 
             Console.WriteLine("You successfully changed your password!\n");
+        }
+
+
+        private static bool UserExist(string name)
+        {
+            using (var conn = new NpgsqlConnection(Blog.ConnectionString))
+            {
+                conn.Open();
+
+                var database = new Database(conn);
+                var parametar = new NpgsqlParameter("n", name);
+
+                return database.Query<UserPoco>("SELECT * FROM users WHERE name=@n;", parametar).Count > 0;
+            }
         }
     }
 }
