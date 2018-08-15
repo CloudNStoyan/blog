@@ -125,7 +125,8 @@ namespace Blog
         public static void AccountOptions()
         {
             Console.WriteLine("Account Options:");
-            Console.Write("Choose between renaming your account and changing your password with 'rename' and 'change' or 'return' to return!");
+            Console.WriteLine("Choose between renaming your account and changing your password with 'rename' and 'change' or 'return' to return!");
+            Console.Write("You choose: ");
             string input = Console.ReadLine()?.Trim().ToLowerInvariant();
 
             if (input == "rename")
@@ -150,7 +151,7 @@ namespace Blog
                 {
                     Console.Write("New password: ");
                     string newPassword = Console.ReadLine();
-                    Console.WriteLine("Confirm password: ");
+                    Console.Write("Confirm password: ");
                     if (newPassword == Console.ReadLine())
                     {
                         ChangePassword(Id, newPassword);

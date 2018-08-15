@@ -9,8 +9,7 @@ namespace Blog
     public static class Blog
     {
         public const string ConnectionString = @"Server=vm5;Port=5437;Database=postgres;Uid=postgres;Pwd=9ae51c68-c9d6-40e8-a1d6-a71be968ba3e;";
-        public static int CurrentPost;
-        public static int CurrentPostUserId;
+        public static PostPoco CurrentPost;
 
         public static void ViewAccountPosts()
         {
@@ -25,9 +24,12 @@ namespace Blog
 
             if (posts.Count > 0)
             {
-                int choosedPost = Post.ChoosePostInterface(posts);
-                if (choosedPost >= 0)
-                ChoosePost(posts[choosedPost].PostId);
+                var choosedPost = Post.ChoosePostInterface(posts);
+
+                if (choosedPost != null)
+                {
+                    ChoosePost(choosedPost);
+                }
             }
             else
             {
@@ -35,7 +37,7 @@ namespace Blog
             }
         }
 
-        public static void CreateCommentInterface()
+        private static void CreateCommentInterface()
         {
             Console.Write("Your comment(Type 'done' when you are done!): ");
             string comment = string.Empty;
@@ -66,14 +68,16 @@ namespace Blog
             {
                 conn.Open();
                 var database = new Database(conn);
-                var parametars = new[]
+
+                var commentPoco = new CommentPoco
                 {
-                    new NpgsqlParameter("a", Account.Name),
-                    new NpgsqlParameter("c", comment),
-                    new NpgsqlParameter("p", CurrentPost),
-                    new NpgsqlParameter("i", Account.Id)
+                    AuthorName = Account.Name,
+                    Content = comment,
+                    PostId = CurrentPost.PostId,
+                    UserId = Account.Id
                 };
-                database.ExecuteNonQuery("INSERT INTO comments (author_name,content,post_id,user_id) VALUES (@a,@c,@p,@i);", parametars);
+
+                database.Insert(commentPoco);
             }
 
 
@@ -81,11 +85,11 @@ namespace Blog
             Console.WriteLine("You successfully commented!\n");
         }
 
-        private static string EditComment(int commentId)
+        private static void EditComment(CommentPoco comment)
         {
             Console.Write("Edit comment(Type 'done' when you are done):");
 
-            string newComment = string.Empty;
+            string commentContent = string.Empty;
 
             bool creatingComment = true;
 
@@ -98,7 +102,7 @@ namespace Blog
                 }
                 else
                 {
-                    newComment += line;
+                    commentContent += line;
                 }
             }
 
@@ -108,27 +112,22 @@ namespace Blog
 
                 var database = new Database(conn);
 
-                var parametars = new[]
-                {
-                    new NpgsqlParameter("c", newComment),
-                    new NpgsqlParameter("i", commentId)
-                };
+                comment.Content = commentContent;
 
-                database.ExecuteNonQuery("UPDATE comments SET content=@c WHERE comment_id@i;", parametars);
+                database.Update(comment);
             }
 
             Console.WriteLine("Great you edited this comment!\n");
-            return newComment;
         }
 
 
-        public static void ChoosePost(int id)
+        public static void ChoosePost(PostPoco post)
         {
-            Post.ViewPost(id);
-            PostInterface(CurrentPostUserId);
+            Post.ViewPost(post);
+            PostInterface(post);
         }
 
-        private static void DeleteProcess(int postId)
+        private static void DeleteProcess(PostPoco post)
         {
             Console.WriteLine("Once you've deleted a post it can't never be restored!");
             Console.Write("Are you sure you want to delete this post? (Y/N): ");
@@ -140,7 +139,7 @@ namespace Blog
                 string password = Console.ReadLine();
                 if (password == Account.Password)
                 {
-                    DeletePost(postId);
+                    DeletePost(post);
                 }
                 else
                 {
@@ -149,7 +148,7 @@ namespace Blog
             }
         }
 
-        private static void DeletePost(int postId)
+        private static void DeletePost(PostPoco post)
         {
             using (var conn = new NpgsqlConnection(ConnectionString))
             {
@@ -157,19 +156,30 @@ namespace Blog
 
                 var database = new Database(conn);
 
-                var parametar = new Dictionary<string, object> {{"i", postId}};
+                var parametar = new Dictionary<string, object>(){ { "i", post.PostId } };
 
-                database.ExecuteNonQuery("DELETE FROM comments WHERE post_id=@i;", parametar);
-                database.ExecuteNonQuery("DELETE FROM posts_tags WHERE post_id=@i;", parametar);
-                database.ExecuteNonQuery("DELETE FROM posts WHERE post_id=@i;", parametar);
+                var comments = database.Query<CommentPoco>("SELECT * FROM comments WHERE post_id=@i", parametar);
+                var postsTags = database.Query<PostsTagsPoco>("SELECT * FROM posts_tags WHERE post_id=@i", parametar);
+
+                foreach (var commentPoco in comments)
+                {
+                    database.Delete(commentPoco);
+                }
+
+                foreach (var postsTagsPoco in postsTags)
+                {
+                    database.Delete(postsTagsPoco);
+                }
+
+                database.Delete(post);
             }
 
             Console.WriteLine("You sucesfully deleted this post!");
         }
 
-        private static void PostInterface(int userId)
+        private static void PostInterface(PostPoco post)
         {
-            if (Account.Id == userId)
+            if (Account.Id == post.UserId)
             {
                 Console.WriteLine("DISCLAIMER: You can edit this post!");
                 Console.WriteLine("Type: edit help to see how to edit!");
@@ -212,7 +222,7 @@ namespace Blog
                             Blog.AllComments(CurrentPost);
                             break;
                         case "delete":
-                            Blog.DeleteProcess(CurrentPost);
+                            Blog.DeleteProcess(post);
                             break;
                         case "edithelp":
                             CommandPrinter.ShowPostEdits();
@@ -271,75 +281,80 @@ namespace Blog
 
             if (comments.Count >= 1)
             {
-                for (int i = 0; i < comments.Count; i++)
-                {
-                    string commentContent = comments[i].Content;
-                    string shortContent = commentContent.Length > 7
-                        ? commentContent.Substring(0, 7) + "..."
-                        : commentContent;
-                    Console.WriteLine($"{i + 1} | {shortContent}");
-                }
+                bool choosingComment = true;
 
-                while (true)
+                while (choosingComment)
                 {
-                    Console.WriteLine("Type 'return' to return to the post!!\n");
-                    Console.Write("Select comment: ");
-                    try
+                    for (int i = 0; i < comments.Count; i++)
                     {
-                        string line = Console.ReadLine() ?? " ";
-                        if (line.ToLowerInvariant().Trim() == "return")
-                        {
-                            break;
-                        }
+                        string shortContent = comments[i].Content.Length > 7
+                            ? comments[i].Content.Substring(0, 7) + "..."
+                            : comments[i].Content;
+                        Console.WriteLine($"{i + 1} | {shortContent} | {comments[i].AuthorName}");
+                    }
 
-                        int selectedComment = int.Parse(line) - 1;
-                        if (selectedComment > comments.Count - 1)
-                        {
-                            Console.WriteLine($"Please select comments from 1 to {comments.Count - 1}\n");
-                            continue;
-                        }
+                    Console.WriteLine("Choose a comment to view or edit!\n");
 
-                        Console.WriteLine("\nPlease choose between viewing or editing the comment!");
-                        Console.WriteLine("To view the comment type view");
-                        Console.WriteLine("To edit the comment type edit");
-                        Console.WriteLine("Return to choosing comment by typing 'return'\n");
-                        while (true)
+                    Console.Write("You choosed: ");
+
+                    string line = Console.ReadLine() ?? " ";
+
+                    if (line.ToLowerInvariant().Trim() == "return")
+                    {
+                        choosingComment = false;
+                    }
+                    else
+                    {
+                        bool isNumber = int.TryParse(line, out int selectedIndex);
+                        selectedIndex--;
+                        if (isNumber)
                         {
-                            Console.Write("You choosed: ");
-                            string input = Console.ReadLine() ?? " ";
-                            if (input.ToLowerInvariant().Trim() == "view")
+                            if (selectedIndex >= 0 && selectedIndex <= comments.Count - 1)
                             {
-                                Console.WriteLine(comments[selectedComment].Content + "\n");
-                            }
-                            else if (input.ToLowerInvariant().Trim() == "edit")
-                            {
-                                string editedComment = EditComment(comments[selectedComment].CommentId);
-                                comments[selectedComment].Content = editedComment;
-                            }
-                            else if (input.ToLowerInvariant().Trim() == "return")
-                            {
-                                break;
+                                Console.WriteLine("Please choose between view and edit");
+                                Console.WriteLine("Type 'view' to view the whole comment");
+                                Console.WriteLine(
+                                    "Type 'edit' to edit this comment (Only if you have the right to do it)\n");
+
+                                Console.Write("You want to: ");
+                                string option = Console.ReadLine() ?? " ";
+                                if (option.ToLowerInvariant().Trim() == "view")
+                                {
+                                    Console.WriteLine(
+                                        $"\n{comments[selectedIndex].Content}\n\nAuthor:{comments[selectedIndex].AuthorName}\n");
+                                }
+                                else if (option.ToLowerInvariant().Trim() == "edit")
+                                {
+                                    if (comments[selectedIndex].UserId == Account.Id)
+                                    {
+                                        EditComment(comments[selectedIndex]);
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("You dont have permission to edit this comment!");
+                                    }
+                                }
                             }
                             else
                             {
-                                Console.WriteLine("Please choose between view,edit and return!\n");
+                                Console.WriteLine($"Please choose between 1 and {comments.Count}\n");
                             }
                         }
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("Please type number!\n");
+                        else
+                        {
+                            Console.WriteLine("You need to type a number!\n");
+                        }
                     }
                 }
             }
             else
             {
-                Console.WriteLine("You dont have any comments on this post!");
+                Console.WriteLine("They aren't any comments on this post!");
             }
         }
 
 
-        private static void AllComments(int postId)
+        private static void AllComments(PostPoco post)
         {
             List<CommentPoco> comments;
 
@@ -348,75 +363,82 @@ namespace Blog
                 conn.Open();
 
                 var database = new Database(conn);
-                comments = database.Query<CommentPoco>("SELECT * FROM comments WHERE post_id=@i;", new NpgsqlParameter("i", postId));
+                comments = database.Query<CommentPoco>("SELECT * FROM comments WHERE post_id=@i;", new NpgsqlParameter("i", post.PostId));
 
             }
 
-            if (comments.Count < 1)
+            if (comments.Count >= 1)
             {
-                Console.WriteLine("They aren't any comments on this post!");
-            }
+                bool choosingComment = true;
 
-            while (true)
-            {
-                for (int i = 0; i < comments.Count; i++)
+                while (choosingComment)
                 {
-                    string shortContent = comments[i].Content.Length > 7
-                        ? comments[i].Content.Substring(0, 7) + "..."
-                        : comments[i].Content;
-                    Console.WriteLine($"{i + 1} | {shortContent} | {comments[i].AuthorName}");
-                }
-
-                Console.WriteLine("Choose a comment to view or edit!\n");
-
-                Console.Write("You choosed: ");
-
-                string line = Console.ReadLine() ?? " ";
-
-                if (line.ToLowerInvariant().Trim() == "return")
-                {
-                    break;
-                }
-
-                int selectedIndex;
-
-                try
-                {
-                    selectedIndex = int.Parse(line) - 1;
-                    if (selectedIndex < 1 || selectedIndex > comments.Count - 1)
+                    for (int i = 0; i < comments.Count; i++)
                     {
-                        Console.WriteLine($"Please choose between 1 and {comments.Count}\n");
-                        continue;
+                        string shortContent = comments[i].Content.Length > 7
+                            ? comments[i].Content.Substring(0, 7) + "..."
+                            : comments[i].Content;
+                        Console.WriteLine($"{i + 1} | {shortContent} | {comments[i].AuthorName}");
                     }
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("You need to type number!\n");
-                    continue;
-                }
 
-                Console.WriteLine("Please choose between view and edit");
-                Console.WriteLine("Type 'view' to view the whole comment");
-                Console.WriteLine("Type 'edit' to edit this comment (Only if you have the right to do it)\n");
+                    Console.WriteLine("Choose a comment to view or edit!\n");
 
-                Console.Write("You want to: ");
-                string option = Console.ReadLine() ?? " ";
-                if (option.ToLowerInvariant().Trim() == "view")
-                {
-                    Console.WriteLine($"\n{comments[selectedIndex].Content}\n\nAuthor:{comments[selectedIndex].AuthorName}\n");
-                } else if (option.ToLowerInvariant().Trim() == "edit")
-                {
-                    if (comments[selectedIndex].AuthorName == Account.Name)
+                    Console.Write("You choosed: ");
+
+                    string line = Console.ReadLine() ?? " ";
+
+                    if (line.ToLowerInvariant().Trim() == "return")
                     {
-                        EditComment(comments[selectedIndex].CommentId);
+                        choosingComment = false;
                     }
                     else
                     {
-                        Console.WriteLine("You dont have permission to edit this comment!");
+                        bool isNumber = int.TryParse(line, out int selectedIndex);
+                        selectedIndex--;
+                        if (isNumber)
+                        {
+                            if (selectedIndex >= 0 && selectedIndex <= comments.Count - 1)
+                            {
+                                Console.WriteLine("Please choose between view and edit");
+                                Console.WriteLine("Type 'view' to view the whole comment");
+                                Console.WriteLine(
+                                    "Type 'edit' to edit this comment (Only if you have the right to do it)\n");
+
+                                Console.Write("You want to: ");
+                                string option = Console.ReadLine() ?? " ";
+                                if (option.ToLowerInvariant().Trim() == "view")
+                                {
+                                    Console.WriteLine(
+                                        $"\n{comments[selectedIndex].Content}\n\nAuthor:{comments[selectedIndex].AuthorName}\n");
+                                }
+                                else if (option.ToLowerInvariant().Trim() == "edit")
+                                {
+                                    if (comments[selectedIndex].UserId == Account.Id)
+                                    {
+                                        EditComment(comments[selectedIndex]);
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("You dont have permission to edit this comment!");
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine($"Please choose between 1 and {comments.Count}\n");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("You need to type a number!\n");
+                        }
                     }
                 }
             }
-
+            else
+            {
+                Console.WriteLine("They aren't any comments on this post!");
+            }
         }
 
         public static void ShowLatests()
@@ -428,49 +450,11 @@ namespace Blog
                 var database = new Database(conn);
                 var posts = database.Query<PostPoco>("SELECT * FROM posts ORDER BY post_id LIMIT 10;");
 
-                for (int i = posts.Count - 1; i >= 0; i--)
+                var choosedPost = Post.ChoosePostInterface(posts);
+                if (choosedPost != null)
                 {
-                    Console.WriteLine($"{Math.Abs(i - posts.Count)}| {posts[i].Title}");
+                    ChoosePost(choosedPost);
                 }
-
-                if (posts.Count > 0)
-                {
-                    Console.WriteLine("Type 'return' to return to the blog!\n");
-                    while (true)
-                    {
-                        Console.Write("Post number: ");
-                        string line = Console.ReadLine() ?? " ";
-                        if (line.ToLowerInvariant().Trim() == "return")
-                        {
-                            break;
-                        }
-
-                        int id = 0;
-
-                        try
-                        {
-                            id = posts.Count - int.Parse(line.Trim());
-                            if (id < 1 || id > posts.Count - 1)
-                            {
-                                Console.WriteLine($"Invalid number. Number must be in range 1 and {posts.Count}");
-                                continue;
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine("You need to type number!");
-                        }
-
-                        Blog.ChoosePost(posts[id].PostId);
-
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("They aren't any posts yet!\n");
-                }
-
-                conn.Dispose();
             }
         }
     }

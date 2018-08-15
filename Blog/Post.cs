@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Npgsql;
 
 namespace Blog
 {
-    public class Post
+    public static class Post
     {
-        public static void EditPostContent(int postId, string content)
+        public static void EditPostContent(PostPoco post, string content)
         {
             using (var conn = new NpgsqlConnection(Blog.ConnectionString))
             {
@@ -16,30 +15,23 @@ namespace Blog
                 
                 var database = new Database(conn);
 
-                var parametars = new Dictionary<string,object>
-                {
-                    {"c", content},
-                    {"i", postId}
-                };
+                post.Content = content;
 
-                database.ExecuteNonQuery("UPDATE posts SET content=@c WHERE post_id=@i;", parametars);
+                database.Update(post);
             }
         }
 
-        public static void EditPostTitle(int postId, string title)
+        public static void EditPostTitle(PostPoco post, string title)
         {
             using (var conn = new NpgsqlConnection(Blog.ConnectionString))
             {
                 conn.Open();
 
                 var database = new Database(conn);
-                var parametars = new Dictionary<string, object>
-                {
-                    {"t", title},
-                    {"i", postId}
-                };
 
-                database.ExecuteNonQuery("UPDATE posts SET title=@t WHERE post_id=@i;", parametars);
+                post.Title = title;
+
+                database.Update(post);
 
                 Console.WriteLine("You succesfully edited this post title!");
             }
@@ -84,28 +76,26 @@ namespace Blog
                 conn.Open();
 
                 var database = new Database(conn);
-                var parametars = new Dictionary<string,object>
-                {
-                    {"t", title},
-                    {"c", content},
-                    {"u", Account.Id}
-                };
 
-                int postId = database.Execute<int>("INSERT INTO posts (title,content,user_id) VALUES (@t,@c,@u) RETURNING post_id;", parametars);
+                var postPoco = new PostPoco {Title = title, Content = content,UserId = Account.Id};
+
+                int postId = database.Insert(postPoco);
 
                 foreach (string tagName in tags)
                 {
                     var tag = database.QueryOne<TagPoco>("SELECT * FROM tags WHERE name=@n;", new NpgsqlParameter("n", tagName));
 
-                    int id = tag?.TagId ?? database.Execute<int>("INSERT INTO tags (name) VALUES (@n) RETURNING tag_id;", new NpgsqlParameter("n", tagName));
-
-                    parametars = new Dictionary<string,object>
+                    if (tag == null)
                     {
-                        {"p", postId},
-                        {"t", id}
-                    };
+                        tag = new TagPoco {Name = tagName};
+                        tag.TagId = database.Insert(tag);
+                    }
 
-                    database.ExecuteNonQuery("INSERT INTO posts_tags (post_id,tag_id) VALUES (@p,@t);", parametars);
+                    int tagId = tag.TagId;
+
+                    var postsTagsPoco = new PostsTagsPoco {PostId = postId, TagId = tagId};
+
+                    database.Insert(postsTagsPoco);
                 }
             }
 
@@ -119,18 +109,21 @@ namespace Blog
                 var database = new Database(conn);
                 var posts = database.Query<PostPoco>("SELECT * FROM posts;");
 
-                Blog.ChoosePost(ChoosePostInterface(posts));
+                var choosedPost = ChoosePostInterface(posts);
+                if (choosedPost != null)
+                {
+                    Blog.ChoosePost(choosedPost);
+                }
             }
         }
 
-        public static void ViewPost(int id)
+        public static void ViewPost(PostPoco post)
         {
             using (var conn = new NpgsqlConnection(Blog.ConnectionString))
             {
                 conn.Open();
 
                 var database = new Database(conn);
-                var post = database.QueryOne<PostPoco>("SELECT * FROM posts WHERE post_id=@i;", new NpgsqlParameter("i", id));
                 var postsTagsConnections = database.Query<PostsTagsPoco>("SELECT * FROM posts_tags WHERE post_id=@i;", new NpgsqlParameter("i", post.PostId));
 
                 var tags = new List<TagPoco>();
@@ -147,13 +140,12 @@ namespace Blog
                 Console.WriteLine($"Tags: {string.Join(", ", tags.Select(t => t.Name)).Trim()}");
                 Console.WriteLine("|------------------------------------------------------------------------------------------|");
 
-                Blog.CurrentPost = post.PostId;
-                Blog.CurrentPostUserId = post.UserId;
+                Blog.CurrentPost = post;
             }
         }
 
 
-        public static int ChoosePostInterface(List<PostPoco> posts)
+        public static PostPoco ChoosePostInterface(List<PostPoco> posts)
         {
             Console.WriteLine("|Number|" + "Title".PadLeft(13,' ').PadRight(27,' ') + "|");
 
@@ -189,7 +181,7 @@ namespace Blog
                             }
 
 
-                            return posts[id].PostId;
+                            return posts[id];
                         }
 
                         Console.WriteLine("You must type number or 'return' !");
@@ -201,7 +193,7 @@ namespace Blog
                 }
             }
 
-            return -1;
+            return null;
         }
     }
 }

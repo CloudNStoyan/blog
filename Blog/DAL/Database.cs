@@ -212,7 +212,7 @@ namespace Blog
         /// <summary>
         /// Insert something with poco class to the database.
         /// </summary>
-        /// <returns>How many rows are changed.</returns>
+        /// <returns>How many rows are changed.</returns>a
         public int Insert<T>(T poco) where T : class, new ()
         {
             var pocoType = typeof(T);
@@ -223,8 +223,6 @@ namespace Blog
             {
                 throw new Exception($"This class must have table attribute! class: '{pocoType}'");
             }
-
-            // Оправи редът
 
             var properties = pocoType.GetProperties();
 
