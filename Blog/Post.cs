@@ -124,13 +124,16 @@ namespace Blog
                 conn.Open();
 
                 var database = new Database(conn);
-                var postsTagsConnections = database.Query<PostsTagsPoco>("SELECT * FROM posts_tags WHERE post_id=@i;", new NpgsqlParameter("i", post.PostId));
 
-                var tags = new List<TagPoco>();
-                foreach (var tagsConnection in postsTagsConnections)
+                string sql = 
+                    "SELECT tgs.tag_id AS tag_id,tgs.name AS name FROM posts_tags AS pt INNER JOIN tags AS tgs ON pt.post_id=@i AND pt.tag_id = tgs.tag_id;";
+
+                var parametar = new Dictionary<string,object>
                 {
-                    tags.Add(database.QueryOne<TagPoco>("SELECT * FROM tags WHERE tag_id=@i", new NpgsqlParameter("i", tagsConnection.TagId)));
-                }
+                    {"i", post.PostId}
+                };
+
+                var tags = database.Query<TagPoco>(sql,parametar);
 
                 Console.WriteLine("|------------------------------------------------------------------------------------------|");
                 Console.WriteLine($"Title: {post.Title.Trim()}");

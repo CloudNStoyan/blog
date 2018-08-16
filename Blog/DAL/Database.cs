@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Reflection;
 using Npgsql;
@@ -30,6 +31,7 @@ namespace Blog
         public List<T> Query<T>(string sql, params NpgsqlParameter[] parametars) where T : class, new()
         {
             ThrowIfSqlOrParamsAreNull(sql, parametars);
+            this.OpenConnectionIfNot();
 
             var result = new List<T>();
             using (var command = new NpgsqlCommand(sql, this.Connection))
@@ -130,6 +132,7 @@ namespace Blog
         public T Execute<T>(string sql, params NpgsqlParameter[] parametars)
         {
             ThrowIfSqlOrParamsAreNull(sql, parametars);
+            this.OpenConnectionIfNot();
 
             T result = default;
 
@@ -191,6 +194,7 @@ namespace Blog
         public int ExecuteNonQuery(string sql, params NpgsqlParameter[] parametars)
         {
             ThrowIfSqlOrParamsAreNull(sql, parametars);
+            this.OpenConnectionIfNot();
 
             using (var command = new NpgsqlCommand(sql, this.Connection))
             {
@@ -215,6 +219,7 @@ namespace Blog
         /// <returns>How many rows are changed.</returns>a
         public int Insert<T>(T poco) where T : class, new ()
         {
+            this.OpenConnectionIfNot();
             var pocoType = typeof(T);
 
             var tableAttribute = pocoType.GetCustomAttribute<TableAttribute>();
@@ -260,6 +265,7 @@ namespace Blog
         /// </summary>
         public void Update<T>(T poco)
         {
+            this.OpenConnectionIfNot();
             var pocoType = typeof(T);
 
             var tableAttribute = pocoType.GetCustomAttribute<TableAttribute>();
@@ -296,6 +302,7 @@ namespace Blog
             parametars.Add(new NpgsqlParameter("i", primaryKeyColumnValue));
 
             string sql = $"UPDATE \"{schema}\".\"{table}\" SET {String.Join(",", columnsAndValues)} WHERE {primaryKeyColumnName}=@i;";
+            Console.WriteLine(sql);
 
             using (var command = new NpgsqlCommand(sql, this.Connection))
             {
@@ -310,6 +317,7 @@ namespace Blog
         /// <returns>How many rows are changed</returns>
         public int Delete<T>(T poco)
         {
+            this.OpenConnectionIfNot();
             var pocoType = typeof(T);
 
             var properties = pocoType.GetProperties();
@@ -332,6 +340,14 @@ namespace Blog
             {
                 command.Parameters.Add(parametar);
                 return command.ExecuteNonQuery();
+            }
+        }
+
+        private void OpenConnectionIfNot()
+        {
+            if (this.Connection != null && this.Connection.State == ConnectionState.Closed)
+            {
+                this.Connection.Open();
             }
         }
 

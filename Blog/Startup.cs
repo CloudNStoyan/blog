@@ -15,6 +15,25 @@ namespace Blog
             Console.WriteLine("#===========================BLOG===========================#");
             Console.WriteLine("#==========================================================#");
 
+            using (var conn = new NpgsqlConnection(Blog.ConnectionString))
+            {
+                conn.Open();
+                var database = new Database(conn);
+                var service = new Service(database);
+                Console.WriteLine(service.UserExist("admin"));
+
+
+                var allPosts = service.GetAllPosts();
+                foreach (var post in allPosts)
+                {
+                    Console.WriteLine(post.Title);
+                }
+            }
+
+
+
+
+
             while (true)
             {
                 Console.Write("Do you have an existing account! (Y/N) ");

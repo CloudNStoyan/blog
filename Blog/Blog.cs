@@ -10,17 +10,12 @@ namespace Blog
     {
         public const string ConnectionString = @"Server=vm5;Port=5437;Database=postgres;Uid=postgres;Pwd=9ae51c68-c9d6-40e8-a1d6-a71be968ba3e;";
         public static PostPoco CurrentPost;
+        private static Service service = new Service(new Database(new NpgsqlConnection(ConnectionString)));
 
         public static void ViewAccountPosts()
         {
-            List<PostPoco> posts;
-            using (var conn = new NpgsqlConnection(ConnectionString))
-            {
-                conn.Open();
-                var database = new Database(conn);
-                posts = database.Query<PostPoco>("SELECT * FROM posts WHERE user_id=@i;",
-                    new NpgsqlParameter("i", Account.Id));
-            }
+            var user = new UserPoco {Name = Account.Name, Password = Account.Password, UserId = Account.Id};
+            var posts = service.GetAllUsersPosts(user);
 
             if (posts.Count > 0)
             {
@@ -64,23 +59,7 @@ namespace Blog
                 }
             }
 
-            using (var conn = new NpgsqlConnection(ConnectionString))
-            {
-                conn.Open();
-                var database = new Database(conn);
-
-                var commentPoco = new CommentPoco
-                {
-                    AuthorName = Account.Name,
-                    Content = comment,
-                    PostId = CurrentPost.PostId,
-                    UserId = Account.Id
-                };
-
-                database.Insert(commentPoco);
-            }
-
-
+            service.CreateComment(Account.Name,comment,CurrentPost.PostId,Account.Id);
 
             Console.WriteLine("You successfully commented!\n");
         }
