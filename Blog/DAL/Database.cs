@@ -255,7 +255,7 @@ namespace Blog
 
             using (var command = new NpgsqlCommand(sql, this.Connection))
             {
-                command.Parameters.AddRange(parametars.ToArray());
+                command.Parameters.AddRange(parametars.wToArray());
                 return (int)command.ExecuteScalar();
             }
         }
@@ -302,7 +302,6 @@ namespace Blog
             parametars.Add(new NpgsqlParameter("i", primaryKeyColumnValue));
 
             string sql = $"UPDATE \"{schema}\".\"{table}\" SET {String.Join(",", columnsAndValues)} WHERE {primaryKeyColumnName}=@i;";
-            Console.WriteLine(sql);
 
             using (var command = new NpgsqlCommand(sql, this.Connection))
             {

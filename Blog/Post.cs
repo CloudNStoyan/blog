@@ -11,13 +11,9 @@ namespace Blog
         {
             using (var conn = new NpgsqlConnection(Blog.ConnectionString))
             {
-                conn.Open();
-                
                 var database = new Database(conn);
-
-                post.Content = content;
-
-                database.Update(post);
+                var service = new Service(database);
+                service.UpdatePostContent(post,content);
             }
         }
 
@@ -25,14 +21,9 @@ namespace Blog
         {
             using (var conn = new NpgsqlConnection(Blog.ConnectionString))
             {
-                conn.Open();
-
                 var database = new Database(conn);
-
-                post.Title = title;
-
-                database.Update(post);
-
+                var service = new Service(database);
+                service.UpdatePostTitle(post,title);
                 Console.WriteLine("You succesfully edited this post title!");
             }
         }
@@ -73,30 +64,9 @@ namespace Blog
         {
             using (var conn = new NpgsqlConnection(Blog.ConnectionString))
             {
-                conn.Open();
-
                 var database = new Database(conn);
-
-                var postPoco = new PostPoco {Title = title, Content = content,UserId = Account.Id};
-
-                int postId = database.Insert(postPoco);
-
-                foreach (string tagName in tags)
-                {
-                    var tag = database.QueryOne<TagPoco>("SELECT * FROM tags WHERE name=@n;", new NpgsqlParameter("n", tagName));
-
-                    if (tag == null)
-                    {
-                        tag = new TagPoco {Name = tagName};
-                        tag.TagId = database.Insert(tag);
-                    }
-
-                    int tagId = tag.TagId;
-
-                    var postsTagsPoco = new PostsTagsPoco {PostId = postId, TagId = tagId};
-
-                    database.Insert(postsTagsPoco);
-                }
+                var service = new Service(database);
+                service.CreatePost(title,content,tags);
             }
 
         }
@@ -105,9 +75,9 @@ namespace Blog
         {
             using (var conn = new NpgsqlConnection(Blog.ConnectionString))
             {
-                conn.Open();
                 var database = new Database(conn);
-                var posts = database.Query<PostPoco>("SELECT * FROM posts;");
+                var service = new Service(database);
+                var posts = service.GetAllPosts();
 
                 var choosedPost = ChoosePostInterface(posts);
                 if (choosedPost != null)
@@ -121,19 +91,10 @@ namespace Blog
         {
             using (var conn = new NpgsqlConnection(Blog.ConnectionString))
             {
-                conn.Open();
-
                 var database = new Database(conn);
+                var service = new Service(database);
 
-                string sql = 
-                    "SELECT tgs.tag_id AS tag_id,tgs.name AS name FROM posts_tags AS pt INNER JOIN tags AS tgs ON pt.post_id=@i AND pt.tag_id = tgs.tag_id;";
-
-                var parametar = new Dictionary<string,object>
-                {
-                    {"i", post.PostId}
-                };
-
-                var tags = database.Query<TagPoco>(sql,parametar);
+                var tags = service.GetPostTags(post);
 
                 Console.WriteLine("|------------------------------------------------------------------------------------------|");
                 Console.WriteLine($"Title: {post.Title.Trim()}");

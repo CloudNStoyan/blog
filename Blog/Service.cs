@@ -48,6 +48,95 @@ namespace Blog
             this.Database.Update(commentPoco);
         }
 
+        public void UpdateComment(CommentPoco poco)
+        {
+            this.Database.Update(poco);
+        }
+
+        public void DeletePost(PostPoco poco)
+        {
+            var parametar = new Dictionary<string, object>() { { "i", poco.PostId } };
+
+            var comments = this.Database.Query<CommentPoco>("SELECT * FROM comments WHERE post_id=@i;", parametar);
+            var postsTags = this.Database.Query<PostsTagsPoco>("SELECT * FROM posts_tags WHERE post_id=@i;", parametar);
+
+            foreach (var commentPoco in comments)
+            {
+                this.Database.Delete(commentPoco);
+            }
+
+            foreach (var postsTagsPoco in postsTags)
+            {
+                this.Database.Delete(postsTagsPoco);
+            }
+
+            this.Database.Delete(poco);
+        }
+
+        public List<CommentPoco> GetUserComments(UserPoco poco)
+        {
+           return this.Database.Query<CommentPoco>("SELECT * FROM comments WHERE user_id=@i;", new NpgsqlParameter("i", poco.UserId));
+        }
+
+        public List<CommentPoco> GetPostsAllCommentars(PostPoco poco)
+        {
+            return this.Database.Query<CommentPoco>("SELECT * FROM comments WHERE post_id=@i;", new NpgsqlParameter("i", poco.PostId));
+        }
+
+        public List<PostPoco> GetNewestsPosts()
+        {
+            return this.Database.Query<PostPoco>("SELECT * FROM posts ORDER BY post_id LIMIT 10;");
+        }
+
+        public void UpdatePostContent(PostPoco post,string content)
+        {
+            post.Content = content;
+            this.Database.Update(post);
+        }
+
+        public void UpdatePostTitle(PostPoco post, string title)
+        {
+            post.Title = title;
+            this.Database.Update(post);
+        }
+
+        public List<TagPoco> GetPostTags(PostPoco poco)
+        {
+            string sql =
+                "SELECT tgs.tag_id AS tag_id,tgs.name AS name FROM posts_tags AS pt INNER JOIN tags AS tgs ON pt.post_id=@i AND pt.tag_id = tgs.tag_id;";
+
+            var parametar = new Dictionary<string, object>
+            {
+                {"i", poco.PostId}
+            };
+
+            return this.Database.Query<TagPoco>(sql, parametar);
+        }
+
+        public void CreatePost(string title, string content, string[] tags)
+        {
+            var postPoco = new PostPoco { Title = title, Content = content, UserId = Account.Id };
+
+            int postId = this.Database.Insert(postPoco);
+
+            foreach (string tagName in tags)
+            {
+                var tag = this.Database.QueryOne<TagPoco>("SELECT * FROM tags WHERE name=@n;", new NpgsqlParameter("n", tagName));
+
+                if (tag == null)
+                {
+                    tag = new TagPoco { Name = tagName };
+                    tag.TagId = this.Database.Insert(tag);
+                }
+
+                int tagId = tag.TagId;
+
+                var postsTagsPoco = new PostsTagsPoco { PostId = postId, TagId = tagId };
+
+                this.Database.Insert(postsTagsPoco);
+            }
+        }
+
         public void Rename(int id,string password,string newName)
         {
             Console.WriteLine($"Id:{id}|Password:{password}|Name:{newName}");

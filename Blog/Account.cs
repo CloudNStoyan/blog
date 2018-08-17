@@ -12,8 +12,6 @@ namespace Blog
         public static int Id;
         public static bool Logged;
 
-        private static Service service = new Service(new Database(new NpgsqlConnection(Blog.ConnectionString)));
-
         public static void LoginInterface()
         {
             Console.Write("Username: ");
@@ -48,46 +46,56 @@ namespace Blog
             {
                 Console.Write("Username: ");
                 string name = Console.ReadLine() ?? " ";
-                if (!service.UserExist(name))
+                using (var conn = new NpgsqlConnection(Blog.ConnectionString))
                 {
-                    Console.Write("Password: ");
-                    string password = Console.ReadLine() ?? " ";
-                    Console.Write("Confirm Password: ");
-                    string confirmPass = Console.ReadLine() ?? " ";
-
-                    if (string.IsNullOrEmpty(confirmPass) || string.IsNullOrEmpty(name) || string.IsNullOrEmpty(password))
+                    var database = new Database(conn);
+                    var service = new Service(database);
+                    if (!service.UserExist(name))
                     {
-                        Console.WriteLine("Invalid information!");
+                        Console.Write("Password: ");
+                        string password = Console.ReadLine() ?? " ";
+                        Console.Write("Confirm Password: ");
+                        string confirmPass = Console.ReadLine() ?? " ";
+
+                        if (string.IsNullOrEmpty(confirmPass) || string.IsNullOrEmpty(name) || string.IsNullOrEmpty(password))
+                        {
+                            Console.WriteLine("Invalid information!");
+                        }
+                        else
+                        {
+                            service.RegisterUser(name, password);
+                            if (Login(name, password))
+                            {
+                                Console.WriteLine($"Sucesfully created account {Name} now you are logged!");
+                                Console.WriteLine("Type help for more information!\n");
+                            }
+                            creatingAccount = false;
+                        }
                     }
                     else
                     {
-                        service.RegisterUser(name,password);
-                        if (Login(name,password))
-                        {
-                            Console.WriteLine($"Sucesfully created account {Name} now you are logged!");
-                            Console.WriteLine("Type help for more information!\n");
-                        }
-                        creatingAccount = false;
+                        Console.WriteLine("This name is already taken try another one!");
                     }
-                }
-                else
-                {
-                    Console.WriteLine("This name is already taken try another one!");
                 }
             }
         }
 
         private static bool Login(string name, string password)
         {
-            var user = service.Login(name, password);
-
-            if (user != null)
+            using (var conn = new NpgsqlConnection(Blog.ConnectionString))
             {
-                Name = user.Name;
-                Password = user.Password;
-                Id = user.UserId;
-                Logged = true;
-                return true;
+                var database = new Database(conn);
+                var service = new Service(database);
+                var user = service.Login(name, password);
+
+                if (user != null)
+                {
+                    Name = user.Name;
+                    Password = user.Password;
+                    Id = user.UserId;
+                    Logged = true;
+                    return true;
+                }
             }
 
             return false;
@@ -106,23 +114,28 @@ namespace Blog
             {
                 Console.Write("New name: ");
                 string newName = Console.ReadLine()?.Trim();
-
-                if (!service.UserExist(newName))
+                using (var conn = new NpgsqlConnection(Blog.ConnectionString))
                 {
-                    if (!string.IsNullOrEmpty(newName) && !string.IsNullOrWhiteSpace(newName))
+                    var database = new Database(conn);
+                    var service = new Service(database);
+                    if (!service.UserExist(newName))
                     {
-                        Rename(newName);
-                        Console.WriteLine(newName);
+                        if (!string.IsNullOrEmpty(newName) && !string.IsNullOrWhiteSpace(newName))
+                        {
+                            Rename(newName);
+                            Console.WriteLine(newName);
+                        }
+                        else
+                        {
+                            Console.WriteLine("New name must not be whitespace or empty!");
+                        }
                     }
                     else
                     {
-                        Console.WriteLine("New name must not be whitespace or empty!");
+                        Console.WriteLine(
+                            $"There is already user with this name: {newName}. You are returned to the options menu!");
+                        AccountOptions();
                     }
-                }
-                else
-                {
-                    Console.WriteLine($"There is already user with this name: {newName}. You are returned to the options menu!");
-                    AccountOptions();
                 }
             } else if (input == "change")
             {
@@ -149,7 +162,13 @@ namespace Blog
         {
             if (!string.IsNullOrEmpty(newName))
             {
-                service.Rename(Id, Password, newName);
+                using (var conn = new NpgsqlConnection(Blog.ConnectionString))
+                {
+                    var database = new Database(conn);
+                    var service = new Service(database);
+                    service.Rename(Id, Password, newName);
+                }
+
                 Login(newName, Password);
                 Console.WriteLine("You succsefuly renamed your account!\n");
             }
@@ -161,8 +180,20 @@ namespace Blog
 
         private static void ChangePassword(int userId, string newPassword)
         {
-            service.ChangePassword(userId,newPassword,Name);
+            using (var conn = new NpgsqlConnection(Blog.ConnectionString))
+            {
+                var database = new Database(conn);
+                var service = new Service(database);
+                service.ChangePassword(userId, newPassword, Name);
+            }
+
             Console.WriteLine("You successfully changed your password!\n");
+        }
+
+        public static UserPoco AccountToUserPoco()
+        {
+            var userPoco = new UserPoco {Name=Account.Name,Password = Account.Password,UserId = Account.Id};
+            return userPoco;
         }
     }
 }

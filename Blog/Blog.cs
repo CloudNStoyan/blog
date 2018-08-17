@@ -10,25 +10,30 @@ namespace Blog
     {
         public const string ConnectionString = @"Server=vm5;Port=5437;Database=postgres;Uid=postgres;Pwd=9ae51c68-c9d6-40e8-a1d6-a71be968ba3e;";
         public static PostPoco CurrentPost;
-        private static Service service = new Service(new Database(new NpgsqlConnection(ConnectionString)));
 
         public static void ViewAccountPosts()
         {
             var user = new UserPoco {Name = Account.Name, Password = Account.Password, UserId = Account.Id};
-            var posts = service.GetAllUsersPosts(user);
-
-            if (posts.Count > 0)
+            using (var conn = new NpgsqlConnection(ConnectionString))
             {
-                var choosedPost = Post.ChoosePostInterface(posts);
+                var database = new Database(conn);
+                var service = new Service(database);
+                var posts = service.GetAllUsersPosts(user);
 
-                if (choosedPost != null)
+                if (posts.Count > 0)
                 {
-                    ChoosePost(choosedPost);
+                    var choosedPost = Post.ChoosePostInterface(posts);
+
+                    if (choosedPost != null)
+                    {
+                        ChoosePost(choosedPost);
+                    }
                 }
-            }
-            else
-            {
-                Console.WriteLine("You don't have any posts yet! create your first post by typing 'post-create' !\n");
+                else
+                {
+                    Console.WriteLine(
+                        "You don't have any posts yet! create your first post by typing 'post-create' !\n");
+                }
             }
         }
 
@@ -59,7 +64,12 @@ namespace Blog
                 }
             }
 
-            service.CreateComment(Account.Name,comment,CurrentPost.PostId,Account.Id);
+            using (var conn = new NpgsqlConnection(ConnectionString))
+            {
+                var database = new Database(conn);
+                var service = new Service(database);
+                service.CreateComment(Account.Name, comment, CurrentPost.PostId, Account.Id);
+            }
 
             Console.WriteLine("You successfully commented!\n");
         }
@@ -87,13 +97,10 @@ namespace Blog
 
             using (var conn = new NpgsqlConnection(ConnectionString))
             {
-                conn.Open();
-
                 var database = new Database(conn);
-
+                var service = new Service(database);
                 comment.Content = commentContent;
-
-                database.Update(comment);
+                service.UpdateComment(comment);
             }
 
             Console.WriteLine("Great you edited this comment!\n");
@@ -131,26 +138,9 @@ namespace Blog
         {
             using (var conn = new NpgsqlConnection(ConnectionString))
             {
-                conn.Open();
-
                 var database = new Database(conn);
-
-                var parametar = new Dictionary<string, object>(){ { "i", post.PostId } };
-
-                var comments = database.Query<CommentPoco>("SELECT * FROM comments WHERE post_id=@i", parametar);
-                var postsTags = database.Query<PostsTagsPoco>("SELECT * FROM posts_tags WHERE post_id=@i", parametar);
-
-                foreach (var commentPoco in comments)
-                {
-                    database.Delete(commentPoco);
-                }
-
-                foreach (var postsTagsPoco in postsTags)
-                {
-                    database.Delete(postsTagsPoco);
-                }
-
-                database.Delete(post);
+                var service = new Service(database);
+                service.DeletePost(post);
             }
 
             Console.WriteLine("You sucesfully deleted this post!");
@@ -251,11 +241,9 @@ namespace Blog
 
             using (var conn = new NpgsqlConnection(ConnectionString))
             {
-                conn.Open();
-
                 var database = new Database(conn);
-                comments = database.Query<CommentPoco>("SELECT * FROM comments WHERE author_name=@n;",
-                    new NpgsqlParameter("n", Account.Name));
+                var service = new Service(database);
+                comments = service.GetUserComments(Account.AccountToUserPoco());
             }
 
             if (comments.Count >= 1)
@@ -339,11 +327,9 @@ namespace Blog
 
             using (var conn = new NpgsqlConnection(ConnectionString))
             {
-                conn.Open();
-
                 var database = new Database(conn);
-                comments = database.Query<CommentPoco>("SELECT * FROM comments WHERE post_id=@i;", new NpgsqlParameter("i", post.PostId));
-
+                var service = new Service(database);
+                comments = service.GetPostsAllCommentars(post);
             }
 
             if (comments.Count >= 1)
@@ -427,7 +413,8 @@ namespace Blog
                 conn.Open();
 
                 var database = new Database(conn);
-                var posts = database.Query<PostPoco>("SELECT * FROM posts ORDER BY post_id LIMIT 10;");
+                var service = new Service(database);
+                var posts = service.GetNewestsPosts();
 
                 var choosedPost = Post.ChoosePostInterface(posts);
                 if (choosedPost != null)
