@@ -16,10 +16,13 @@ namespace Blog
             this.Database = database;
         }
 
-        public void RegisterUser(string name, string password)
+        public UserPoco RegisterUser(string name, string password)
         {
             var userPoco = new UserPoco {Name = name, Password = password};
-            this.Database.Insert(userPoco);
+            int userPocoId = this.Database.Insert(userPoco);
+            userPoco.UserId = userPocoId;
+
+            return userPoco;
         }
 
         public UserPoco Login(string name, string password)

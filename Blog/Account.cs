@@ -63,8 +63,8 @@ namespace Blog
                         }
                         else
                         {
-                            service.RegisterUser(name, password);
-                            if (Login(name, password))
+                            var user = service.RegisterUser(name, password);
+                            if (Login(user.Name, user.Password))
                             {
                                 Console.WriteLine($"Sucesfully created account {Name} now you are logged!");
                                 Console.WriteLine("Type help for more information!\n");

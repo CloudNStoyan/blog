@@ -255,7 +255,7 @@ namespace Blog
 
             using (var command = new NpgsqlCommand(sql, this.Connection))
             {
-                command.Parameters.AddRange(parametars.wToArray());
+                command.Parameters.AddRange(parametars.ToArray());
                 return (int)command.ExecuteScalar();
             }
         }
@@ -283,21 +283,20 @@ namespace Blog
                     : throw new Exception($"Property doesnt have attribute '{nameof(ColumnAttribute)}'")).ToList();
 
             string table = tableAttribute.Name;
-            string schema = tableAttribute.Schema;
-
-            var values = properties.Select(x => x.GetValue(poco, null)).ToList();
-
-            var columns = columnAttributes.Where(c => !c.IsPrimaryKey).Select(c => c.Name).ToList();
-
-            var columnsAndValues = columns.Select((x, i) => $"{x}=@a{i}");
+            string schema = tableAttribute.Schema; 
 
             string primaryKeyColumnName = columnAttributes.FirstOrDefault(c => c.IsPrimaryKey)?.Name;
 
-            object primaryKeyColumnValue = properties
+            var columnsAndValuesDic = properties.Where(x => !x.GetCustomAttribute<ColumnAttribute>().IsPrimaryKey)
+                .ToDictionary(x => x.GetCustomAttribute<ColumnAttribute>().Name, x => x.GetValue(poco, null));
+
+            var columnsAndValues = columnsAndValuesDic.Select((x, i) => $"{x.Key}=@a{i}");
+
+            var parametars = columnsAndValuesDic.Select((x, i) => new NpgsqlParameter($"a{i}", x.Value)).ToList();
+
+            var primaryKeyColumnValue = properties
                 .FirstOrDefault(p => p.GetCustomAttribute<ColumnAttribute>().IsPrimaryKey)
                 ?.GetValue(poco, null);
-
-            var parametars = values.Select((x,i) => new NpgsqlParameter($"a{i}", x)).ToList();
 
             parametars.Add(new NpgsqlParameter("i", primaryKeyColumnValue));
 
