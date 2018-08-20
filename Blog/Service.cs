@@ -116,7 +116,7 @@ namespace Blog
             return this.Database.Query<TagPoco>(sql, parametar);
         }
 
-        public void CreatePost(string title, string content, string[] tags)
+        public int CreatePost(string title, string content, string[] tags)
         {
             var postPoco = new PostPoco { Title = title, Content = content, UserId = Account.Id };
 
@@ -138,6 +138,8 @@ namespace Blog
 
                 this.Database.Insert(postsTagsPoco);
             }
+
+            return postId;
         }
 
         public void Rename(int id,string password,string newName)
