@@ -106,5 +106,17 @@ namespace Blog.Tests
                 Assert.NotNull(userPoco);
             }
         }
+
+        [Fact]
+        public void AllPostsTest()
+        {
+            using (var conn = new NpgsqlConnection(ConnectionString))
+            {
+                var database = new Database(conn);
+                var service = new Service(database);
+                var posts = service.GetAllPosts();
+                Assert.True(posts.Count > 1);
+            }
+        }
     }
 }
