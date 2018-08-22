@@ -118,5 +118,24 @@ namespace Blog.Tests
                 Assert.True(posts.Count > 1);
             }
         }
+
+        [Fact]
+        public void AllusersCommentsTest()
+        {
+            using (var conn = new NpgsqlConnection(ConnectionString))
+            {
+                var database = new Database(conn);
+                var service = new Service(database);
+                var comments =
+                    service.GetUserComments(new UserPoco
+                    {
+                        Name = "defaultuser",
+                        Password = "defaultPassword",
+                        UserId = 19
+                    });
+
+                Assert.True(comments.Count > 1);
+            }
+        }
     }
 }
