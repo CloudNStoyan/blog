@@ -1,0 +1,213 @@
+html {
+    min-height: 100%;
+}
+
+body {
+    display: grid;
+    grid-template-areas: 
+        "header"
+        "main"
+        "footer";
+    grid-template-rows: 200px;
+    grid-template-columns: 1fr;
+    margin: 0px;
+}
+
+div.shrunken {
+    display: none;
+}
+
+body > header.mobile {
+    display: grid;
+}
+
+body > header.mobile > div.title {
+    grid-area: title;
+    font-size: 5.5em;
+    margin-top: 10%;
+    margin-left: 3%;
+}
+
+body > header.mobile > div.expand {
+    grid-area: expand;
+    font-size: 5.5em;
+    margin-left: 80%;
+    margin-top: 10%;
+}
+
+body > header.mobile > div.expand > a.expand {
+    text-decoration: none;
+    color: white;
+}
+
+body > header.mobile > div.buttons-container {
+    background-color: #333;
+    height: 150%;
+    width: 100%;
+    z-index: 1;
+    grid-area: expanded;
+    border-top: 1px solid white;
+}
+
+header.mobile > div.buttons-container > nav {
+    display: grid;
+}
+
+header.mobile > div.buttons-container > nav a {
+    color: white;
+    text-decoration: none;
+    font-size: 5em;
+    margin-left: 2%;
+}
+
+body > header.desktop {
+    grid-area: header;
+    display: grid;
+    grid-template-areas: 
+        "title nav"
+        "logo logo";
+    grid-template-columns: 100px 1fr;
+    position: sticky;
+    background-color: white;
+    top: 0;
+    z-index: 200;
+}
+
+div#logo {
+    grid-area: logo;
+    background-image: url("https://www.shutterstock.com/blog/wp-content/uploads/sites/5/2017/08/image13.jpg");
+    height: 100px;
+    border-top: solid aqua 5px;
+}
+
+header.desktop > nav {
+    position: absolute;
+    grid-area: nav;
+    bottom: 99%;
+    height: 20px;
+    left: 40%;
+    display: grid;
+    grid-template-areas: 
+    "a a a";
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 40px 40px 40px;
+}
+
+header.desktop > nav a {
+    margin: 10px;
+    font: 1em sans-serif;
+    padding: 1em;
+    text-decoration: none;
+    color: black;
+    height: 62px;
+    text-align: center;
+}
+
+header.desktop > nav a > span {
+    position: relative;
+    top: 40%;
+}
+
+header.desktop > nav a:hover {
+    background-color: #f6f6f6;
+}
+
+body > main {
+    grid-area: main;
+    margin-top: 20px;
+    margin-left: 10%;
+    margin-right: 10%;
+    border: solid 1px gray;
+    border-radius: 3px;
+    background-color: #f6f6f6;
+}
+
+body > header.desktop > a {
+    grid-area: title;
+    position: relative;
+    left: 25%;
+    text-decoration: none;
+    color: rgb(85, 26, 139);
+    width: 200px;
+}
+
+footer {
+    grid-area: footer;
+    background-color: #333;
+    margin-top: 20px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 12%;
+}
+
+footer > div {
+    margin: 20px;
+}
+
+footer a {
+    text-decoration: none;
+    color: white;
+}
+
+footer > div.license {
+    color: white;
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+}
+
+footer > div.license a {
+    color: darkblue;
+}
+
+@media (min-width: 375px) and (max-width: 1024px) {
+	body {
+        display: grid;
+        grid-template-areas: 
+            "header"
+            "main"
+            "footer";
+        grid-template-rows: 200px;
+        grid-template-columns: 68rem;
+        margin: 0px;
+    }
+
+    body > header.desktop {
+        display: none;
+    }
+
+    body > header.mobile {
+        background-color: #333;
+        display: grid;
+        color: white;
+        grid-template-areas: 
+            "title expand"
+            "expanded expanded";
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 190px 190px;
+        position: fixed;
+        width: 100%;
+    }
+
+    body > main {
+        grid-area: main;
+        margin-top: 20px;
+        margin-left: 0;
+        width: 100%;
+        border: solid 1px gray;
+        border-radius: 3px;
+        background-color: #f6f6f6;
+    }
+    
+    footer {
+        grid-area: footer;
+        background-color: #333;
+        margin-top: 20px;
+        position: sticky;
+        bottom: 0;
+        height: 15rem;
+        width: 100%;
+        font-size: 3rem;
+    }
+}

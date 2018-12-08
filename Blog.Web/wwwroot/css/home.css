@@ -1,0 +1,53 @@
+article > header {
+    font: 2em sans-serif;
+    color: black;
+    margin: 2px;
+}
+
+article > header > a {
+    text-decoration: none;
+    color: rgb(85, 26, 139);
+}
+
+article > div.line {
+    height: 2px;
+    background: #e1e1e1;
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
+article > div.tags {
+    margin-left: 15px;
+    margin-right: 15px;
+    text-align: right;
+}
+
+article > div.tags > a::before {
+    content: "#";
+}
+
+article > div.tags > a:not(:last-child)::after {
+    content: ", ";
+}
+
+article > div.tags > a {
+    text-decoration: none;
+    font: 1em sans-serif;
+    color: rgb(85, 26, 139);
+}
+
+article > p {
+    font: 1em sans-serif;
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
+article {
+    background-color: white;
+    margin: 10px;
+    border: 1px solid gray;
+}
+
+body > main {
+    margin-bottom: 7%;
+}
