@@ -15,10 +15,8 @@ namespace Blog.Web.Controllers
             return View();
         }
 
-        public IActionResult About()
+        public IActionResult Post(int id)
         {
-            ViewData["Message"] = "Your application description page.";
-
             return View();
         }
 
@@ -32,12 +30,6 @@ namespace Blog.Web.Controllers
         public IActionResult Privacy()
         {
             return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }
