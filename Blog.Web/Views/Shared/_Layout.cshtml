@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Blog.Web</title>
     <link href="~/css/style.css" rel="stylesheet" />
-    @RenderSection("styles", false);
+    @RenderSection("styles", false)
 </head>
 <body>
     <header class="desktop">
         <nav>
-            <a href="#">
+            <a asp-controller="Home" asp-action="Index">
                 <span>Home</span>
             </a>
             <a href="#">
@@ -25,30 +25,28 @@
         </a>
         <div id="logo"></div>
     </header>
-    <header class="mobile">
-        <div class="title">
-            <span>Stoyan's Block</span>
-        </div>
-        <div class="expand">
-            <a href="#" class="expand"><i class="fa fa-bars"></i></a>
-        </div>
-        <div class="buttons-container shrunken">
-            <nav>
-                <a href="#">
-                    <span>Home</span>
-                </a>
-                <a href="#">
-                    <span>Most popular</span>
-                </a>
-                <a href="#">
-                    <span>My posts</span>
-                </a>
-            </nav>
-        </div>
-    </header>
-<main>
-    @RenderBody()
-</main>
+<header class="mobile">
+    <div class="title">
+        <span>Stoyan's Block</span>
+    </div>
+    <div class="expand">
+        <a href="#" class="expand"><i class="fa fa-bars"></i></a>
+    </div>
+    <div class="buttons-container shrunken">
+        <nav>
+            <a href="#">
+                <span>Home</span>
+            </a>
+            <a href="#">
+                <span>Most popular</span>
+            </a>
+            <a href="#">
+                <span>My posts</span>
+            </a>
+        </nav>
+    </div>
+</header>
+@RenderBody()
 <footer>
     <div class="email">
         <a href="#">Email</a>
