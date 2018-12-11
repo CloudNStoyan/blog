@@ -15,28 +15,6 @@ namespace Blog.Web.Controllers
             return View();
         }
 
-        public IActionResult Post(int id)
-        {
-            var posts = new[] {
-                new PostModel
-            {
-                Title = "My first Post",
-                Content = "This is the contnet \n\n CoNtEnT",
-                Tags = new [] {"Tags", "And", "Another", "One"}
-            },
-                new PostModel
-            {
-                Title = "My first Post",
-                Content = "This is the contnet \n\n CoNtEnT",
-                Tags = new [] {"Tags", "And", "Another", "One"}
-            }
-
-            };
-
-
-            return View(posts[0]);
-        }
-
         public IActionResult Contact()
         {
             ViewData["Message"] = "Your contact page.";
