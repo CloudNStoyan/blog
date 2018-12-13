@@ -4,11 +4,18 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Blog.Web</title>
-    <link href="~/css/style.css" rel="stylesheet" />
+    <link href="~/css/newstyle.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
     @RenderSection("styles", false)
 </head>
 <body>
-    <header class="desktop">
+    <header class="navigation">
+        <a asp-controller="Home" asp-action="Index" class="title">
+            <h1>Stoyan's Blog</h1>
+            <a href="#" class="btn">
+                <i class="fa fa-bars"></i>
+            </a>
+        </a>
         <nav>
             <a asp-controller="Home" asp-action="Index">
                 <span>Home</span>
@@ -20,41 +27,18 @@
                 <span>My posts</span>
             </a>
         </nav>
-        <a asp-controller="Home" asp-action="Index">
-            <h1>Stoyan's Blog</h1>
-        </a>
-        <div id="logo"></div>
+        <div class="logo"></div>
     </header>
-<header class="mobile">
-    <div class="title">
-        <span>Stoyan's Block</span>
-    </div>
-    <div class="expand">
-        <a href="#" class="expand"><i class="fa fa-bars"></i></a>
-    </div>
-    <div class="buttons-container shrunken">
-        <nav>
-            <a href="#">
-                <span>Home</span>
-            </a>
-            <a href="#">
-                <span>Most popular</span>
-            </a>
-            <a href="#">
-                <span>My posts</span>
-            </a>
-        </nav>
-    </div>
-</header>
-@RenderBody()
-<footer>
-    <div class="email">
-        <a href="#">Email</a>
-    </div>
-    <div class="about">
-        <a href="#">About us</a>
-    </div>
-    <div class="license">This is personal blog made by <a href="#">Me</a></div>
-</footer>
+    @RenderBody()
+    <script src="~/js/script.js"></script>
+    <footer>
+        <div class="email">
+            <a href="#">Email</a>
+        </div>
+        <div class="about">
+            <a href="#">About</a>
+        </div>
+        <div class="license">This is personal blog made by <a href="#">Me</a></div>
+    </footer>
 </body>
 </html>

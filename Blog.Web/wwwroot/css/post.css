@@ -4,18 +4,6 @@ main > header {
     text-align: center;
 }
 
-body {
-    display: grid;
-    grid-template-areas: 
-        "header"
-        "main"
-        "comments"
-        "footer";
-    grid-template-rows: 200px;
-    grid-template-columns: 1fr;
-    margin: 0px;
-}
-
 main > p {
     margin-left: 10px;
     margin-right: 10px;

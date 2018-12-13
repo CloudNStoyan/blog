@@ -48,6 +48,6 @@ article {
     border: 1px solid gray;
 }
 
-body > main {
-    margin-bottom: 7%;
+main {
+    background-color: #f6f6f6;
 }

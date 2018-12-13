@@ -5,7 +5,9 @@
 @section styles {
     <link href="~/css/home.css" rel="stylesheet" />
 }
-    <main>
+<main>
+    @for (int i = 0; i < 8; i++)
+    {
         <article>
             <header>
                 <a asp-controller="Data" asp-action="Post" asp-route-id="1">This is article 1</a>
@@ -19,4 +21,5 @@
                 <a href="#">animal</a>
             </div>
         </article>
-    </main>
+    }
+</main>
