@@ -89,3 +89,16 @@ footer a {
     text-decoration: none;
     color: white;
 }
+
+
+
+
+/* Small devices (tablets, 768px and up) */
+@media (min-width: 550px) and (max-width: 849px) {
+
+}
+
+/* Large devices (large desktops, 1200px and up) */
+@media (min-width: 850px) { 
+
+}
