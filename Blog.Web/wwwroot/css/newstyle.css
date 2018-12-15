@@ -7,98 +7,114 @@ header.navigation > a > h1 {
     margin: 0;
 }
 
-header.navigation {
-    background-color: #333;
-    font-size: 1em;
-    display: flex;
-    flex-flow: row wrap;
-    padding: 4% 0;
-    position: sticky;
-    top: 0;
-}
+@media (max-width: 849px) {
+    header.navigation {
+        background-color: #333;
+        font-size: 1em;
+        display: flex;
+        flex-flow: row wrap;
+        padding: 4% 0;
+        position: sticky;
+        top: 0;
+    }
 
-header.navigation > div.logo {
-    display: none;
-}
+    header.navigation > div.logo {
+        display: none;
+    }
 
-header.navigation > a.title {
-    margin-left: 4%;
-    display: flex;
-    flex: 0 0 76%;
-    order: 0;
-}
-header.navigation > a.btn {
-    flex: 0 0 16%;
-    font-size: 2em;
-    order: 0;
-    text-align: right;
-    margin-right: 4%;
-} 
+    header.navigation > a.title {
+        margin-left: 4%;
+        display: flex;
+        flex: 0 0 76%;
+        order: 0;
+    }
+    header.navigation > a.btn {
+        flex: 0 0 16%;
+        font-size: 2em;
+        order: 0;
+        text-align: right;
+        margin-right: 4%;
+    } 
 
-header.navigation > nav {
-    order: 1;
-    flex: 0 0 92%;
-    margin: 0 4%;
-    flex-flow: column wrap;
-    font-size: 1.6em;
-    display: none;
-}
+    header.navigation > nav {
+        order: 1;
+        flex: 0 0 92%;
+        margin: 0 4%;
+        flex-flow: column wrap;
+        font-size: 1.6em;
+        display: none;
+    }
 
-header.navigation a {
-    text-decoration: none;
-    color: white;
-}
+    header.navigation a {
+        text-decoration: none;
+        color: white;
+    }
 
-footer {
-    background-color: #333;
-    position: sticky;
-    bottom: 0;
-    padding: 2% 4% 2% 4%;
-    display: flex;
-    flex-flow: row wrap;
-    font-size: 1em;
-}
+    footer {
+        background-color: #333;
+        position: sticky;
+        bottom: 0;
+        padding: 2% 4% 2% 4%;
+        display: flex;
+        flex-flow: row wrap;
+        font-size: 1em;
+    }
 
-footer > div.email {
-    order: 0;
-    flex: 0 0 50%;
-    border-bottom: 1px solid white;
-}
+    footer > div.email {
+        order: 0;
+        flex: 0 0 50%;
+        border-bottom: 1px solid white;
+    }
 
-footer > div.about {
-    order: 0;
-    flex: 0 0 50%;
-    border-bottom: 1px solid white;
-    text-align: right;
-}
+    footer > div.about {
+        order: 0;
+        flex: 0 0 50%;
+        border-bottom: 1px solid white;
+        text-align: right;
+    }
 
-footer > div.license {
-    color: white;
-    order: 1;
-    flex: 0 0 88%;
-    font-size: 0.8em;
-    text-align: center;
-    margin-top: 2%;
-}
+    footer > div.license {
+        color: white;
+        order: 1;
+        flex: 0 0 88%;
+        font-size: 0.8em;
+        text-align: center;
+        margin-top: 2%;
+    }
 
-footer > div.license > a {
-    border-bottom: 1px solid black;
-}
+    footer > div.license > a {
+        border-bottom: 1px solid black;
+    }
 
-footer a {
-    text-decoration: none;
-    color: white;
-}
-
-
-
-
-/* Small devices (tablets, 768px and up) */
-@media (min-width: 550px) and (max-width: 849px) {
+    footer a {
+        text-decoration: none;
+        color: white;
+    }
 
 }
 
 /* Large devices (large desktops, 1200px and up) */
 @media (min-width: 850px) { 
+    header.navigation > a.btn > i {
+        display: none;
+    }
 
+    header.navigation > a.title {
+        text-decoration: none;
+        color: rgb(85, 26, 139);
+        margin: 25px 0;
+    }
+
+    header.navigation > div.logo {
+        background-image: url(../assets/images/logo.jpg);
+        height: 100px;
+        display: block;
+        border-top: 5px solid aqua;
+        flex: 0 0 100%;
+    }
+
+    header.navigation {
+        display: flex;
+        flex-flow: row wrap;
+    }
 }
