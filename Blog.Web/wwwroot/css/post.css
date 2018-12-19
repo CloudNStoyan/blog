@@ -10,7 +10,7 @@ main > p {
 }
 
 main > div.tags {
-    bottom: 0px;
+    bottom: 0;
     position: relative;
     margin-left: 10px;
 }
