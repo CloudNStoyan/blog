@@ -89,19 +89,4 @@ div.comment div.line {
 }
 
 @media (min-width: 375px) and (max-width: 1024px) {
-    body > main {
-        margin-top: 20px;
-        margin: 0;
-        width: 100%;
-        grid-area: main;
-        border: solid 1px gray;
-        border-radius: 3px;
-        background-color: #f6f6f6;
-    }
-
-    body > div.comment-section {
-        grid-area: comments;
-        margin: 0;
-
-    }
 }
