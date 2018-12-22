@@ -1,3 +1,11 @@
+body > main {
+    border: solid 1px gray;
+    border-radius: 3px;
+    background-color: #f6f6f6;
+    margin-left: 20%;
+    margin-right: 20%;
+}
+
 main > header {
     font-size: 2em;
     background-color: white;
@@ -29,9 +37,8 @@ main > div.tags a:not(:first-child) {
 }
 
 div.comment-section {
-    grid-area: comments;
-    margin-left: 370px;
-    margin-right: 370px;
+    margin-left: 20%;
+    margin-right: 20%;
     margin-top: 20px;
 }
 
@@ -88,5 +95,22 @@ div.comment div.line {
     height: 1px;
 }
 
-@media (min-width: 375px) and (max-width: 1024px) {
+@media (max-width: 849px) {
+    body > main {
+        margin-top: 20px;
+        margin: 0;
+        border: solid 1px gray;
+        border-radius: 3px;
+        background-color: #f6f6f6;
+    }
+
+    body > div.comment-section {
+        margin: 0;
+    }
+
+    div.comment-section > div.create-comment-container textarea {
+        min-width: 150px;
+        min-height: 75px;
+        border: 1px solid grey;
+    }
 }

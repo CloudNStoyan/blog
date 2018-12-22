@@ -20,27 +20,40 @@
 </main>
 <div class="comment-section">
     <div class="create-comment-container">
-        <textarea></textarea>
+        <textarea placeholder="Write your comment here.."></textarea>
         <button type="submit">Create</button>
     </div>
     <div class="comments-container">
+        @if (Model.Comments != null)
+        {
+            foreach (var comment in Model.Comments)
+             {
+                 <div class="comment">
+                     <header>
+                         <div class="avatar">
+                             <img src="@comment.User.AvatarUrl"/>
+                         </div>
+                         <span class="profile-name">@comment.User.Name</span>
+                         <span class="date">@comment.DateCreated</span>
+                     </header>
+                     <div class="line"></div>
+                     <p class="content">
+                         @comment.Content
+                     </p>
+                 </div>
+            }
+        }
+        else
+        {
+            <div>
+                Dwarf is the best out there! :)
+            </div>
+        }
+
         <div class="comment">
             <header>
                 <div class="avatar">
-                    <img src="https://www.hearthstonetopdecks.com/wp-content/uploads/2017/09/avatar-maiev-150x150.jpg" />
-                </div>
-                <span class="profile-name">Foo</span>
-                <span class="date">September 14, 2018 at 3:33 am</span>
-            </header>
-            <div class="line"></div>
-            <p class="content">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam nec leo dapibus, scelerisque erat ut, ornare sapien. Fusce sed dignissim turpis. Etiam felis erat, iaculis gravida ex eu, dapibus suscipit elit. Nam pulvinar placerat scelerisque. In sodales tristique libero eget finibus. Sed laoreet semper tellus, in efficitur diam suscipit non. Duis et eleifend eros, sed imperdiet augue. In pretium ante ultricies sapien faucibus convallis. Pellentesque sed cursus nibh, quis ullamcorper tortor. Pellentesque est mi, ultrices dignissim imperdiet non, sollicitudin ac arcu. Nullam ultrices nunc nec commodo elementum.
-            </p>
-        </div>
-        <div class="comment">
-            <header>
-                <div class="avatar">
-                    <img src="https://www.hearthstonetopdecks.com/wp-content/uploads/2017/09/avatar-maiev-150x150.jpg" />
+                    <img src="https://www.hearthstonetopdecks.com/wp-content/uploads/2017/09/avatar-maiev-150x150.jpg"/>
                 </div>
                 <span class="profile-name">Foo</span>
                 <span class="date">September 14, 2018 at 3:33 am</span>
