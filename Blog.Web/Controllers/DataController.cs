@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Blog.Web.DAL;
 using Blog.Web.Models;
 using Microsoft.AspNetCore.Mvc;
+using Npgsql;
 
 namespace Blog.Web.Controllers
 {
@@ -32,6 +34,30 @@ namespace Blog.Web.Controllers
 
             };
 
+            PostPoco rawPost;
+            TagPoco[] rawTags;
+
+            using (var conn = new NpgsqlConnection(Service.ConnectionString))
+            {
+                var database = new Database(conn);
+                var service = new Service(database);
+                rawPost = service.GetPost(id);
+                rawTags = service.GetTags(id);
+            }
+
+            var tags = new List<string>();
+
+            foreach (var tagPoco in rawTags)
+            {
+                tags.Add(tagPoco.Name);
+            }
+
+            var post = new PostModel()
+            {
+                Title = rawPost.Title,
+                Content = rawPost.Content,
+                Tags = tags.ToArray()
+            };
 
             return View(posts[id]);
         }
