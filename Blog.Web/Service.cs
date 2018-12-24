@@ -26,17 +26,23 @@ namespace Blog.Web
 
         public TagPoco[] GetTags(int id)
         {
-            var poststags = this.Database.Query<PostsTagsPoco>("SELECT * FROM posts_tags WHERE post_id=@i;", new NpgsqlParameter("i", id));
-            var tags = new List<TagPoco>();
-
-            this.Database.Query<>()
+            var tags = this.Database.Query<TagPoco>(
+                "SELECT t.tag_id, t.name FROM (SELECT * FROM posts_tags INNER JOIN posts ON posts_tags.post_id = @i) AS q INNER JOIN tags AS t ON q.tag_id = t.tag_id;",
+                new NpgsqlParameter("i", id));
 
             return tags.ToArray();
         }
 
         public CommentPoco[] GetComments(int id)
         {
-            var comments = this.Database.Query<CommentPoco>("SELECT * FROM ")
+            var comments = this.Database.Query<CommentPoco>("SELECT * FROM comments WHERE post_id=@i", new NpgsqlParameter("i", id));
+            return comments.ToArray();
+        }
+
+        public UserPoco GetUser(int id)
+        {
+            var user = this.Database.QueryOne<UserPoco>("SELECT * FROM users WHERE user_id=@i", new NpgsqlParameter("i", id));
+            return user;
         }
     }
 }

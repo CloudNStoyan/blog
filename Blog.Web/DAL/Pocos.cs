@@ -12,11 +12,14 @@ namespace Blog.Web.DAL
         [Column(Name = "user_id", IsPrimaryKey = true)]
         public int UserId { get; set; }
 
-        [Column(Name = "name")]
+        [Column(Name = "username")]
         public string Name { get; set; }
 
         [Column(Name = "password")]
         public string Password { get; set; }
+
+        [Column(Name = "avatar_url")]
+        public string AvatarUrl { get; set; }
     }
 
     [Table(Name = "posts", Schema = "public")]
@@ -51,9 +54,6 @@ namespace Blog.Web.DAL
         [Column(Name = "comment_id", IsPrimaryKey = true)]
         public int CommentId { get; set; }
 
-        [Column(Name = "author_name")]
-        public string AuthorName { get; set; }
-
         [Column(Name = "content")]
         public string Content { get; set; }
 
@@ -62,6 +62,9 @@ namespace Blog.Web.DAL
 
         [Column(Name = "user_id")]
         public int UserId { get; set; }
+
+        [Column(Name = "created_on")]
+        public string CreatedOn { get; set; }
     }
 
     [Table(Name = "posts_tags", Schema = "public")]

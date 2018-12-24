@@ -36,6 +36,7 @@ namespace Blog.Web.Controllers
 
             PostPoco rawPost;
             TagPoco[] rawTags;
+            CommentPoco[] rawComments;
 
             using (var conn = new NpgsqlConnection(Service.ConnectionString))
             {
@@ -43,9 +44,38 @@ namespace Blog.Web.Controllers
                 var service = new Service(database);
                 rawPost = service.GetPost(id);
                 rawTags = service.GetTags(id);
+                rawComments = service.GetComments(id);
             }
 
             var tags = new List<string>();
+
+            var comments = new List<Comment>();
+
+            foreach (var rawComment in rawComments)
+            {
+                var comment = new Comment
+                {
+                    Content = rawComment.Content,
+                    DateCreated = rawComment.CreatedOn
+                };
+                var user = new User();
+                UserPoco rawUser;
+
+                using (var conn = new NpgsqlConnection(Service.ConnectionString))
+                {
+                    var database = new Database(conn);
+                    var service = new Service(database);
+                    rawUser = service.GetUser(rawComment.UserId);
+                    Console.WriteLine($"\n {rawUser.Name} {rawUser.AvatarUrl} \n");
+                }
+
+                user.Name = rawUser.Name;
+                user.AvatarUrl = rawUser.AvatarUrl;
+                comment.User = user;
+
+                comments.Add(comment);
+            }
+            
 
             foreach (var tagPoco in rawTags)
             {
@@ -56,10 +86,11 @@ namespace Blog.Web.Controllers
             {
                 Title = rawPost.Title,
                 Content = rawPost.Content,
-                Tags = tags.ToArray()
+                Tags = tags.ToArray(),
+                Comments = comments.ToArray()
             };
 
-            return View(posts[id]);
+            return View(post);
         }
     }
 }
