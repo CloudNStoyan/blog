@@ -1,4 +1,6 @@
-﻿@{
+﻿@model LightPostModel[]
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
@@ -6,19 +8,19 @@
     <link href="~/css/home.css" rel="stylesheet" />
 }
 <main>
-    @for (int i = 0; i < 8; i++)
+    @foreach (var post in Model)
     {
         <article>
             <header>
-                <a asp-controller="Data" asp-action="Post" asp-route-id="1">This is article 1</a>
+                <a asp-controller="Data" asp-action="Post" asp-route-id="@post.PostId">@post.Title</a>
             </header>
             <div class="line"></div>
-            <p>Some text</p>
+            <p>@post.Content.Remove(post.Content.Length - 1)...</p>
             <div class="tags">
-                <a href="#">cat</a>
-                <a href="#">dog</a>
-                <a href="#">frog</a>
-                <a href="#">animal</a>
+                @foreach (var tag in post.Tags)
+                {
+                    <a href="#">@tag</a>
+                }
             </div>
         </article>
     }

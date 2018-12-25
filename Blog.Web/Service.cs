@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Blog.Web.DAL;
+using Blog.Web.Models;
 using Npgsql;
 
 namespace Blog.Web
 {
     public class Service
     {
-        public const string ConnectionString = @"";
+        public const string ConnectionString = @"Server=vm13.lan;Port=4401;Database=blog;Uid=blog;Pwd=test123;";
         private Database Database { get; }
 
         public Service(Database database)
@@ -35,14 +36,37 @@ namespace Blog.Web
 
         public CommentPoco[] GetComments(int id)
         {
-            var comments = this.Database.Query<CommentPoco>("SELECT * FROM comments WHERE post_id=@i", new NpgsqlParameter("i", id));
+            var comments = this.Database.Query<CommentPoco>("SELECT * FROM comments WHERE post_id=@i;", new NpgsqlParameter("i", id));
             return comments.ToArray();
         }
 
         public UserPoco GetUser(int id)
         {
-            var user = this.Database.QueryOne<UserPoco>("SELECT * FROM users WHERE user_id=@i", new NpgsqlParameter("i", id));
+            var user = this.Database.QueryOne<UserPoco>("SELECT * FROM users WHERE user_id=@i;", new NpgsqlParameter("i", id));
             return user;
+        }
+
+        public List<LightPostModel> GetLatest(int count)
+        {
+            var posts = this.Database.Query<PostPoco>("SELECT * FROM posts ORDER BY post_id LIMIT @l;", new NpgsqlParameter("l", count));
+            var finishedModels = new List<LightPostModel>();
+            foreach (var postPoco in posts)
+            {
+                var lightPostModel = new LightPostModel
+                {
+                    Content = string.Join(" ", postPoco.Content.Split(' ').Take(8)),
+                    PostId = postPoco.PostId,
+                    Title = postPoco.Title
+                };
+
+                var tags = this.GetTags(postPoco.PostId);
+
+                lightPostModel.Tags = tags.Select(tagPoco => tagPoco.Name).ToArray();
+
+                finishedModels.Add(lightPostModel);
+            }
+
+            return finishedModels;
         }
     }
 }
