@@ -16,7 +16,7 @@ footer {
     flex-flow: row wrap;
     font-size: 1em;
     margin-top: 2%;
-    width: 100%;
+    width: 92%;
 }
 
 footer > div.email {
