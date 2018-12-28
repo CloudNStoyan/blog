@@ -51,7 +51,7 @@ footer a {
 }
 
 
-@media (max-width: 849px) {
+@media (max-width: 1366px) {
     header.navigation {
         background-color: #333;
         font-size: 1em;
@@ -97,7 +97,7 @@ footer a {
 }
 
 /* Large devices (large desktops, 1200px and up) */
-@media (min-width: 850px) { 
+@media (min-width: 1367px) { 
     header.navigation > a.btn > i {
         display: none;
     }
