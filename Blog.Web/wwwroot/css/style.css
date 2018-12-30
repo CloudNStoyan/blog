@@ -51,7 +51,7 @@ footer a {
 }
 
 
-@media (max-width: 1366px) {
+@media (max-width: 1366px) and (min-width: 320px){
     header.navigation {
         background-color: #333;
         font-size: 1em;
