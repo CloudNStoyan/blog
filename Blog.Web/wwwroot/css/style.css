@@ -83,15 +83,14 @@ footer a {
 
     header.navigation > nav {
         order: 1;
-        margin-top: 15%;
         flex: 0 0 92%;
         flex-flow: column wrap;
         font-size: 1.6em;
         display: none;
-        position: absolute;
         background-color: #333;
         width: 100%;
         z-index: 100;
+        padding-left: 4%;
     }
 
     header.navigation a {
