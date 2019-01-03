@@ -1,8 +1,6 @@
 body, html {
     margin: 0;
     height: 100%;
-    overflow: scroll;
-    -webkit-overflow-scrolling: touch;
 }
 
 header.navigation > a > h1 {
@@ -92,7 +90,9 @@ footer a {
         background-color: #333;
         width: 100%;
         z-index: 100;
+        margin-right: 15%;
         padding-left: 4%;
+        position: absolute;
     }
 
     header.navigation a {
