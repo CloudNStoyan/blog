@@ -54,13 +54,28 @@ footer a {
 @media (max-width: 1366px) and (min-width: 320px){
     header.navigation {
         background-color: #333;
-        font-size: 1em;
+        font-size: 16px;
         display: flex;
         flex-flow: row wrap;
-        padding: 4% 0;
+        padding: 2.8px 0;
         position: sticky;
         top: 0;
-        margin-bottom: 2%;
+        margin-bottom: 26px;
+        height: 70px;
+    }
+
+    div.popup {
+        height: 100%;
+        width: 100%;
+        position: fixed;
+        background-color: transparent;
+        z-index: 100;
+        margin-top: 64px;
+
+    }
+
+    header.navigation > a > h1  , i {
+        margin-top: 16px;
     }
 
     header.navigation > div.logo {
@@ -72,10 +87,11 @@ footer a {
         display: flex;
         flex: 0 0 76%;
         order: 0;
+        text-align: center;
     }
     header.navigation > a.btn {
         flex: 0 0 16%;
-        font-size: 2em;
+        font-size: 32px;
         order: 0;
         text-align: right;
         margin-right: 4%;
@@ -83,15 +99,13 @@ footer a {
 
     header.navigation > nav {
         order: 1;
-        flex: 0 0 92%;
         flex-flow: column wrap;
         font-size: 1.6em;
         display: none;
         background-color: #333;
         width: 100%;
-        margin-right: 15%;
         padding-left: 4%;
-	margin-top: 10%;
+	    margin-top: 20px;
     }
 
     header.navigation a {
@@ -130,6 +144,10 @@ footer a {
         top: 0;
         background-color: white;
         z-index: 1;
+    }
+
+    div.popup {
+        display: none;
     }
 
     main {
