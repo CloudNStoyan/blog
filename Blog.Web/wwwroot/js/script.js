@@ -15,6 +15,6 @@ button.addEventListener('click', function() {
 
 popup.addEventListener('click', function() {
     let list = document.querySelector('header.navigation > nav');
-    list.style = "";
+    list.removeAttribute('style');
     popup.style = "display: none;";
 });
