@@ -161,6 +161,7 @@ footer a {
 
     main {
         margin: 2% 10% 130px 10%;
+        max-width: 1350px;
     }
 
     header.navigation > nav {
