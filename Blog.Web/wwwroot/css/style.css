@@ -24,7 +24,7 @@ footer > div.email {
     flex: 0 0 46%;
     border-bottom: 1px solid white;
     margin-left: 4%;
-    margin-top: 2%;
+    margin-top: 15px;
 }
 
 footer > div.about {
@@ -33,7 +33,7 @@ footer > div.about {
     border-bottom: 1px solid white;
     text-align: right;
     margin-right: 4%;
-    margin-top: 2%;
+    margin-top: 15px;
 }
 
 footer > div.license {
@@ -42,7 +42,7 @@ footer > div.license {
     flex: 0 0 100%;
     font-size: 0.8em;
     text-align: center;
-    margin-top: 30px;
+    margin-top: 15px;
 }
 
 footer > div.license > a {
