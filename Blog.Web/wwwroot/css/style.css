@@ -36,6 +36,7 @@ footer > div.about {
     margin-top: 15px;
 }
 
+
 footer > div.license {
     color: white;
     order: 1;
@@ -45,9 +46,6 @@ footer > div.license {
     margin-top: 15px;
 }
 
-footer > div.license > a {
-    border-bottom: 1px solid black;
-}
 
 footer a {
     text-decoration: none;
