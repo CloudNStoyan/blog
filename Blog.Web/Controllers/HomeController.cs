@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Blog.Web.DAL;
 using Microsoft.AspNetCore.Mvc;
 using Blog.Web.Models;
+using Microsoft.AspNetCore.Http;
 using Npgsql;
 
 namespace Blog.Web.Controllers
@@ -23,7 +25,24 @@ namespace Blog.Web.Controllers
                 posts = service.GetLatest(10);
             }
 
+            var option = new CookieOptions {Expires = DateTime.Now.AddMinutes(10)};
+
+            this.Response.Cookies.Append("Dwarf", "dwarfent", option);
+
+            Console.WriteLine(this.Request.Cookies["username"]);
+
             return View(posts.ToArray());
         }
+
+        public IActionResult LoginPage()
+        {
+            return this.View();
+        }
+
+        public IActionResult Login()
+        {
+            return Redirect("Index");
+        }
+
     }
 }

@@ -32,6 +32,7 @@ namespace Blog.Web
 
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -47,7 +48,7 @@ namespace Blog.Web
             }
 
             app.UseStaticFiles();
-            app.UseCookiePolicy();
+
 
             app.UseMvc(routes =>
             {
