@@ -68,5 +68,20 @@ namespace Blog.Web
 
             return finishedModels;
         }
+
+        public LoginAccountModel ConfirmAccount(LoginAccountModel loginModel)
+        {
+            var parametars = new[]
+            {
+                new NpgsqlParameter("u", loginModel.Username), new NpgsqlParameter("p", loginModel.Password)
+
+            };
+
+            var account = this.Database.QueryOne<UserPoco>("SELECT * FROM users WHERE username=@u AND password=@p", parametars);
+
+            return account != null ? loginModel : null;
+
+        }
+
     }
 }

@@ -25,11 +25,11 @@ namespace Blog.Web.Controllers
                 posts = service.GetLatest(10);
             }
 
-            var option = new CookieOptions {Expires = DateTime.Now.AddMinutes(10)};
+           //var option = new CookieOptions {Expires = DateTime.Now.AddMinutes(10)};
 
-            this.Response.Cookies.Append("Dwarf", "dwarfent", option);
+           //this.Response.Cookies.Append("Dwarf", "dwarfent", option);
 
-            Console.WriteLine(this.Request.Cookies["username"]);
+           // Console.WriteLine(this.Request.Cookies["username"]);
 
             return View(posts.ToArray());
         }
@@ -39,8 +39,12 @@ namespace Blog.Web.Controllers
             return this.View();
         }
 
-        public IActionResult Login()
+        public IActionResult Login(AccountModel account)
         {
+            Console.WriteLine("\r\n\r\n\r\n\r\n");
+            Console.WriteLine(account.Username);
+            Console.WriteLine(account.Password);
+            Console.WriteLine("\r\n\r\n\r\n\r\n");
             return Redirect("Index");
         }
 
