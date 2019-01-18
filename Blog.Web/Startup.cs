@@ -49,6 +49,7 @@ namespace Blog.Web
 
             app.UseStaticFiles();
 
+            app.UseCookieMiddleware();   
 
             app.UseMvc(routes =>
             {

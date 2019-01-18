@@ -5,9 +5,17 @@
 <section></section>
 
 <main>
-    <form asp-controller="Home" asp-action="Login" method="post">
-        <input type="text" name="username" />
-        <input type="password" name="password" />
-        <input type="submit" />
-    </form>
+    @if ((bool)ViewData["isLogged"]) {
+        <div>
+            <h1>You are logged!</h1>
+        </div>
+    }
+    else
+    {
+        <form asp-controller="Home" asp-action="Login" method="post">
+            <input type="text" name="username"/>
+            <input type="password" name="password"/>
+            <input type="submit"/>
+        </form>
+    }
 </main>

@@ -36,15 +36,19 @@ namespace Blog.Web.Controllers
 
         public IActionResult LoginPage()
         {
+            this.ViewData.Add("isLogged", this.HttpContext.Items["isLogged"]);
             return this.View();
         }
 
-        public IActionResult Login(AccountModel account)
+        public IActionResult Login(LoginAccountModel account)
         {
-            Console.WriteLine("\r\n\r\n\r\n\r\n");
-            Console.WriteLine(account.Username);
-            Console.WriteLine(account.Password);
-            Console.WriteLine("\r\n\r\n\r\n\r\n");
+            var cookieService = new CookieService(this.HttpContext);
+
+            var option = new CookieOptions { Expires = DateTime.Now.AddMinutes(10) };
+
+            cookieService.SetCookie("Username", account.Username, option);
+            cookieService.SetCookie("Password", account.Password, option);
+
             return Redirect("Index");
         }
 
