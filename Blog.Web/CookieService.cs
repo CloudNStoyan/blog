@@ -24,5 +24,10 @@ namespace Blog.Web
         {
             return this.HttpContext.Request.Cookies[key];
         }
+
+        public void DeleteCookie(string key)
+        {
+            this.HttpContext.Response.Cookies.Delete(key);
+        }
     }
 }

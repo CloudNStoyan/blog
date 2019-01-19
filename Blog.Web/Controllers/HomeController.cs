@@ -49,7 +49,15 @@ namespace Blog.Web.Controllers
             cookieService.SetCookie("Username", account.Username, option);
             cookieService.SetCookie("Password", account.Password, option);
 
-            return Redirect("Index");
+            return this.Redirect("Index");
+        }
+
+        public IActionResult LogOut()
+        {
+            var cookieService = new CookieService(this.HttpContext);
+            cookieService.DeleteCookie("Username");
+            cookieService.DeleteCookie("Password");
+            return this.Redirect("LoginPage");
         }
 
     }

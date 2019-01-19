@@ -8,6 +8,9 @@
     @if ((bool)ViewData["isLogged"]) {
         <div>
             <h1>You are logged!</h1>
+            <form asp-controller="Home" asp-action="LogOut" method="post">
+                <input type="submit" name="button" value="Log out!" />
+            </form>
         </div>
     }
     else
@@ -15,7 +18,7 @@
         <form asp-controller="Home" asp-action="Login" method="post">
             <input type="text" name="username"/>
             <input type="password" name="password"/>
-            <input type="submit"/>
+            <input type="submit" value="Log in!" />
         </form>
     }
 </main>
