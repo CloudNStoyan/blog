@@ -1,4 +1,6 @@
-﻿@{
+﻿@model LoginAccountModel
+
+@{
     ViewData["Title"] = "Login";
 }
 
@@ -7,7 +9,7 @@
 <main>
     @if ((bool)ViewData["isLogged"]) {
         <div>
-            <h1>You are logged!</h1>
+            <h1>You are already logged @Model.Username!</h1>
             <form asp-controller="Home" asp-action="LogOut" method="post">
                 <input type="submit" name="button" value="Log out!" />
             </form>

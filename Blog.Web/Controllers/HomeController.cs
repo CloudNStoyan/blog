@@ -37,7 +37,7 @@ namespace Blog.Web.Controllers
         public IActionResult LoginPage()
         {
             this.ViewData.Add("isLogged", this.HttpContext.Items["isLogged"]);
-            return this.View();
+            return this.View((LoginAccountModel)this.ViewData["account"]);
         }
 
         public IActionResult Login(LoginAccountModel account)
