@@ -10,6 +10,9 @@
     @if ((bool)ViewData["isLogged"]) {
         <div>
             <h1>You are already logged @Model.Username!</h1>
+            <div class="avatar">
+                <img src="@Model.Avatar" />
+            </div>
             <form asp-controller="Home" asp-action="LogOut" method="post">
                 <input type="submit" name="button" value="Log out!" />
             </form>
