@@ -69,7 +69,7 @@ namespace Blog.Web
             return finishedModels;
         }
 
-        public LoginAccountModel ConfirmAccount(LoginAccountModel loginModel)
+        public UserPoco ConfirmAccount(LoginAccountModel loginModel)
         {
             var parametars = new[]
             {
@@ -79,7 +79,7 @@ namespace Blog.Web
 
             var account = this.Database.QueryOne<UserPoco>("SELECT * FROM users WHERE username=@u AND password=@p", parametars);
 
-            return account != null ? loginModel : null;
+            return account;
 
         }
 

@@ -39,10 +39,19 @@ namespace Blog.Web
                     var service = new Service(database);
                     var confirm = service.ConfirmAccount(loginAccountModel);
 
-		    loginAccountModel.Avatar = confirm.AvatarUrl;
+                    Console.WriteLine(loginAccountModel.Username);
 
-                    context.Items.Add("isLogged", confirm != null);
-		    context.Items.Add("account", loginAccountModel);
+                    if (confirm != null)
+                    {
+                        loginAccountModel.Avatar = confirm.AvatarUrl;
+                        loginAccountModel.Username = confirm.Name;
+                        context.Items.Add("isLogged", true);
+                        context.Items.Add("account", loginAccountModel);
+                    }
+                    else
+                    {
+                        context.Items.Add("isLogged", false);
+                    }
                 }
             }
             else
