@@ -44,7 +44,6 @@ namespace Blog.Web
                     if (confirm != null)
                     {
                         loginAccountModel.Avatar = confirm.AvatarUrl;
-                        loginAccountModel.Username = confirm.Name;
                         context.Items.Add("isLogged", true);
                         context.Items.Add("account", loginAccountModel);
                     }
