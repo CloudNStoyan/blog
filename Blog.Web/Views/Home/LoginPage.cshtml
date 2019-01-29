@@ -4,7 +4,9 @@
     ViewData["Title"] = "Login";
 }
 
-<section></section>
+@section styles {
+    <link href="~/css/login.css" rel="stylesheet" />
+}
 
 <main>
     @if ((bool)ViewData["isLogged"]) {
