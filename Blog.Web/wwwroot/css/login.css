@@ -1,6 +1,6 @@
 input[type=submit] {
 	background-color: white;
-	border: 1px solid purple;
+	border: 1px solid blue;
 }
 
 input[type=submit]:hover {
