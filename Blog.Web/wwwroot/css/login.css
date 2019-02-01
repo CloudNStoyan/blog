@@ -7,3 +7,7 @@ input[type=submit]:hover {
 	background-color: grey;	
 	color: white;
 }
+
+.avatar {
+	border: 1px solid black;
+}
