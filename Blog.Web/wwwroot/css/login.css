@@ -9,5 +9,7 @@ input[type=submit]:hover {
 }
 
 .avatar {
-	border: 1px solid black;
+	border: 2px solid black;
+	border-radius: 1px;
 }
+
