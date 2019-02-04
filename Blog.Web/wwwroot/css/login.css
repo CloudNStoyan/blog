@@ -13,3 +13,7 @@ input[type=submit]:hover {
 	border-radius: 2px;
 }
 
+div > h1 {
+	font: 12px "YouTube Noto",Roboto,arial,sans-serif;
+}
+
