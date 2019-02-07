@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Autofac;
 using Blog.Web.DAL;
 using Microsoft.AspNetCore.Mvc;
 using Blog.Web.Models;
@@ -18,18 +19,20 @@ namespace Blog.Web.Controllers
         {
             var posts = new List<LightPostModel>();
 
-            using (var conn = new NpgsqlConnection(Service.ConnectionString))
+            //using (var conn = new NpgsqlConnection(Service.ConnectionString))
+            //{
+            //    var database = new Database(conn);
+            //    var service = new Service(database);
+            //    posts = service.GetLatest(10);
+            //}
+
+            var container = MainContainer.Configure();
+
+            using (var scope = container.BeginLifetimeScope())
             {
-                var database = new Database(conn);
-                var service = new Service(database);
+                var service = scope.Resolve<IService>();
                 posts = service.GetLatest(10);
             }
-
-           //var option = new CookieOptions {Expires = DateTime.Now.AddMinutes(10)};
-
-           //this.Response.Cookies.Append("Dwarf", "dwarfent", option);
-
-           // Console.WriteLine(this.Request.Cookies["username"]);
 
             return View(posts.ToArray());
         }
@@ -37,13 +40,12 @@ namespace Blog.Web.Controllers
         public IActionResult LoginPage()
         {
             this.ViewData.Add("isLogged", this.HttpContext.Items["isLogged"]);
-	    if (this.HttpContext.Items["account"] != null) {
-		return this.View((LoginAccountModel)this.HttpContext.Items["account"]);
-	    } else 
-	    {
-		return this.View();
-	    }
-            
+            if (this.HttpContext.Items["account"] != null)
+            {
+                return this.View((LoginAccountModel) this.HttpContext.Items["account"]);
+            }
+
+            return this.View();
         }
 
         public IActionResult Login(LoginAccountModel account)
