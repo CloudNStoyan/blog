@@ -19,18 +19,10 @@ namespace Blog.Web.Controllers
         {
             var posts = new List<LightPostModel>();
 
-            //using (var conn = new NpgsqlConnection(Service.ConnectionString))
-            //{
-            //    var database = new Database(conn);
-            //    var service = new Service(database);
-            //    posts = service.GetLatest(10);
-            //}
-
-            var container = MainContainer.Configure();
-
-            using (var scope = container.BeginLifetimeScope())
+            using (var conn = new NpgsqlConnection(Service.ConnectionString))
             {
-                var service = scope.Resolve<IService>();
+                var database = new Database(conn);
+                var service = new Service(database);
                 posts = service.GetLatest(10);
             }
 
