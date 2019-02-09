@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Autofac;
@@ -13,15 +14,11 @@ namespace Blog.Web
         public static IContainer Configure()
         {
             var builder = new ContainerBuilder();
-
-            Database database;
-            using (var conn = new NpgsqlConnection(Service.ConnectionString))
-            {
-                database = new Database(conn);
-            }
-
-            builder.RegisterInstance(database);
-            builder.RegisterType<Service>().As<IService>();
+            
+            builder.Register((ctx, p) => new NpgsqlConnection(Service.ConnectionString)).InstancePerLifetimeScope();
+      
+            builder.RegisterType<Service>().InstancePerLifetimeScope();
+            builder.RegisterType<Database>().InstancePerLifetimeScope();
 
             return builder.Build();
         }

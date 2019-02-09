@@ -8,7 +8,7 @@ using Npgsql;
 
 namespace Blog.Web
 {
-    public class Service : IService
+    public class Service
     {
         public const string ConnectionString = @"Server=vm13.lan;Port=4401;Database=blog;Uid=blog;Pwd=test123;";
         private Database Database { get; }
