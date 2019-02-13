@@ -17,36 +17,114 @@ namespace Blog.Web
             this.Database = database;
         }
 
-        public PostPoco GetPostById(int id)
+        public PostModel GetPostById(int id)
         {
-            var post = this.Database.QueryOne<PostPoco>("SELECT * FROM posts WHERE post_id=@i;", new NpgsqlParameter("i", id));
+            var postPoco = this.Database.QueryOne<PostPoco>("SELECT * FROM posts WHERE post_id=@i;", new NpgsqlParameter("i", id));
+            var post = new PostModel
+            {
+                Content = postPoco.Content,
+                Id = postPoco.PostId,
+                Title = postPoco.Title
+            };
+
+            var tempCommentList = new List<Comment>();
+            var commentsPoco = this.GetPostComments(postPoco.PostId);
+            foreach (var commentPoco in commentsPoco)
+            {
+                var tempComment = new Comment
+                {
+                    Content = commentPoco.Content,
+                    DateCreated = commentPoco.CreatedOn
+                };
+
+                var tempPocoUser = this.GetUser(commentPoco.UserId);
+                var tempUser = new User
+                {
+                    AvatarUrl = tempPocoUser.AvatarUrl,
+                    Name = tempPocoUser.Name
+                };
+
+                tempComment.User = tempUser;
+
+                tempCommentList.Add(tempComment);
+            }
+
+            var tagsPoco = this.GetPostTags(postPoco.PostId);
+
+            var tempTags = tagsPoco.Select(tagPoco => tagPoco.Name).ToArray();
+
+            post.Tags = tempTags;
 
             return post;
         }
 
-        
-
-        public List<LightPostModel> GetLatest(int count)
+        public PostModel[] GetLatestPosts(int count)
         {
-            var posts = this.Database.Query<PostPoco>("SELECT * FROM posts ORDER BY post_id LIMIT @l;", new NpgsqlParameter("l", count));
-            var finishedModels = new List<LightPostModel>();
-            foreach (var postPoco in posts)
+            var postPocos = this.Database.Query<PostPoco>("SELECT * FROM posts ORDER BY post_id LIMIT @c;", new NpgsqlParameter("c", count));
+            var posts = new List<PostModel>();
+
+            foreach (var postPoco in postPocos)
             {
-                var lightPostModel = new LightPostModel
+                var post = new PostModel
                 {
-                    Content = string.Join(" ", postPoco.Content.Split(' ').Take(8)),
-                    PostId = postPoco.PostId,
+                    Content = postPoco.Content,
+                    Id = postPoco.PostId,
                     Title = postPoco.Title
                 };
 
-                //var tags = this.GetTags(postPoco.PostId);
+                var tempCommentList = new List<Comment>();
+                var commentsPoco = this.GetPostComments(postPoco.PostId);
+                foreach (var commentPoco in commentsPoco)
+                {
+                    var tempComment = new Comment();
+                    tempComment.Content = commentPoco.Content;
+                    tempComment.DateCreated = commentPoco.CreatedOn;
 
-                //lightPostModel.Tags = tags.Select(tagPoco => tagPoco.Name).ToArray();
+                    var tempPocoUser = this.GetUser(commentPoco.UserId);
+                    var tempUser = new User
+                    {
+                        AvatarUrl = tempPocoUser.AvatarUrl,
+                        Name = tempPocoUser.Name
+                    };
 
-                finishedModels.Add(lightPostModel);
+                    tempComment.User = tempUser;
+
+                    tempCommentList.Add(tempComment);
+                }
+
+                var tagsPoco = this.GetPostTags(postPoco.PostId);
+
+                var tempTags = tagsPoco.Select(tagPoco => tagPoco.Name).ToArray();
+
+                post.Tags = tempTags;
+
+                posts.Add(post);
             }
 
-            return finishedModels;
+            return posts.ToArray();
+        }
+
+
+        private UserPoco GetUser(int id)
+        {
+            var user = this.Database.QueryOne<UserPoco>("SELECT * FROM users WHERE user_id=@i;", new NpgsqlParameter("i", id));
+            return user;
+        }
+
+        private CommentPoco[] GetPostComments(int id)
+        {
+            var comments = this.Database.Query<CommentPoco>("SELECT * FROM comments WHERE post_id=@i;", new NpgsqlParameter("i", id));
+            return comments.ToArray();
+        }
+
+        private TagPoco[] GetPostTags(int id)
+        {
+            var tags = this.Database.Query<TagPoco>(
+                "SELECT t.tag_id, t.name FROM (SELECT * FROM posts_tags INNER JOIN posts ON posts_tags.post_id = @i)" +
+                " AS q INNER JOIN tags AS t ON q.tag_id = t.tag_id;",
+                new NpgsqlParameter("i", id));
+
+            return tags.ToArray();
         }
     }
 }

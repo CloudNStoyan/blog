@@ -17,20 +17,11 @@ namespace Blog.Web.Controllers
     {
         public IActionResult Index()
         {
-            var posts = new List<LightPostModel>();
-
-            //using (var conn = new NpgsqlConnection(Service.ConnectionString))
-            //{
-            //    var database = new Database(conn);
-            //    var service = new Service(database);
-            //    posts = service.GetLatest(10);
-            //}
-
             var container = MainContainer.Configure();
-            var service = container.Resolve<Service>();
-            posts = service.GetLatest(10);
+            var service = container.Resolve<PostService>();
+            var posts = service.GetLatestPosts(10);
 
-            return View(posts.ToArray());
+            return View(posts);
         }
 
         public IActionResult LoginPage()

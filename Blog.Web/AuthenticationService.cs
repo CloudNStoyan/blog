@@ -17,12 +17,6 @@ namespace Blog.Web
             this.Database = database;
         }
 
-        public UserPoco GetUser(int id)
-        {
-            var user = this.Database.QueryOne<UserPoco>("SELECT * FROM users WHERE user_id=@i;", new NpgsqlParameter("i", id));
-            return user;
-        }
-
         public UserPoco ConfirmAccount(LoginAccountModel loginModel)
         {
             var parametars = new[]

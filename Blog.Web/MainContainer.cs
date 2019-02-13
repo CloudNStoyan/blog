@@ -17,8 +17,9 @@ namespace Blog.Web
             
             builder.Register((ctx, p) => new NpgsqlConnection(Service.ConnectionString)).InstancePerLifetimeScope();
       
-            builder.RegisterType<Service>().InstancePerLifetimeScope();
+            builder.RegisterType<PostService>().InstancePerLifetimeScope();
             builder.RegisterType<Database>().InstancePerLifetimeScope();
+            builder.RegisterType<AuthenticationService>().InstancePerLifetimeScope();
 
             return builder.Build();
         }
