@@ -15,11 +15,16 @@ namespace Blog.Web.Controllers
         public IActionResult Post(int id)
         {
             var container = MainContainer.Configure();
-            var service = container.Resolve<PostService>();
 
-            var post = service.GetPostById(id);
+            using (var scope = container.BeginLifetimeScope())
+            {
+                var service = scope.Resolve<PostService>();
 
-            return View(post);
+                var post = service.GetPostById(id);
+
+                return View(post);
+            }
+
         }
     }
 }

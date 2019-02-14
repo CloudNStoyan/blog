@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Autofac;
 using Blog.Web.DAL;
 using Blog.Web.Models;
 using Microsoft.AspNetCore.Builder;
@@ -33,14 +34,14 @@ namespace Blog.Web
                     Password = password
                 };
 
-                using (var conn = new NpgsqlConnection(Service.ConnectionString))
+                var container = MainContainer.Configure();
+
+                using (var scope = container.BeginLifetimeScope())
                 {
-                    var database = new Database(conn);
-                    var service = new Service(database);
-                    var confirm = service.ConfirmAccount(loginAccountModel);
+                    var authService = scope.Resolve<AuthenticationService>();
 
-                    Console.WriteLine(loginAccountModel.Username);
 
+                    var confirm = authService.ConfirmAccount(loginAccountModel);
                     if (confirm != null)
                     {
                         loginAccountModel.Avatar = confirm.AvatarUrl;

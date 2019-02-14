@@ -18,10 +18,14 @@ namespace Blog.Web.Controllers
         public IActionResult Index()
         {
             var container = MainContainer.Configure();
-            var service = container.Resolve<PostService>();
-            var posts = service.GetLatestPosts(10);
 
-            return View(posts);
+            using (var scope = container.BeginLifetimeScope())
+            {
+                var service = scope.Resolve<PostService>();
+                var posts = service.GetLatestPosts(10);
+
+                return View(posts);
+            }
         }
 
         public IActionResult LoginPage()
