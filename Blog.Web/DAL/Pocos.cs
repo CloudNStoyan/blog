@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Blog.Web.DAL;
-
-namespace Blog.Web.DAL
+﻿namespace Blog.Web.DAL
 {
     [Table(Name = "users", Schema = "public")]
     public class UserPoco

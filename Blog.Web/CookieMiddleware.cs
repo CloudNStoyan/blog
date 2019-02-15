@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Autofac;
-using Blog.Web.DAL;
 using Blog.Web.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Npgsql;
 
 namespace Blog.Web
 {

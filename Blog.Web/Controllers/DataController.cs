@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Autofac;
-using Blog.Web.DAL;
-using Blog.Web.Models;
+﻿using Autofac;
 using Microsoft.AspNetCore.Mvc;
-using Npgsql;
 
 namespace Blog.Web.Controllers
 {
