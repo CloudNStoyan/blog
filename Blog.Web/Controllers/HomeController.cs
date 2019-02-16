@@ -26,7 +26,7 @@ namespace Blog.Web.Controllers
             this.ViewData.Add("isLogged", this.HttpContext.Items["isLogged"]);
             if (this.HttpContext.Items["account"] != null)
             {
-                return this.View((LoginAccountModel) this.HttpContext.Items["account"]);
+                return this.View((AccountModel) this.HttpContext.Items["account"]);
             }
 
             return this.View();
