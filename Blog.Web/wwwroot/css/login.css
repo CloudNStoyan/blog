@@ -11,6 +11,7 @@ input[type=submit]:hover {
 .avatar {
 	border: 2px solid black;
 	border-radius: 2px;
+	width: 100%;
 }
 
 div > h1 {
