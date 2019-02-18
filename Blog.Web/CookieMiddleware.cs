@@ -39,9 +39,15 @@ namespace Blog.Web
                     var confirm = authService.ConfirmAccount(loginAccountModel);
                     if (confirm != null)
                     {
-                        loginAccountModel.Avatar = confirm.AvatarUrl;
+                        var accountModel = new AccountModel()
+                        {
+                            Username = confirm.Name,
+                            Password = confirm.Password,
+                            Avatar = confirm.AvatarUrl
+                        };
+
                         context.Items.Add("isLogged", true);
-                        context.Items.Add("account", loginAccountModel);
+                        context.Items.Add("account", accountModel);
                     }
                     else
                     {
