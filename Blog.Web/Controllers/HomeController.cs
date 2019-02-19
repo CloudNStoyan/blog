@@ -36,7 +36,7 @@ namespace Blog.Web.Controllers
         {
             var cookieService = new CookieService(this.HttpContext);
 
-            var option = new CookieOptions { Expires = DateTime.Now.AddMinutes(10) };
+            var option = new CookieOptions { Expires = DateTime.Now.AddMinutes(30) };
 
             cookieService.SetCookie("Username", account.Username, option);
             cookieService.SetCookie("Password", account.Password, option);
