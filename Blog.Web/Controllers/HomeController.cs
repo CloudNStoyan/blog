@@ -20,37 +20,5 @@ namespace Blog.Web.Controllers
                 return View(posts);
             }
         }
-
-        public IActionResult LoginPage()
-        {
-            this.ViewData.Add("isLogged", this.HttpContext.Items["isLogged"]);
-            if (this.HttpContext.Items["account"] != null)
-            {
-                return this.View((AccountModel) this.HttpContext.Items["account"]);
-            }
-
-            return this.View();
-        }
-
-        public IActionResult Login(LoginAccountModel account)
-        {
-            var cookieService = new CookieService(this.HttpContext);
-
-            var option = new CookieOptions { Expires = DateTime.Now.AddMinutes(30) };
-
-            cookieService.SetCookie("Username", account.Username, option);
-            cookieService.SetCookie("Password", account.Password, option);
-
-            return this.Redirect("Index");
-        }
-
-        public IActionResult LogOut()
-        {
-            var cookieService = new CookieService(this.HttpContext);
-            cookieService.DeleteCookie("Username");
-            cookieService.DeleteCookie("Password");
-            return this.Redirect("LoginPage");
-        }
-
     }
 }

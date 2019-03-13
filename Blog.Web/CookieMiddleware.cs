@@ -41,8 +41,8 @@ namespace Blog.Web
                     {
                         var accountModel = new AccountModel()
                         {
-                            Username = confirm.Name,
-                            Password = confirm.Password,
+                            Username = loginAccountModel.Username,
+                            Password = loginAccountModel.Password,
                             Avatar = confirm.AvatarUrl
                         };
 

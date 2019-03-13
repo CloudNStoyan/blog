@@ -74,9 +74,11 @@ namespace Blog.Web
                 var commentsPoco = this.GetPostComments(postPoco.PostId);
                 foreach (var commentPoco in commentsPoco)
                 {
-                    var tempComment = new Comment();
-                    tempComment.Content = commentPoco.Content;
-                    tempComment.DateCreated = commentPoco.CreatedOn;
+                    var tempComment = new Comment
+                    {
+                        Content = commentPoco.Content,
+                        DateCreated = commentPoco.CreatedOn
+                    };
 
                     var tempPocoUser = this.GetUser(commentPoco.UserId);
                     var tempUser = new User

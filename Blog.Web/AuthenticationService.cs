@@ -26,5 +26,19 @@ namespace Blog.Web
             return account;
 
         }
+
+        public bool CreateAccount(RegisterModel registerModel)
+        {
+            var poco = new UserPoco()
+            {
+                AvatarUrl = registerModel.AvatarUrl,
+                Name = registerModel.Username,
+                Password = registerModel.Password
+            };
+
+            int result = this.Database.Insert(poco);
+
+            return result > 0;
+        }
     }
 }
