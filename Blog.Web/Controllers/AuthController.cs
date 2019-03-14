@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
+using Autofac;
 using Blog.Web.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +22,7 @@ namespace Blog.Web.Controllers
             cookieService.SetCookie("Username", account.Username, option);
             cookieService.SetCookie("Password", account.Password, option);
 
-            return this.Redirect("Index");
+            return this.Redirect("LoginPage");
         }
 
         public IActionResult LogOut()
@@ -32,7 +35,31 @@ namespace Blog.Web.Controllers
 
         public IActionResult Register(LoginAccountModel account)
         {
+            var container = MainContainer.Configure();
 
+            using (var scope = container.BeginLifetimeScope())
+            {
+                var service = scope.Resolve<AuthenticationService>();
+
+                byte[] passwordBytes = Encoding.ASCII.GetBytes(account.Password);
+                byte[] result;
+
+                using (var shaM = new SHA512Managed())
+                {
+                    result = shaM.ComputeHash(passwordBytes);
+                }
+
+                var registerModel = new RegisterModel()
+                {
+                    AvatarUrl = "none",
+                    Password = result,
+                    Username = account.Username
+                };
+
+
+                service.CreateAccount(registerModel);
+
+            }
 
             return this.Redirect("LoginPage");
         }

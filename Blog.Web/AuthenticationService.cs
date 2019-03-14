@@ -1,6 +1,9 @@
-﻿using Blog.Web.DAL;
+﻿using System.Security.Cryptography;
+using System.Text;
+using Blog.Web.DAL;
 using Blog.Web.Models;
 using Npgsql;
+using NpgsqlTypes;
 
 namespace Blog.Web
 {
@@ -15,9 +18,16 @@ namespace Blog.Web
 
         public UserPoco ConfirmAccount(LoginAccountModel loginModel)
         {
+            byte[] passwordBytes = Encoding.ASCII.GetBytes(loginModel.Password);
+            byte[] result;
+            using (var shaM = new SHA512Managed())
+            {
+                result = shaM.ComputeHash(passwordBytes);
+            }
+
             var parametars = new[]
             {
-                new NpgsqlParameter("u", loginModel.Username), new NpgsqlParameter("p", loginModel.Password)
+                new NpgsqlParameter("u", loginModel.Username), new NpgsqlParameter("p", result)
 
             };
 
@@ -29,6 +39,7 @@ namespace Blog.Web
 
         public bool CreateAccount(RegisterModel registerModel)
         {
+
             var poco = new UserPoco()
             {
                 AvatarUrl = registerModel.AvatarUrl,

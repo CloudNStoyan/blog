@@ -10,7 +10,7 @@
         public string Name { get; set; }
 
         [Column(Name = "password")]
-        public string Password { get; set; }
+        public byte[] Password { get; set; }
 
         [Column(Name = "avatar_url")]
         public string AvatarUrl { get; set; }

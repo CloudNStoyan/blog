@@ -8,6 +8,8 @@
     <link href="~/css/login.css" rel="stylesheet" />
 }
 
+
+
 <main>
     @if ((bool)ViewData["isLogged"])
     {
@@ -28,6 +30,11 @@
             <input type="password" name="password" />
             <input type="submit" value="Log in!" />
         </form>
-        <form asp-controller="Auth"></form>
+        <hr/>
+        <form asp-controller="Auth" asp-action="Register" method="post">
+            <input type="text" name="username" />
+            <input type="password" name="password" />
+            <input type="submit" value="Register!" />
+        </form>
     }
 </main>
