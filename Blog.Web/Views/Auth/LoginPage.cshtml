@@ -2,13 +2,8 @@
 
 @{
     ViewData["Title"] = "Login";
+    Layout = "_AdminLayout";
 }
-
-@section styles {    
-    <link href="~/css/login.css" rel="stylesheet" />
-}
-
-
 
 <main>
     @if ((bool)ViewData["isLogged"])
@@ -26,15 +21,15 @@
     else
     {
         <form asp-controller="Auth" asp-action="Login" method="post">
-            <input type="text" name="username" />
-            <input type="password" name="password" />
-            <input type="submit" value="Log in!" />
-        </form>
-        <hr/>
-        <form asp-controller="Auth" asp-action="Register" method="post">
-            <input type="text" name="username" />
-            <input type="password" name="password" />
-            <input type="submit" value="Register!" />
+            <div class="form-group">
+                <label for="inputUsername">Username</label>
+                <input class="form-control form-control-lg" id="inputUsername" type="text" name="username" />
+            </div>
+            <div class="form-group">
+                <label for="inputPassword">Password</label>
+                <input class="form-control form-control-lg" id="inputPassword" type="password" name="password" />
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
         </form>
     }
 </main>
