@@ -5,31 +5,38 @@
     Layout = "_AdminLayout";
 }
 
+@section styles {
+    <link rel="stylesheet" href="/css/login.css" />
+}
+
 <main>
-    @if ((bool)ViewData["isLogged"])
-    {
-        <div>
-            <h1>You are already logged @Model.Username!</h1>
-            <div class="avatar">
-                <img src="@Model.Avatar" />
+    <div class="content">
+        @if ((bool) ViewData["isLogged"])
+        {
+            <div class="card">
+                <img class="card-img-top" src="@Model.Avatar"/>
+                <div class="card-body">
+                    <h5 class="card-title">You are logged!</h5>
+                    <h3 class="card-text">@Model.Username</h3>
+                    <form asp-controller="Auth" asp-action="LogOut" method="post">
+                        <button type="submit" class="btn btn-primary">Logout</button>
+                    </form>
+                </div>
             </div>
-            <form asp-controller="Auth" asp-action="LogOut" method="post">
-                <input type="submit" name="button" value="Log out!" />
+        }
+        else
+        {
+            <form asp-controller="Auth" asp-action="Login" method="post">
+                <div class="form-group">
+                    <label for="inputUsername">Username</label>
+                    <input class="form-control form-control-lg" id="inputUsername" type="text" name="username"/>
+                </div>
+                <div class="form-group">
+                    <label for="inputPassword">Password</label>
+                    <input class="form-control form-control-lg" id="inputPassword" type="password" name="password"/>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
             </form>
-        </div>
-    }
-    else
-    {
-        <form asp-controller="Auth" asp-action="Login" method="post">
-            <div class="form-group">
-                <label for="inputUsername">Username</label>
-                <input class="form-control form-control-lg" id="inputUsername" type="text" name="username" />
-            </div>
-            <div class="form-group">
-                <label for="inputPassword">Password</label>
-                <input class="form-control form-control-lg" id="inputPassword" type="password" name="password" />
-            </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
-    }
+        }
+    </div>
 </main>

@@ -1,20 +1,13 @@
-input[type=submit] {
-	background-color: white;
-	border: 1px solid blue;
+.content {
+    background-color: #f0f0f0;
+    border: 1px solid #d0d0d0;
+    padding: 5%;
 }
 
-input[type=submit]:hover {
-	background-color: grey;	
-	color: white;
+@media (min-width: 1367px) {
+    .content {
+        margin-left: 35%;
+        margin-right: 35%;
+        margin-top: 10%;
+    }
 }
-
-.avatar {
-	border: 2px solid black;
-	border-radius: 2px;
-	width: 100%;
-}
-
-div > h1 {
-	font: 12px "YouTube Noto",Roboto,arial,sans-serif;
-}
-
