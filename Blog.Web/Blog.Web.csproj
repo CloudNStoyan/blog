@@ -20,4 +20,10 @@
     <PackageReference Include="Npgsql" Version="4.0.4" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Areas\Admin\Data\" />
+    <Folder Include="Areas\Admin\Models\" />
+    <Folder Include="Views\Admin\" />
+  </ItemGroup>
+
 </Project>

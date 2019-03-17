@@ -4,11 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Blog.Web.Controllers
+namespace Blog.Web.Areas.Admin.Controllers
 {
-    public class AdminController : Controller
+    [Area("Admin")]
+    public class HomeController : Controller
     {
-        public IActionResult Home()
+        public IActionResult Index()
         {
             return View();
         }
