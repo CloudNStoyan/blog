@@ -1,16 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 using Autofac;
+using Blog.Web.Areas.Admin.Models;
+using Blog.Web.Areas.Admin.Services;
 using Blog.Web.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Blog.Web.Controllers
+namespace Blog.Web.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class AuthController : Controller
     {
         public IActionResult Login(LoginAccountModel account)
@@ -22,7 +22,7 @@ namespace Blog.Web.Controllers
             cookieService.SetCookie("Username", account.Username, option);
             cookieService.SetCookie("Password", account.Password, option);
 
-            return this.Redirect("LoginPage");
+            return this.RedirectToAction("Index", "Home");
         }
 
         public IActionResult LogOut()
@@ -61,7 +61,7 @@ namespace Blog.Web.Controllers
 
             }
 
-            return this.Redirect("LoginPage");
+            return this.RedirectToAction("Index", "Home");
         }
 
         public IActionResult LoginPage()

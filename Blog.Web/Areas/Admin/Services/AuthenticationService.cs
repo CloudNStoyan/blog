@@ -3,9 +3,8 @@ using System.Text;
 using Blog.Web.DAL;
 using Blog.Web.Models;
 using Npgsql;
-using NpgsqlTypes;
 
-namespace Blog.Web
+namespace Blog.Web.Areas.Admin.Services
 {
     public class AuthenticationService
     {

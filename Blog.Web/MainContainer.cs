@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Blog.Web.Areas.Admin.Services;
 using Blog.Web.DAL;
 using Npgsql;
 

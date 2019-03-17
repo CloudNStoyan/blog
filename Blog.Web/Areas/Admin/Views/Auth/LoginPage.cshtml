@@ -1,4 +1,5 @@
-﻿@model AccountModel
+﻿@using Blog.Web.Areas.Admin.Models
+@model AccountModel
 
 @{
     ViewData["Title"] = "Login";
@@ -26,7 +27,7 @@
         }
         else
         {
-            <form asp-controller="Auth" asp-action="Login" method="post">
+            <form asp-area="Admin" asp-controller="Auth" asp-action="Login" method="post">
                 <div class="form-group">
                     <label for="inputUsername">Username</label>
                     <input class="form-control form-control-lg" id="inputUsername" type="text" name="username"/>

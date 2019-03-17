@@ -9,7 +9,6 @@ namespace Blog.Web.DAL
 {
     public class Database
     {
-
         private NpgsqlConnection Connection { get; }
 
         /// <summary>

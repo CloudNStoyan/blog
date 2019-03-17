@@ -1,5 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Autofac;
+using Blog.Web.Areas.Admin.Models;
+using Blog.Web.Areas.Admin.Services;
 using Blog.Web.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
