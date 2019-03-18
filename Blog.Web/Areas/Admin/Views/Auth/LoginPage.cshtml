@@ -7,7 +7,7 @@
 }
 
 @section styles {
-    <link rel="stylesheet" href="/css/login.css" />
+    <link rel="stylesheet" href="~/admin/css/login.css" />
 }
 
 <main>
@@ -28,16 +28,25 @@
         else
         {
             <form asp-area="Admin" asp-controller="Auth" asp-action="Login" method="post">
-                <div class="form-group">
-                    <label for="inputUsername">Username</label>
-                    <input class="form-control form-control-lg" id="inputUsername" type="text" name="username"/>
+                <div class="wrapper">
+                    <h5 class="custom-title text-center">Sign In</h5>
+                    <div class="form-group">
+                        <input class="form-control form-control-lg custom-input" placeholder="Username" id="inputUsername" type="text" name="username" />
+                        <label for="inputUsername" class="form-labels">Username</label>
+                    </div>
+                    <div class="form-group">
+                        <input class="form-control form-control-lg custom-input" placeholder="Password" id="inputPassword" type="password" name="password" />
+                        <label for="inputPassword" class="form-labels">Password</label>
+                    </div>
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="customCheck1">
+                        <label class="custom-control-label" for="customCheck1">Rembember username</label>
+                    </div>
+                    <button type="submit" class="btn btn-lg btn-primary btn-block text-uppercase">Sign in</button>
                 </div>
-                <div class="form-group">
-                    <label for="inputPassword">Password</label>
-                    <input class="form-control form-control-lg" id="inputPassword" type="password" name="password"/>
-                </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
             </form>
         }
     </div>
 </main>
+
+<script src="~/admin/js/login.js"></script>
