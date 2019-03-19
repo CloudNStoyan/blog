@@ -56,9 +56,7 @@ namespace Blog.Web.Areas.Admin.Controllers
                     Username = account.Username
                 };
 
-
                 service.CreateAccount(registerModel);
-
             }
 
             return this.RedirectToAction("Index", "Home");
