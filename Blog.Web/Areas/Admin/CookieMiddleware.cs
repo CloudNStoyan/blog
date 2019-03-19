@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Autofac;
 using Blog.Web.Areas.Admin.Models;
 using Blog.Web.Areas.Admin.Services;
@@ -20,36 +21,33 @@ namespace Blog.Web
         public async Task Invoke(HttpContext context)
         {
             var cookieService = new CookieService(context);
-            string username = cookieService.ReadCookie("username");
-            string password = cookieService.ReadCookie("password");
+            string sessionKey = cookieService.ReadCookie("session_key");
 
-            if (username != null && password != null)
+            if (!string.IsNullOrWhiteSpace(sessionKey))
             {
-                var loginAccountModel = new LoginAccountModel()
-                {
-                    Username = username,
-                    Password = password
-                };
-
                 var container = MainContainer.Configure();
 
                 using (var scope = container.BeginLifetimeScope())
                 {
-                    var authService = scope.Resolve<AuthenticationService>();
+                    var service = scope.Resolve<AuthenticationService>();
+                    var session = service.RequestSession(sessionKey);
 
+                    var loginTime = session.LoginTime;
+                    loginTime = loginTime.AddMinutes(30);
 
-                    var confirm = authService.ConfirmAccount(loginAccountModel);
-                    if (confirm != null)
+                    if (loginTime > DateTime.Now)
                     {
-                        var accountModel = new AccountModel()
-                        {
-                            Username = loginAccountModel.Username,
-                            Password = loginAccountModel.Password,
-                            Avatar = confirm.AvatarUrl
-                        };
+                        var userPoco = service.GetAccountPoco(session.UserId);
 
                         context.Items.Add("isLogged", true);
-                        context.Items.Add("account", accountModel);
+
+                        var acc = new AccountModel()
+                        {
+                            Username = userPoco.Name,
+                            Avatar = userPoco.AvatarUrl,
+                        };
+
+                        context.Items.Add("account", acc);
                     }
                     else
                     {

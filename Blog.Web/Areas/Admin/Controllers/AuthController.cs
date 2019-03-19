@@ -19,8 +19,21 @@ namespace Blog.Web.Areas.Admin.Controllers
 
             var option = new CookieOptions { Expires = DateTime.Now.AddMinutes(30) };
 
-            cookieService.SetCookie("Username", account.Username, option);
-            cookieService.SetCookie("Password", account.Password, option);
+            var container = MainContainer.Configure();
+
+            using (var scope = container.BeginLifetimeScope())
+            {
+                var service = scope.Resolve<AuthenticationService>();
+
+                var confirmedAccount = service.ConfirmAccount(account);
+
+                if (confirmedAccount != null)
+                {
+                    string session = service.MakeSession(confirmedAccount.UserId);
+
+                    cookieService.SetCookie("sessionKey", session, option);
+                }
+            }
 
             return this.RedirectToAction("Index", "Home");
         }

@@ -1,4 +1,6 @@
-﻿namespace Blog.Web.DAL
+﻿using System;
+
+namespace Blog.Web.DAL
 {
     [Table(Name = "users", Schema = "public")]
     public class UserPoco
@@ -72,5 +74,18 @@
 
         [Column(Name = "tag_id")]
         public int TagId { get; set; }
+    }
+
+    [Table(Name = "login_sessions", Schema = "public")]
+    public class LoginSessions
+    {
+        [Column(Name = "login_sessions_id", IsPrimaryKey = true)]
+        public int LoginSessionId { get; set; }
+        [Column(Name = "session_key")]
+        public string SessionKey { get; set; }
+        [Column(Name = "login_time")]
+        public DateTime LoginTime { get; set; }
+        [Column(Name = "user_id")]
+        public int UserId { get; set; }
     }
 }

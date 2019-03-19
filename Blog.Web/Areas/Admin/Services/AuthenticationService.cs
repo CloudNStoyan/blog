@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using System;
+using System.Security.Cryptography;
 using System.Text;
 using Blog.Web.DAL;
 using Blog.Web.Models;
@@ -34,6 +35,53 @@ namespace Blog.Web.Areas.Admin.Services
 
             return account;
 
+        }
+
+        public UserPoco GetAccountPoco(int id)
+        {
+            var parametar = new NpgsqlParameter("i", id);
+            return this.Database.QueryOne<UserPoco>("SELECT * FROM users WHERE user_id=@i", parametar);
+        }
+
+        public LoginSessions RequestSession(string sessionKey)
+        {
+            var parametar = new NpgsqlParameter("k", sessionKey);
+
+            var session =
+                this.Database.QueryOne<LoginSessions>("SELECT * FROM login_sessions WHERE session_key=@k ",
+                    parametar);
+
+            return session;
+        }
+
+        public string MakeSession(int userId)
+        {
+            string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            var builder = new StringBuilder();
+            var random = new Random();
+            int length = 40;
+
+            for (int i = 0; i < length; i++)
+            {
+                builder.Append(chars[random.Next(length)]);
+            }
+
+
+            var loginSession = new LoginSessions()
+            {
+                LoginTime = DateTime.Now,
+                SessionKey = builder.ToString(),
+                UserId = userId
+            };
+
+            int index = this.Database.Insert(loginSession);
+
+            var parametar = new NpgsqlParameter("i", index);
+
+            var session =
+                this.Database.QueryOne<LoginSessions>("SELECT * FROM login_sessions WHERE login_sessions_id=@i", parametar);
+
+            return session.SessionKey;
         }
 
         public bool CreateAccount(RegisterModel registerModel)
