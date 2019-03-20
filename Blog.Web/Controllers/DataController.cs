@@ -7,7 +7,7 @@ namespace Blog.Web.Controllers
     {
         public IActionResult Post(int id)
         {
-            var container = MainContainer.Configure();
+            var container = ContainerFactory.Create();
 
             using (var scope = container.BeginLifetimeScope())
             {

@@ -25,7 +25,7 @@ namespace Blog.Web
 
             if (!string.IsNullOrWhiteSpace(sessionKey))
             {
-                var container = MainContainer.Configure();
+                var container = ContainerFactory.Create();
 
                 using (var scope = container.BeginLifetimeScope())
                 {

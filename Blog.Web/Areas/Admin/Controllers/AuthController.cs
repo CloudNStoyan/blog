@@ -13,13 +13,20 @@ namespace Blog.Web.Areas.Admin.Controllers
     [Area("Admin")]
     public class AuthController : Controller
     {
+        private AuthenticationService AuthService { get; set; }
+
+        public AuthController(AuthenticationService authService)
+        {
+            this.AuthService = authService;
+        }
+
         public IActionResult Login(LoginAccountModel account)
         {
             var cookieService = new CookieService(this.HttpContext);
 
             var option = new CookieOptions { Expires = DateTime.Now.AddMinutes(30) };
 
-            var container = MainContainer.Configure();
+            var container = ContainerFactory.Create();
 
             using (var scope = container.BeginLifetimeScope())
             {
@@ -48,7 +55,7 @@ namespace Blog.Web.Areas.Admin.Controllers
 
         public IActionResult Register(LoginAccountModel account)
         {
-            var container = MainContainer.Configure();
+            var container = ContainerFactory.Create();
 
             using (var scope = container.BeginLifetimeScope())
             {
