@@ -1,5 +1,4 @@
-﻿using System;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
 using Autofac;
 using Blog.Web.Areas.Admin.Models;
@@ -13,7 +12,7 @@ namespace Blog.Web.Areas.Admin.Controllers
     [Area("Admin")]
     public class AuthController : Controller
     {
-        private AuthenticationService AuthService { get; set; }
+        private AuthenticationService AuthService { get; }
 
         public AuthController(AuthenticationService authService)
         {
@@ -24,22 +23,13 @@ namespace Blog.Web.Areas.Admin.Controllers
         {
             var cookieService = new CookieService(this.HttpContext);
 
-            var option = new CookieOptions { Expires = DateTime.Now.AddMinutes(30) };
+            var confirmedAccount = this.AuthService.ConfirmAccount(account);
 
-            var container = ContainerFactory.Create();
-
-            using (var scope = container.BeginLifetimeScope())
+            if (confirmedAccount != null)
             {
-                var service = scope.Resolve<AuthenticationService>();
+                string session = this.AuthService.MakeSession(confirmedAccount.UserId);
 
-                var confirmedAccount = service.ConfirmAccount(account);
-
-                if (confirmedAccount != null)
-                {
-                    string session = service.MakeSession(confirmedAccount.UserId);
-
-                    cookieService.SetCookie("sessionKey", session, option);
-                }
+                cookieService.SetCookie("sessionKey", session, new CookieOptions());
             }
 
             return this.RedirectToAction("Index", "Home");

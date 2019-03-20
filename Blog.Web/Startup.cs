@@ -1,5 +1,6 @@
 ﻿using System;
 using Autofac.Extensions.DependencyInjection;
+using Blog.Web.Areas.Admin;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -18,6 +19,7 @@ namespace Blog.Web
             });
 
             services.AddMvc();
+            services.AddHttpContextAccessor();
             
             return new AutofacServiceProvider(ContainerFactory.Create(services));
         }

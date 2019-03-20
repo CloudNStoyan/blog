@@ -43,12 +43,12 @@ namespace Blog.Web.Areas.Admin.Services
             return this.Database.QueryOne<UserPoco>("SELECT * FROM users WHERE user_id=@i", parametar);
         }
 
-        public LoginSessions RequestSession(string sessionKey)
+        public LoginSessionsPoco RequestSession(string sessionKey)
         {
             var parametar = new NpgsqlParameter("k", sessionKey);
 
             var session =
-                this.Database.QueryOne<LoginSessions>("SELECT * FROM login_sessions WHERE session_key=@k ",
+                this.Database.QueryOne<LoginSessionsPoco>("SELECT * FROM login_sessions WHERE session_key=@k ",
                     parametar);
 
             return session;
@@ -67,7 +67,7 @@ namespace Blog.Web.Areas.Admin.Services
             }
 
 
-            var loginSession = new LoginSessions()
+            var loginSession = new LoginSessionsPoco()
             {
                 LoginTime = DateTime.Now,
                 SessionKey = builder.ToString(),
@@ -79,7 +79,7 @@ namespace Blog.Web.Areas.Admin.Services
             var parametar = new NpgsqlParameter("i", index);
 
             var session =
-                this.Database.QueryOne<LoginSessions>("SELECT * FROM login_sessions WHERE login_sessions_id=@i", parametar);
+                this.Database.QueryOne<LoginSessionsPoco>("SELECT * FROM login_sessions WHERE login_sessions_id=@i", parametar);
 
             return session.SessionKey;
         }

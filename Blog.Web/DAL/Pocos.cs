@@ -77,7 +77,7 @@ namespace Blog.Web.DAL
     }
 
     [Table(Name = "login_sessions", Schema = "public")]
-    public class LoginSessions
+    public class LoginSessionsPoco
     {
         [Column(Name = "login_sessions_id", IsPrimaryKey = true)]
         public int LoginSessionId { get; set; }
