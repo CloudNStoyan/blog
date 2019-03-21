@@ -15,7 +15,7 @@
 
         <header class="main-header">
             <!-- Logo -->
-            <a href="index2.html" class="logo">
+            <a asp-area="" asp-controller="Home" asp-action="Index" class="logo">
                 <!-- logo for regular state and mobile devices -->
                 <span class="logo-lg"><b>Admin</b>LTE</span>
             </a>
@@ -50,10 +50,17 @@
                             </a>
                         </li>
                         <!-- User Account: style can be found in dropdown.less -->
-                        <li class="dropdown user user-menu">
+                        <li class="dropdown user user-menu open-sub-menu">
                             <a href="#">
-                                <span class="hidden-xs">Alexander Pierce</span>
+                                <span class="hidden-xs">DarkMagican</span>
                             </a>
+                            <ul class="user-sub-menu">
+                                <li>
+                                    <form asp-controller="Auth" asp-action="LogOut">
+                                        <button type="submit" class="btn btn-primary">Logout!</button>
+                                    </form>
+                                </li>
+                            </ul>
                         </li>
                         <!-- Control Sidebar Toggle Button -->
                         <li>

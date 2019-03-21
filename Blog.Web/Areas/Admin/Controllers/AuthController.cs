@@ -1,9 +1,12 @@
-﻿using System.Security.Cryptography;
+﻿using System;
+using System.Security.Cryptography;
 using System.Text;
 using Autofac;
 using Blog.Web.Areas.Admin.Models;
 using Blog.Web.Areas.Admin.Services;
+using Blog.Web.DAL;
 using Blog.Web.Models;
+using Blog.Web.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,10 +16,12 @@ namespace Blog.Web.Areas.Admin.Controllers
     public class AuthController : Controller
     {
         private AuthenticationService AuthService { get; }
+        private SessionService SessionService { get; }
 
-        public AuthController(AuthenticationService authService)
+        public AuthController(AuthenticationService authService, SessionService sessionService)
         {
             this.AuthService = authService;
+            this.SessionService = sessionService;
         }
 
         public IActionResult Login(LoginAccountModel account)
@@ -27,9 +32,9 @@ namespace Blog.Web.Areas.Admin.Controllers
 
             if (confirmedAccount != null)
             {
-                string session = this.AuthService.MakeSession(confirmedAccount.UserId);
+                string session = this.AuthService.MakeSession(confirmedAccount.UserId, !account.RememberMe);
 
-                cookieService.SetCookie("sessionKey", session, new CookieOptions());
+                cookieService.SetCookie("sessionKey", session);
             }
 
             return this.RedirectToAction("Index", "Home");
@@ -37,9 +42,9 @@ namespace Blog.Web.Areas.Admin.Controllers
 
         public IActionResult LogOut()
         {
-            var cookieService = new CookieService(this.HttpContext);
-            cookieService.DeleteCookie("Username");
-            cookieService.DeleteCookie("Password");
+            var session = this.SessionService.Session;
+            this.AuthService.DeleteSession(session);
+
             return this.Redirect("LoginPage");
         }
 
@@ -74,10 +79,11 @@ namespace Blog.Web.Areas.Admin.Controllers
 
         public IActionResult LoginPage()
         {
-            this.ViewData.Add("isLogged", this.HttpContext.Items["isLogged"]);
-            if (this.HttpContext.Items["account"] != null)
+            var session = this.SessionService.Session;
+
+            if (session.IsLogged)
             {
-                return this.View((AccountModel)this.HttpContext.Items["account"]);
+                return this.RedirectToAction("Index", "Home");
             }
 
             return this.View();

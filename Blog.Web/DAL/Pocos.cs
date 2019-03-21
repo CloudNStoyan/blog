@@ -87,5 +87,11 @@ namespace Blog.Web.DAL
         public DateTime LoginTime { get; set; }
         [Column(Name = "user_id")]
         public int UserId { get; set; }
+        [Column(Name = "deleted")]
+        public bool Deleted { get; set; }
+        [Column(Name = "loggedout_time")]
+        public DateTime LoggedOutTime { get; set; }
+        [Column(Name = "expires")]
+        public bool Expires { get; set; }
     }
 }

@@ -80,6 +80,17 @@ a:hover {
     background-color: #367fa9;
 }
 
+.user-sub-menu {
+    list-style-type: none;
+    display: none;
+    background-color: #367fa9;
+    padding: 0;
+}
+
+.user-sub-menu button {
+    width: 100%;
+}
+
 /* Aside */
 
 .sidebar-menu {

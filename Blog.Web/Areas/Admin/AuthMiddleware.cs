@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Blog.Web.Areas.Admin.Models;
 using Blog.Web.Areas.Admin.Services;
 using Blog.Web.Services;
@@ -28,19 +29,30 @@ namespace Blog.Web.Areas.Admin
 
             if (!string.IsNullOrWhiteSpace(sessionKey))
             {
-                var pocoSession = authService.RequestSession(sessionKey);
+                var pocoSession = authService.RequestSessionWithKey(sessionKey);
 
-                var pocoUser = authService.GetAccountPoco(pocoSession.UserId);
-
-                if (pocoUser != null)
+                bool isNotExpired = false;
+                if (pocoSession != null && pocoSession.Expires)
                 {
-                    session.UserAccount = new AccountModel
+                    isNotExpired = pocoSession.LoginTime.AddMinutes(30) > DateTime.Now;
+                }
+
+
+                if (isNotExpired)
+                {
+                    var pocoUser = authService.GetAccountPoco(pocoSession.UserId);
+
+                    if (pocoUser != null)
                     {
-                        Avatar = pocoUser.AvatarUrl,
-                        Id = pocoUser.UserId,
-                        Username = pocoUser.Name
-                    };
-                    session.IsLogged = true;
+                        session.UserAccount = new AccountModel
+                        {
+                            Avatar = pocoUser.AvatarUrl,
+                            Id = pocoUser.UserId,
+                            Username = pocoUser.Name
+                        };
+                        session.IsLogged = true;
+                        session.Id = pocoSession.LoginSessionId;
+                    }
                 }
             }
 
@@ -55,6 +67,8 @@ namespace Blog.Web.Areas.Admin
         public bool IsLogged { get; set; }
 
         public AccountModel UserAccount { get; set; }
+
+        public int Id { get; set; }
      
     }
 

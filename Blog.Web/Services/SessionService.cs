@@ -1,4 +1,6 @@
-﻿using Blog.Web.Areas.Admin;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Blog.Web.Areas.Admin;
 using Microsoft.AspNetCore.Http;
 
 namespace Blog.Web.Services
@@ -27,6 +29,24 @@ namespace Blog.Web.Services
         public static void SetSession(this HttpContext context, Session session)
         {
             context.Items[SessionKey] = session;
+        }
+    }
+
+    public static class ExtensionCookies
+    {
+        public static string GetCookie(this HttpContext context, string key)
+        {
+            return context.Request.Cookies[key];
+        }
+
+        public static void SetCookie(this HttpContext context, string key, string value)
+        {
+            context.Response.Cookies.Append(key, value);
+        }
+
+        public static void DeleteCookie(this HttpContext context, string key)
+        {
+            context.Response.Cookies.Delete(key);
         }
     }
 }

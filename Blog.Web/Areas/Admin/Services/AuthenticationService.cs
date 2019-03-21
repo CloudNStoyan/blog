@@ -31,7 +31,7 @@ namespace Blog.Web.Areas.Admin.Services
 
             };
 
-            var account = this.Database.QueryOne<UserPoco>("SELECT * FROM users WHERE username=@u AND password=@p", parametars);
+            var account = this.Database.QueryOne<UserPoco>("SELECT * FROM users WHERE username=@u AND password=@p;", parametars);
 
             return account;
 
@@ -40,21 +40,39 @@ namespace Blog.Web.Areas.Admin.Services
         public UserPoco GetAccountPoco(int id)
         {
             var parametar = new NpgsqlParameter("i", id);
-            return this.Database.QueryOne<UserPoco>("SELECT * FROM users WHERE user_id=@i", parametar);
+            return this.Database.QueryOne<UserPoco>("SELECT * FROM users WHERE user_id=@i;", parametar);
         }
 
-        public LoginSessionsPoco RequestSession(string sessionKey)
+        public LoginSessionsPoco RequestSessionWithKey(string sessionKey)
         {
-            var parametar = new NpgsqlParameter("k", sessionKey);
+
+            var parametarSessionKey = new NpgsqlParameter("k", sessionKey);
+            var parametarDeleted = new NpgsqlParameter("d", false);
 
             var session =
-                this.Database.QueryOne<LoginSessionsPoco>("SELECT * FROM login_sessions WHERE session_key=@k ",
-                    parametar);
+                this.Database.QueryOne<LoginSessionsPoco>(
+                    "SELECT * FROM login_sessions WHERE session_key=@k AND deleted=@d;", parametarSessionKey,
+                    parametarDeleted);
 
             return session;
         }
 
-        public string MakeSession(int userId)
+        public LoginSessionsPoco RequestSessionWithId(int sessionId)
+        {
+            var parametars = new NpgsqlParameter[]
+            {
+                new NpgsqlParameter("i", sessionId),
+                new NpgsqlParameter("d", false), 
+            };
+
+            var session =
+                this.Database.QueryOne<LoginSessionsPoco>(
+                    "SELECT * FROM login_sessions WHERE login_sessions_id=@i AND deleted=@d", parametars);
+
+            return session;
+        }
+
+        public string MakeSession(int userId, bool expires)
         {
             string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
             var builder = new StringBuilder();
@@ -67,11 +85,12 @@ namespace Blog.Web.Areas.Admin.Services
             }
 
 
-            var loginSession = new LoginSessionsPoco()
+            var loginSession = new LoginSessionsPoco
             {
                 LoginTime = DateTime.Now,
                 SessionKey = builder.ToString(),
-                UserId = userId
+                UserId = userId,
+                Expires = expires
             };
 
             int index = this.Database.Insert(loginSession);
@@ -79,15 +98,25 @@ namespace Blog.Web.Areas.Admin.Services
             var parametar = new NpgsqlParameter("i", index);
 
             var session =
-                this.Database.QueryOne<LoginSessionsPoco>("SELECT * FROM login_sessions WHERE login_sessions_id=@i", parametar);
+                this.Database.QueryOne<LoginSessionsPoco>("SELECT * FROM login_sessions WHERE login_sessions_id=@i;", parametar);
 
             return session.SessionKey;
+        }
+
+        public void DeleteSession(Session session)
+        {
+            var sessionPoco = this.RequestSessionWithId(session.Id);
+
+            sessionPoco.Deleted = true;
+            sessionPoco.LoggedOutTime = DateTime.Now;
+
+            this.Database.Update(sessionPoco);
         }
 
         public bool CreateAccount(RegisterModel registerModel)
         {
 
-            var poco = new UserPoco()
+            var poco = new UserPoco
             {
                 AvatarUrl = registerModel.AvatarUrl,
                 Name = registerModel.Username,

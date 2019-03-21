@@ -1,7 +1,4 @@
-﻿@using Blog.Web.Areas.Admin.Models
-@model AccountModel
-
-@{
+﻿@{
     ViewData["Title"] = "Login";
     Layout = "_LoginLayout";
 }
@@ -12,21 +9,6 @@
 
 <main>
     <div class="content">
-        @if ((bool) ViewData["isLogged"])
-        {
-            <div class="card">
-                <img class="card-img-top" src="@Model.Avatar"/>
-                <div class="card-body">
-                    <h5 class="card-title">You are logged!</h5>
-                    <h3 class="card-text">@Model.Username</h3>
-                    <form asp-controller="Auth" asp-action="LogOut" method="post">
-                        <button type="submit" class="btn btn-primary">Logout</button>
-                    </form>
-                </div>
-            </div>
-        }
-        else
-        {
             <form asp-area="Admin" asp-controller="Auth" asp-action="Login" method="post">
                 <div class="wrapper">
                     <h5 class="custom-title text-center">Sign In</h5>
@@ -39,13 +21,12 @@
                         <label for="inputPassword" class="form-labels">Password</label>
                     </div>
                     <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" id="customCheck1">
-                        <label class="custom-control-label" for="customCheck1">Rembember username</label>
+                        <input type="checkbox" class="custom-control-input" id="customCheck1" name="RememberMe" value="true">
+                        <label class="custom-control-label" for="customCheck1">Rembember me</label>
                     </div>
                     <button type="submit" class="btn btn-lg btn-primary btn-block text-uppercase">Sign in</button>
                 </div>
             </form>
-        }
     </div>
 </main>
 

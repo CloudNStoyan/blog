@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Blog.Web.Services;
+using Microsoft.AspNetCore.Http;
 
 namespace Blog.Web
 {
@@ -11,19 +12,19 @@ namespace Blog.Web
             this.HttpContext = httpContext;
         }
 
-        public void SetCookie(string key, string value, CookieOptions option)
+        public void SetCookie(string key, string value)
         {
-            this.HttpContext.Response.Cookies.Append(key, value, option);
+            this.HttpContext.SetCookie(key, value);
         }
 
         public string ReadCookie(string key)
         {
-            return this.HttpContext.Request.Cookies[key];
+            return this.HttpContext.GetCookie(key);
         }
 
         public void DeleteCookie(string key)
         {
-            this.HttpContext.Response.Cookies.Delete(key);
+            this.HttpContext.DeleteCookie(key);
         }
     }
 }
