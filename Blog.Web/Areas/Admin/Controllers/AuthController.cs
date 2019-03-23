@@ -26,18 +26,23 @@ namespace Blog.Web.Areas.Admin.Controllers
 
         public IActionResult Login(LoginAccountModel account)
         {
-            var cookieService = new CookieService(this.HttpContext);
-
-            var confirmedAccount = this.AuthService.ConfirmAccount(account);
-
-            if (confirmedAccount != null)
+            if (!string.IsNullOrWhiteSpace(account.Username) && !string.IsNullOrWhiteSpace(account.Password))
             {
-                string session = this.AuthService.MakeSession(confirmedAccount.UserId, !account.RememberMe);
+                var cookieService = new CookieService(this.HttpContext);
 
-                cookieService.SetCookie("sessionKey", session);
+                var confirmedAccount = this.AuthService.ConfirmAccount(account);
+
+                if (confirmedAccount != null)
+                {
+                    string session = this.AuthService.MakeSession(confirmedAccount.UserId, !account.RememberMe);
+
+                    cookieService.SetCookie("sessionKey", session);
+                }
+
+                return this.RedirectToAction("Index", "Home");
             }
 
-            return this.RedirectToAction("Index", "Home");
+            return this.RedirectToAction("Index", "Home", new { area = ""});
         }
 
         public IActionResult LogOut()
