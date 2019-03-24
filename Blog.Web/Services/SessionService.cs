@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Blog.Web.Areas.Admin;
+﻿using Blog.Web.Areas.Admin;
 using Microsoft.AspNetCore.Http;
 
 namespace Blog.Web.Services

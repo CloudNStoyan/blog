@@ -1,13 +1,9 @@
-﻿using System;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
 using Autofac;
-using Blog.Web.Areas.Admin.Models;
 using Blog.Web.Areas.Admin.Services;
-using Blog.Web.DAL;
 using Blog.Web.Models;
 using Blog.Web.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Blog.Web.Areas.Admin.Controllers
@@ -51,35 +47,6 @@ namespace Blog.Web.Areas.Admin.Controllers
             this.AuthService.DeleteSession(session);
 
             return this.Redirect("LoginPage");
-        }
-
-        public IActionResult Register(LoginAccountModel account)
-        {
-            var container = ContainerFactory.Create();
-
-            using (var scope = container.BeginLifetimeScope())
-            {
-                var service = scope.Resolve<AuthenticationService>();
-
-                byte[] passwordBytes = Encoding.ASCII.GetBytes(account.Password);
-                byte[] result;
-
-                using (var shaM = new SHA512Managed())
-                {
-                    result = shaM.ComputeHash(passwordBytes);
-                }
-
-                var registerModel = new RegisterModel()
-                {
-                    AvatarUrl = "none",
-                    Password = result,
-                    Username = account.Username
-                };
-
-                service.CreateAccount(registerModel);
-            }
-
-            return this.RedirectToAction("Index", "Home");
         }
 
         public IActionResult LoginPage()
