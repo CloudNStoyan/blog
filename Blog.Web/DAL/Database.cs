@@ -248,7 +248,7 @@ namespace Blog.Web.DAL
                 throw new Exception("There wasn't any primary key found with in property attributes");
             }
 
-            string sql = $"INSERT INTO \"{tableAttribute.Schema}\".\"{tableAttribute.Name}\" ({String.Join(",", columns)}) VALUES ({String.Join(",", parametarNames)}) RETURNING {primaryKeyColumnName};";
+            string sql = $"INSERT INTO \"{tableAttribute.Schema}\".\"{tableAttribute.Name}\" ({string.Join(",", columns)}) VALUES ({string.Join(",", parametarNames)}) RETURNING {primaryKeyColumnName};";
 
             using (var command = new NpgsqlCommand(sql, this.Connection))
             {

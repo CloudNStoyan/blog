@@ -40,8 +40,8 @@ namespace Blog.Web.DAL
         [Column(Name = "tag_id", IsPrimaryKey = true)]
         public int TagId { get; set; }
 
-        [Column(Name = "name")]
-        public string Name { get; set; }
+        [Column(Name = "tag_name")]
+        public string TagName { get; set; }
     }
 
     [Table(Name = "comments", Schema = "public")]
@@ -81,17 +81,23 @@ namespace Blog.Web.DAL
     {
         [Column(Name = "login_sessions_id", IsPrimaryKey = true)]
         public int LoginSessionId { get; set; }
+
         [Column(Name = "session_key")]
         public string SessionKey { get; set; }
+
         [Column(Name = "login_time")]
         public DateTime LoginTime { get; set; }
+
         [Column(Name = "user_id")]
         public int UserId { get; set; }
-        [Column(Name = "deleted")]
-        public bool Deleted { get; set; }
-        [Column(Name = "loggedout_time")]
-        public DateTime LoggedOutTime { get; set; }
-        [Column(Name = "expires")]
-        public bool Expires { get; set; }
+
+        [Column(Name = "logged_out")]
+        public bool LoggedOut { get; set; }
+
+        [Column(Name = "logout_time")]
+        public DateTime? LoggedOutTime { get; set; }
+
+        [Column(Name = "expiration_date")]
+        public DateTime? ExpirationDate { get; set; }
     }
 }

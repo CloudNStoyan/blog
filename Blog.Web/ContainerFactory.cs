@@ -21,6 +21,8 @@ namespace Blog.Web
             
             builder.Register((ctx, p) => new NpgsqlConnection("Server=vm13.lan;Port=4401;Database=blog;Uid=blog;Pwd=test123;")).InstancePerLifetimeScope();
 
+            builder.RegisterType<SessionCookieService>().InstancePerLifetimeScope();
+            builder.RegisterType<CookieService>().InstancePerLifetimeScope();
             builder.RegisterType<SessionService>().InstancePerLifetimeScope();
             builder.RegisterType<PostService>().InstancePerLifetimeScope();
             builder.RegisterType<Database>().InstancePerLifetimeScope();

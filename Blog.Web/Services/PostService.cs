@@ -49,7 +49,7 @@ namespace Blog.Web
 
             var tagsPoco = this.GetPostTags(postPoco.PostId);
 
-            var tempTags = tagsPoco.Select(tagPoco => tagPoco.Name).ToArray();
+            var tempTags = tagsPoco.Select(tagPoco => tagPoco.TagName).ToArray();
 
             post.Tags = tempTags;
 
@@ -94,7 +94,7 @@ namespace Blog.Web
 
                 var tagsPoco = this.GetPostTags(postPoco.PostId);
 
-                var tempTags = tagsPoco.Select(tagPoco => tagPoco.Name).ToArray();
+                var tempTags = tagsPoco.Select(tagPoco => tagPoco.TagName).ToArray();
 
                 post.Tags = tempTags;
 

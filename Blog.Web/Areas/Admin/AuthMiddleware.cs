@@ -19,56 +19,53 @@ namespace Blog.Web.Areas.Admin
         }
         
         // ReSharper disable once UnusedMember.Global
-        public async Task Invoke(HttpContext context, AuthenticationService authService)
+        public async Task Invoke(HttpContext context, AuthenticationService authService, SessionCookieService sessionCookieService)
         {
-            var cookieService = new CookieService(context);
+            context.SetSession(new RequestSession());
 
-            string sessionKey = cookieService.ReadCookie("sessionKey");
+            string sessionKey = sessionCookieService.GetSessionKey();
 
-            var session = new Session();
-
-            if (!string.IsNullOrWhiteSpace(sessionKey))
+            if (string.IsNullOrWhiteSpace(sessionKey))
             {
-                var pocoSession = authService.RequestSessionWithKey(sessionKey);
-
-                bool isNotExpired = false;
-                if (pocoSession != null && pocoSession.Expires)
-                {
-                    isNotExpired = pocoSession.LoginTime.AddMinutes(30) > DateTime.Now;
-                }
-
-
-                if (isNotExpired)
-                {
-                    var pocoUser = authService.GetAccountPoco(pocoSession.UserId);
-
-                    if (pocoUser != null)
-                    {
-                        session.UserAccount = new AccountModel
-                        {
-                            Avatar = pocoUser.AvatarUrl,
-                            Id = pocoUser.UserId,
-                            Username = pocoUser.Name
-                        };
-                        session.IsLogged = true;
-                        session.Id = pocoSession.LoginSessionId;
-                    }
-                }
+                await this.next.Invoke(context);
+                return;
             }
 
-            context.SetSession(session);
+            var session = authService.GetSessionBySessionKey(sessionKey);
+
+            var now = DateTime.Now;
+
+            if (session == null || session.LoggedOut || session.ExpirationDate <= now)
+            {
+                await this.next.Invoke(context);
+                return;
+            }
+
+            var pocoUser = authService.GetUserById(session.UserId);
+
+            context.SetSession(new RequestSession
+            {
+                IsLogged = true,
+                SessionId = session.LoginSessionId,
+                UserAccount = new AccountModel
+                {
+                    Avatar = pocoUser.AvatarUrl,
+                    UserId = pocoUser.UserId,
+                    Username = pocoUser.Name
+                }
+            });
 
             await this.next.Invoke(context);
         }
     }
 
-    public class Session
+    public class RequestSession
     {
         public bool IsLogged { get; set; }
 
         public AccountModel UserAccount { get; set; }
 
-        public int Id { get; set; }
+        public int SessionId { get; set; }
      
     }
 

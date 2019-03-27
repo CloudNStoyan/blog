@@ -1,7 +1,4 @@
-﻿using System.Security.Cryptography;
-using System.Text;
-using Autofac;
-using Blog.Web.Areas.Admin.Services;
+﻿using Blog.Web.Areas.Admin.Services;
 using Blog.Web.Models;
 using Blog.Web.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -12,39 +9,44 @@ namespace Blog.Web.Areas.Admin.Controllers
     public class AuthController : Controller
     {
         private AuthenticationService AuthService { get; }
+
         private SessionService SessionService { get; }
 
-        public AuthController(AuthenticationService authService, SessionService sessionService)
+        private SessionCookieService SessionCookieService { get; }
+
+        public AuthController(AuthenticationService authService, SessionService sessionService, SessionCookieService sessionCookieService)
         {
             this.AuthService = authService;
             this.SessionService = sessionService;
+            this.SessionCookieService = sessionCookieService;
         }
 
         public IActionResult Login(LoginAccountModel account)
         {
-            if (!string.IsNullOrWhiteSpace(account.Username) && !string.IsNullOrWhiteSpace(account.Password))
+            if (string.IsNullOrWhiteSpace(account.Username) || string.IsNullOrWhiteSpace(account.Password))
             {
-                var cookieService = new CookieService(this.HttpContext);
+                return this.RedirectToAction("Index", "Home", new { area = "" });
+            }
 
-                var confirmedAccount = this.AuthService.ConfirmAccount(account);
+            var user = this.AuthService.Login(account);
 
-                if (confirmedAccount != null)
-                {
-                    string session = this.AuthService.MakeSession(confirmedAccount.UserId, !account.RememberMe);
-
-                    cookieService.SetCookie("sessionKey", session);
-                }
-
+            if (user == null)
+            {
                 return this.RedirectToAction("Index", "Home");
             }
 
-            return this.RedirectToAction("Index", "Home", new { area = ""});
+            string sessionKey = this.AuthService.CreateSession(user.UserId, account.RememberMe);
+
+            this.SessionCookieService.SetSessionKey(sessionKey);
+
+            return this.RedirectToAction("Index", "Home");
         }
 
         public IActionResult LogOut()
         {
             var session = this.SessionService.Session;
-            this.AuthService.DeleteSession(session);
+
+            this.AuthService.Logout(session);
 
             return this.Redirect("LoginPage");
         }

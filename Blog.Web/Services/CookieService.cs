@@ -1,30 +1,60 @@
-﻿using Blog.Web.Services;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 
-namespace Blog.Web
+namespace Blog.Web.Services
 {
     public class CookieService
     {
-        private HttpContext HttpContext { get; set; }
+        private IHttpContextAccessor ContextAccessor { get; }
 
-        public CookieService(HttpContext httpContext)
+        private HttpResponse Response => this.ContextAccessor.HttpContext.Response;
+
+        private HttpRequest Request => this.ContextAccessor.HttpContext.Request;
+
+        public CookieService(IHttpContextAccessor contextAccessor)
         {
-            this.HttpContext = httpContext;
+            this.ContextAccessor = contextAccessor;
         }
 
         public void SetCookie(string key, string value)
         {
-            this.HttpContext.SetCookie(key, value);
+            this.Response.Cookies.Append(key, value);
         }
 
-        public string ReadCookie(string key)
+        public string GetCookie(string key)
         {
-            return this.HttpContext.GetCookie(key);
+            return this.Request.Cookies[key];
         }
 
-        public void DeleteCookie(string key)
+        public void RemoveCookie(string key)
         {
-            this.HttpContext.DeleteCookie(key);
+            this.Response.Cookies.Delete(key);
+        }
+    }
+
+    public class SessionCookieService
+    {
+        private CookieService CookieService { get; }
+
+        private const string CookieKey = "__session_";
+        
+        public SessionCookieService(CookieService cookieService)
+        {
+            this.CookieService = cookieService;
+        }
+
+        public void SetSessionKey(string sessionKey)
+        {
+            this.CookieService.SetCookie(CookieKey, sessionKey);
+        }
+
+        public string GetSessionKey()
+        {
+            return this.CookieService.GetCookie(CookieKey);
+        }
+
+        public void RemoveSessionKey()
+        {
+            this.CookieService.RemoveCookie(CookieKey);
         }
     }
 }
