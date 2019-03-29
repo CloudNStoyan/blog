@@ -1,6 +1,7 @@
 ﻿using System;
 using Autofac.Extensions.DependencyInjection;
 using Blog.Web.Areas.Admin;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -18,7 +19,15 @@ namespace Blog.Web
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+
             services.AddMvc();
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Admins", policy =>
+                {
+                    policy.RequireClaim("Logged");
+                });
+            });
             services.AddHttpContextAccessor();
             
             return new AutofacServiceProvider(ContainerFactory.Create(services));
