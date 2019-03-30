@@ -25,28 +25,6 @@ namespace Blog.Web
                 Title = postPoco.Title
             };
 
-            var tempCommentList = new List<Comment>();
-            var commentsPoco = this.GetPostComments(postPoco.PostId);
-            foreach (var commentPoco in commentsPoco)
-            {
-                var tempComment = new Comment
-                {
-                    Content = commentPoco.Content,
-                    DateCreated = commentPoco.CreatedOn
-                };
-
-                var tempPocoUser = this.GetUser(commentPoco.UserId);
-                var tempUser = new User
-                {
-                    AvatarUrl = tempPocoUser.AvatarUrl,
-                    Name = tempPocoUser.Name
-                };
-
-                tempComment.User = tempUser;
-
-                tempCommentList.Add(tempComment);
-            }
-
             var tagsPoco = this.GetPostTags(postPoco.PostId);
 
             var tempTags = tagsPoco.Select(tagPoco => tagPoco.TagName).ToArray();
@@ -70,28 +48,6 @@ namespace Blog.Web
                     Title = postPoco.Title
                 };
 
-                var tempCommentList = new List<Comment>();
-                var commentsPoco = this.GetPostComments(postPoco.PostId);
-                foreach (var commentPoco in commentsPoco)
-                {
-                    var tempComment = new Comment
-                    {
-                        Content = commentPoco.Content,
-                        DateCreated = commentPoco.CreatedOn
-                    };
-
-                    var tempPocoUser = this.GetUser(commentPoco.UserId);
-                    var tempUser = new User
-                    {
-                        AvatarUrl = tempPocoUser.AvatarUrl,
-                        Name = tempPocoUser.Name
-                    };
-
-                    tempComment.User = tempUser;
-
-                    tempCommentList.Add(tempComment);
-                }
-
                 var tagsPoco = this.GetPostTags(postPoco.PostId);
 
                 var tempTags = tagsPoco.Select(tagPoco => tagPoco.TagName).ToArray();
@@ -111,16 +67,10 @@ namespace Blog.Web
             return user;
         }
 
-        private CommentPoco[] GetPostComments(int id)
-        {
-            var comments = this.Database.Query<CommentPoco>("SELECT * FROM comments WHERE post_id=@i;", new NpgsqlParameter("i", id));
-            return comments.ToArray();
-        }
-
         private TagPoco[] GetPostTags(int id)
         {
             var tags = this.Database.Query<TagPoco>(
-                "SELECT t.tag_id, t.name FROM (SELECT * FROM posts_tags INNER JOIN posts ON posts_tags.post_id = @i)" +
+                "SELECT t.tag_id, t.tag_name FROM (SELECT * FROM posts_tags INNER JOIN posts ON posts_tags.post_id = @i)" +
                 " AS q INNER JOIN tags AS t ON q.tag_id = t.tag_id;",
                 new NpgsqlParameter("i", id));
 

@@ -53,15 +53,20 @@ namespace Blog.Web.DAL
                                 returnedElement = null;
                             }
 
+                            var sqlColumnType = reader.GetFieldType(i);
+
                             string propertyName = reader.GetName(i);
 
                             if (properties.Count(p => p.Key.Name == propertyName) > 0)
                             {
                                 var property = properties.First(p => p.Key.Name == propertyName).Value;
                                 var propertyType = property?.PropertyType;
-                                var sqlColumnType = returnedElement?.GetType();
 
-                                if (propertyType != sqlColumnType)
+                                var expectedType = IsNullable(propertyType)
+                                    ? Nullable.GetUnderlyingType(propertyType)
+                                    : propertyType;
+
+                                if (expectedType != sqlColumnType)
                                 {
                                     throw new Exception($"Property type and sql return type are not the same! Property Type {propertyType}, Sql Return Type {sqlColumnType}");
                                 }
@@ -77,6 +82,8 @@ namespace Blog.Web.DAL
 
             return result;
         }
+
+        private static bool IsNullable(Type t) => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>);
 
         /// <summary>
         /// SQL Query
@@ -235,7 +242,8 @@ namespace Blog.Web.DAL
 
             var columns = columnAttributes.Where(c => !c.IsPrimaryKey).Select(c => c.Name).ToList();
 
-            var values = properties.Where(x => !x.GetCustomAttribute<ColumnAttribute>().IsPrimaryKey).Select(x => x.GetValue(poco, null)).ToList();
+            var values = properties.Where(x => !x.GetCustomAttribute<ColumnAttribute>().IsPrimaryKey)
+                .Select(x => x.GetValue(poco, null) ?? DBNull.Value).ToList();
 
             var parametars = values.Select((x, i) => new NpgsqlParameter("p" + i, x)).ToArray();
 
@@ -293,11 +301,11 @@ namespace Blog.Web.DAL
 
             var primaryKeyColumnValue = properties
                 .FirstOrDefault(p => p.GetCustomAttribute<ColumnAttribute>().IsPrimaryKey)
-                ?.GetValue(poco, null);
+                ?.GetValue(poco, null) ?? DBNull.Value;
 
             parametars.Add(new NpgsqlParameter("i", primaryKeyColumnValue));
 
-            string sql = $"UPDATE \"{schema}\".\"{table}\" SET {String.Join(",", columnsAndValues)} WHERE {primaryKeyColumnName}=@i;";
+            string sql = $"UPDATE \"{schema}\".\"{table}\" SET {string.Join(",", columnsAndValues)} WHERE {primaryKeyColumnName}=@i;";
 
             using (var command = new NpgsqlCommand(sql, this.Connection))
             {

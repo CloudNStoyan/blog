@@ -1,10 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using Autofac.Extensions.DependencyInjection;
 using Blog.Web.Areas.Admin;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Blog.Web
@@ -20,15 +27,24 @@ namespace Blog.Web
             });
 
 
+
             services.AddMvc();
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("Admins", policy =>
                 {
-                    policy.RequireClaim("Logged");
+                    policy.Requirements.Add(new LoggedRequirement(true));
+                    policy.AuthenticationSchemes = new List<string>
+                    {
+                        CookieAuthenticationDefaults.AuthenticationScheme
+                    };
                 });
             });
+
+
+            services.AddSingleton<IAuthorizationHandler, LoggedHandler>();
             services.AddHttpContextAccessor();
+
             
             return new AutofacServiceProvider(ContainerFactory.Create(services));
         }
@@ -42,8 +58,7 @@ namespace Blog.Web
 
             app.UseStaticFiles();
 
-            app.UseCookieMiddleware();   
-
+            app.UseCookieMiddleware();
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

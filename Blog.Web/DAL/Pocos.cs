@@ -44,25 +44,6 @@ namespace Blog.Web.DAL
         public string TagName { get; set; }
     }
 
-    [Table(Name = "comments", Schema = "public")]
-    public class CommentPoco
-    {
-        [Column(Name = "comment_id", IsPrimaryKey = true)]
-        public int CommentId { get; set; }
-
-        [Column(Name = "content")]
-        public string Content { get; set; }
-
-        [Column(Name = "post_id")]
-        public int PostId { get; set; }
-
-        [Column(Name = "user_id")]
-        public int UserId { get; set; }
-
-        [Column(Name = "created_on")]
-        public string CreatedOn { get; set; }
-    }
-
     [Table(Name = "posts_tags", Schema = "public")]
     public class PostsTagsPoco
     {

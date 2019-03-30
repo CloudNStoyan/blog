@@ -1,10 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Blog.Web.Areas.Admin.Models;
 using Blog.Web.Areas.Admin.Services;
 using Blog.Web.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Authentication;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Blog.Web.Areas.Admin
 {
@@ -19,8 +24,7 @@ namespace Blog.Web.Areas.Admin
         }
         
         // ReSharper disable once UnusedMember.Global
-        public async Task Invoke(HttpContext context, AuthenticationService authService, SessionCookieService sessionCookieService)
-        {
+        public async Task Invoke(HttpContext context, AuthenticationService authService, SessionCookieService sessionCookieService) {
             context.SetSession(new RequestSession());
 
             string sessionKey = sessionCookieService.GetSessionKey();
@@ -54,6 +58,14 @@ namespace Blog.Web.Areas.Admin
                     Username = pocoUser.Name
                 }
             });
+
+            var claims = new List<Claim> {new Claim(ClaimTypes.Name, pocoUser.Name, ClaimValueTypes.String)};
+            var userIdentity = new ClaimsIdentity("Admins");
+            userIdentity.AddClaims(claims);
+
+            context.User.AddIdentity(userIdentity);
+
+            context.User.FindAll("Logged");
 
             await this.next.Invoke(context);
         }

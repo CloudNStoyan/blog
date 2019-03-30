@@ -50,7 +50,7 @@ namespace Blog.Web.Areas.Admin.Services
 
             var session =
                 this.Database.QueryOne<LoginSessionsPoco>(
-                    "SELECT * FROM login_sessions WHERE session_key=@k AND deleted=false;", key);
+                    "SELECT * FROM login_sessions WHERE session_key=@k AND logged_out=false;", key);
 
             return session;
         }
@@ -58,7 +58,7 @@ namespace Blog.Web.Areas.Admin.Services
         private LoginSessionsPoco GetSessionById(int sessionId)
         {
             var session = this.Database.QueryOne<LoginSessionsPoco>(
-                    "SELECT * FROM login_sessions WHERE login_sessions_id=@i AND deleted=false", new NpgsqlParameter("i", sessionId));
+                    "SELECT * FROM login_sessions WHERE login_sessions_id=@i AND logged_out=false", new NpgsqlParameter("i", sessionId));
 
             return session;
         }
@@ -74,6 +74,7 @@ namespace Blog.Web.Areas.Admin.Services
                 LoginTime = now,
                 SessionKey = sessionKey,
                 UserId = userId,
+
             };
 
             if (!rememberMe)
