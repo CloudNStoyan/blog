@@ -33,7 +33,6 @@ namespace Blog.Web
             {
                 options.AddPolicy("Admins", policy =>
                 {
-                    policy.Requirements.Add(new LoggedRequirement(true));
                     policy.AuthenticationSchemes = new List<string>
                     {
                         CookieAuthenticationDefaults.AuthenticationScheme
@@ -41,8 +40,6 @@ namespace Blog.Web
                 });
             });
 
-
-            services.AddSingleton<IAuthorizationHandler, LoggedHandler>();
             services.AddHttpContextAccessor();
 
             
