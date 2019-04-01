@@ -293,7 +293,7 @@ namespace Blog.Web.DAL
             string primaryKeyColumnName = columnAttributes.FirstOrDefault(c => c.IsPrimaryKey)?.Name;
 
             var columnsAndValuesDic = properties.Where(x => !x.GetCustomAttribute<ColumnAttribute>().IsPrimaryKey)
-                .ToDictionary(x => x.GetCustomAttribute<ColumnAttribute>().Name, x => x.GetValue(poco, null));
+                .ToDictionary(x => x.GetCustomAttribute<ColumnAttribute>().Name, x => x.GetValue(poco, null) ?? DBNull.Value);
 
             var columnsAndValues = columnsAndValuesDic.Select((x, i) => $"{x.Key}=@a{i}");
 

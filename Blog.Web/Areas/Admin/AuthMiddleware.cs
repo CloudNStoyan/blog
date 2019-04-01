@@ -59,14 +59,6 @@ namespace Blog.Web.Areas.Admin
                 }
             });
 
-            var claims = new List<Claim> {new Claim(ClaimTypes.Name, pocoUser.Name, ClaimValueTypes.String)};
-            var userIdentity = new ClaimsIdentity("Admins");
-            userIdentity.AddClaims(claims);
-
-            context.User.AddIdentity(userIdentity);
-
-            context.User.FindAll("Logged");
-
             await this.next.Invoke(context);
         }
     }

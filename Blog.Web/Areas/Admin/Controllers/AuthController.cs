@@ -1,7 +1,10 @@
-﻿using Blog.Web.Areas.Admin.Services;
+﻿using System.Security.Claims;
+using System.Threading.Tasks;
 using Blog.Web.Models;
 using Blog.Web.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using AuthenticationService = Blog.Web.Areas.Admin.Services.AuthenticationService;
 
 namespace Blog.Web.Areas.Admin.Controllers
 {
@@ -21,7 +24,7 @@ namespace Blog.Web.Areas.Admin.Controllers
             this.SessionCookieService = sessionCookieService;
         }
 
-        public IActionResult Login(LoginAccountModel account)
+        public async Task<IActionResult> Login(LoginAccountModel account)
         {
             if (string.IsNullOrWhiteSpace(account.Username) || string.IsNullOrWhiteSpace(account.Password))
             {
@@ -39,6 +42,11 @@ namespace Blog.Web.Areas.Admin.Controllers
 
             this.SessionCookieService.SetSessionKey(sessionKey);
 
+            var identity = new ClaimsIdentity("Cookies");
+            identity.AddClaim(new Claim(ClaimTypes.Name, user.Name));
+
+            await this.HttpContext.SignInAsync("Cookies", new ClaimsPrincipal(identity));
+
             return this.RedirectToAction("Index", "Home");
         }
 
@@ -47,6 +55,8 @@ namespace Blog.Web.Areas.Admin.Controllers
             var session = this.SessionService.Session;
 
             this.AuthService.Logout(session);
+
+            this.HttpContext.SignOutAsync("Cookies");
 
             return this.Redirect("LoginPage");
         }

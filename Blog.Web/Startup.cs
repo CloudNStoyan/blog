@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using Autofac.Extensions.DependencyInjection;
 using Blog.Web.Areas.Admin;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -26,22 +20,19 @@ namespace Blog.Web
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            services.AddIdentityCore<MyUser>(options => { });
+            services.AddScoped<IUserStore<MyUser>, MyUserStore>();
 
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie("Cookies", option =>
+                {
+                    option.LoginPath = "/Admin/Auth/LoginPage";
+                    option.LogoutPath = "/Admin/Auth/LogOut";
+                });
 
             services.AddMvc();
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("Admins", policy =>
-                {
-                    policy.AuthenticationSchemes = new List<string>
-                    {
-                        CookieAuthenticationDefaults.AuthenticationScheme
-                    };
-                });
-            });
 
             services.AddHttpContextAccessor();
-
             
             return new AutofacServiceProvider(ContainerFactory.Create(services));
         }
@@ -67,6 +58,9 @@ namespace Blog.Web
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+
+            app.UseAuthentication();
         }
     }
 }
