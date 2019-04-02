@@ -1,18 +1,17 @@
-﻿using System.Net;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Blog.Web.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+    [Authorize]
     public class HomeController : Controller
     {
         public IActionResult Index()
         {
-            // this.User.Identity.IsAuthenticated
-            // this.User.Identity.Name
+            var a = this.User.Identity.IsAuthenticated;
+            var b = this.User.Identity.Name;
+            var c = this.User.Identity.AuthenticationType;
 
             return this.View();
         }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Blog.Web.Areas.Admin.Models;
@@ -7,9 +6,6 @@ using Blog.Web.Areas.Admin.Services;
 using Blog.Web.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Authentication;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Blog.Web.Areas.Admin
 {
@@ -25,6 +21,7 @@ namespace Blog.Web.Areas.Admin
         
         // ReSharper disable once UnusedMember.Global
         public async Task Invoke(HttpContext context, AuthenticationService authService, SessionCookieService sessionCookieService) {
+
             context.SetSession(new RequestSession());
 
             string sessionKey = sessionCookieService.GetSessionKey();
@@ -59,6 +56,10 @@ namespace Blog.Web.Areas.Admin
                 }
             });
 
+            var identity = new ClaimsIdentity("Custom");
+            identity.AddClaim(new Claim(ClaimTypes.Name, pocoUser.Name));
+            context.User = new ClaimsPrincipal(identity);
+
             await this.next.Invoke(context);
         }
     }
@@ -75,7 +76,7 @@ namespace Blog.Web.Areas.Admin
 
     public static class MyMiddleWareExtensions
     {
-        public static IApplicationBuilder UseCookieMiddleware(this IApplicationBuilder builder)
+        public static IApplicationBuilder UseAuthMiddleware(this IApplicationBuilder builder)
         {
             return builder.UseMiddleware<AuthMiddleware>();
         }

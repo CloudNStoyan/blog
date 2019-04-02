@@ -1,11 +1,9 @@
 ﻿using System;
 using Autofac.Extensions.DependencyInjection;
 using Blog.Web.Areas.Admin;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Blog.Web
@@ -20,15 +18,14 @@ namespace Blog.Web
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddIdentityCore<MyUser>(options => { });
-            services.AddScoped<IUserStore<MyUser>, MyUserStore>();
+            services.AddAuthorization();
 
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie("Cookies", option =>
-                {
-                    option.LoginPath = "/Admin/Auth/LoginPage";
-                    option.LogoutPath = "/Admin/Auth/LogOut";
-                });
+            const string SchemaName = "Custom";
+
+            services.AddAuthentication(SchemaName).AddCookie(SchemaName, options =>
+            {
+                options.LoginPath = new PathString("/Admin/Auth/LoginPage");
+            });
 
             services.AddMvc();
 
@@ -46,7 +43,7 @@ namespace Blog.Web
 
             app.UseStaticFiles();
 
-            app.UseCookieMiddleware();
+            app.UseAuthMiddleware();
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
@@ -58,9 +55,6 @@ namespace Blog.Web
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
-
-
-            app.UseAuthentication();
         }
     }
 }
