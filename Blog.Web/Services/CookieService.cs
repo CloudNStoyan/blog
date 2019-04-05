@@ -35,7 +35,7 @@ namespace Blog.Web.Services
     {
         private CookieService CookieService { get; }
 
-        private const string CookieKey = "__session_";
+        private const string CookieKey = "__session__";
         
         public SessionCookieService(CookieService cookieService)
         {

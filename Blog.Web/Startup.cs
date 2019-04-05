@@ -4,9 +4,7 @@ using Blog.Web.Areas.Admin;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace Blog.Web
 {
@@ -14,12 +12,6 @@ namespace Blog.Web
     {
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.Configure<CookiePolicyOptions>(options =>
-            {
-                options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
-            });
-
             services.AddAuthorization();
 
             services.AddAuthentication("CustomAuthentication")

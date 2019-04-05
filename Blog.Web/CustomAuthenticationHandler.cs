@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
@@ -12,9 +9,12 @@ namespace Blog.Web
 {
     public class CustomAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
-        public CustomAuthenticationHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock) : base(options, logger, encoder, clock)
+        public CustomAuthenticationHandler(
+            IOptionsMonitor<AuthenticationSchemeOptions> options, 
+            ILoggerFactory logger, 
+            UrlEncoder encoder,
+            ISystemClock clock) : base(options, logger, encoder, clock)
         {
-
         }
 
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -23,10 +23,7 @@ namespace Blog.Web
 
             if (!identity.IsAuthenticated)
             {
-                return Task.FromResult(AuthenticateResult.Fail("Not logged!", new AuthenticationProperties()
-                {
-                    RedirectUri = "/Auth/LoginPage"
-                }));
+                return Task.FromResult(AuthenticateResult.Fail("Not logged!"));
             }
 
             var principal = new ClaimsPrincipal(identity);
