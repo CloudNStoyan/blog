@@ -4,7 +4,7 @@ namespace Blog.Web.Controllers
 {
     public class DataController : Controller
     {
-        private PostService PostService { get; set; }
+        private PostService PostService { get; }
 
 
         public DataController(PostService postService)
@@ -15,9 +15,8 @@ namespace Blog.Web.Controllers
         public IActionResult Post(int id)
         {
             var post = this.PostService.GetPostById(id);
+
             return this.View(post);
-
-
         }
     }
 }

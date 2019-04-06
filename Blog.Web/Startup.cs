@@ -14,8 +14,8 @@ namespace Blog.Web
         {
             services.AddAuthorization();
 
-            services.AddAuthentication("CustomAuthentication")
-                .AddScheme<AuthenticationSchemeOptions, CustomAuthenticationHandler>("CustomAuthentication", null);
+            const string customName = "CustomAuthentication";
+            services.AddAuthentication(customName).AddCustom(customName);
 
             services.AddMvc();
 
