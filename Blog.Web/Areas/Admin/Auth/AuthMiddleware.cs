@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Blog.Web.Areas.Admin.Models;
-using Blog.Web.Areas.Admin.Services;
-using Blog.Web.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 
-namespace Blog.Web.Areas.Admin
+namespace Blog.Web.Areas.Admin.Auth
 {
+    /// <summary>
+    /// Checks if authentication is provided on every request
+    /// </summary>
     // ReSharper disable once ClassNeverInstantiated.Global
     public class AuthMiddleware
     {
@@ -64,6 +64,9 @@ namespace Blog.Web.Areas.Admin
         }
     }
 
+    /// <summary>
+    /// The current session that user is linked with
+    /// </summary>
     public class RequestSession
     {
         public bool IsLogged { get; set; }
@@ -74,6 +77,9 @@ namespace Blog.Web.Areas.Admin
      
     }
 
+    /// <summary>
+    /// Connects AuthMiddleware to the pipe
+    /// </summary>
     public static class MyMiddleWareExtensions
     {
         public static IApplicationBuilder UseAuthMiddleware(this IApplicationBuilder builder)

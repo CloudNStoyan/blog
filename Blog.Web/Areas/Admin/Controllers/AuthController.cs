@@ -1,7 +1,5 @@
-﻿using Blog.Web.Models;
-using Blog.Web.Services;
+﻿using Blog.Web.Areas.Admin.Auth;
 using Microsoft.AspNetCore.Mvc;
-using AuthenticationService = Blog.Web.Areas.Admin.Services.AuthenticationService;
 
 namespace Blog.Web.Areas.Admin.Controllers
 {
@@ -21,21 +19,21 @@ namespace Blog.Web.Areas.Admin.Controllers
             this.SessionCookieService = sessionCookieService;
         }
 
-        public IActionResult Login(LoginAccountModel account)
+        public IActionResult Login(LoginDataModel data)
         {
-            if (string.IsNullOrWhiteSpace(account.Username) || string.IsNullOrWhiteSpace(account.Password))
+            if (string.IsNullOrWhiteSpace(data.Username) || string.IsNullOrWhiteSpace(data.Password))
             {
                 return this.RedirectToAction("Index", "Home", new { area = "" });
             }
 
-            var user = this.AuthService.Login(account);
+            var user = this.AuthService.Login(data);
 
             if (user == null)
             {
                 return this.RedirectToAction("Index", "Home");
             }
 
-            string sessionKey = this.AuthService.CreateSession(user.UserId, account.RememberMe);
+            string sessionKey = this.AuthService.CreateSession(user.UserId, data.RememberMe);
 
             this.SessionCookieService.SetSessionKey(sessionKey);
 

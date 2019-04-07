@@ -4,7 +4,7 @@ using Blog.Web.DAL;
 using Blog.Web.Models;
 using Npgsql;
 
-namespace Blog.Web
+namespace Blog.Web.Services
 {
     public class PostService
     {

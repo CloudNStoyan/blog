@@ -1,7 +1,7 @@
 ﻿using System;
 using Autofac.Extensions.DependencyInjection;
 using Blog.Web.Areas.Admin;
-using Microsoft.AspNetCore.Authentication;
+using Blog.Web.Areas.Admin.Auth;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,7 +15,9 @@ namespace Blog.Web
             services.AddAuthorization();
 
             const string customName = "CustomAuthentication";
-            services.AddAuthentication(customName).AddCustom(customName);
+
+            services.AddAuthentication(customName)
+                .AddCustomAuthentication(customName);
 
             services.AddMvc();
 

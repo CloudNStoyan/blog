@@ -1,8 +1,10 @@
-﻿using Blog.Web.Areas.Admin;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 
-namespace Blog.Web.Services
+namespace Blog.Web.Areas.Admin.Auth
 {
+    /// <summary>
+    /// Handles the use of sessions
+    /// </summary>
     public class SessionService
     {
         private IHttpContextAccessor ContextAccessor { get; }

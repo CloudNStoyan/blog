@@ -5,8 +5,11 @@ using Blog.Web.DAL;
 using Blog.Web.Models;
 using Npgsql;
 
-namespace Blog.Web.Areas.Admin.Services
+namespace Blog.Web.Areas.Admin.Auth
 {
+    /// <summary>
+    /// Handles all the authentication calls with the database
+    /// </summary>
     public class AuthenticationService
     {
         private Database Database { get; }
@@ -16,7 +19,12 @@ namespace Blog.Web.Areas.Admin.Services
             this.Database = database;
         }
 
-        public UserPoco Login(LoginAccountModel loginModel)
+        /// <summary>
+        /// Signs in the user using login account
+        /// </summary>
+        /// <param name="loginModel">The user account</param>
+        /// <returns>Userpoco filled with the account data from the database.</returns>
+        public UserPoco Login(LoginDataModel loginModel)
         {
             byte[] passwordBytes = Encoding.ASCII.GetBytes(loginModel.Password);
 
@@ -37,6 +45,11 @@ namespace Blog.Web.Areas.Admin.Services
             return account;
         }
 
+        /// <summary>
+        /// Gets user with this <param name="userId">id</param> from the database and returns it
+        /// </summary>
+        /// <param name="userId">The user id</param>
+        /// <returns>UserPoco filled with the data of the user.</returns>
         public UserPoco GetUserById(int userId)
         {
             var parametar = new NpgsqlParameter("i", userId);
@@ -44,6 +57,11 @@ namespace Blog.Web.Areas.Admin.Services
             return this.Database.QueryOne<UserPoco>("SELECT * FROM users WHERE user_id=@i;", parametar);
         }
 
+        /// <summary>
+        /// Gets session with this <param name="sessionKey">session key</param> from the database and returns it
+        /// </summary>
+        /// <param name="sessionKey">The session key</param>
+        /// <returns></returns>
         public LoginSessionsPoco GetSessionBySessionKey(string sessionKey)
         {
             var key = new NpgsqlParameter("k", sessionKey);
@@ -55,6 +73,11 @@ namespace Blog.Web.Areas.Admin.Services
             return session;
         }
 
+        /// <summary>
+        /// Gets session with this <param name="sessionId">session id</param> from the database and returns it
+        /// </summary>
+        /// <param name="sessionId">The session id</param>
+        /// <returns>The LoginSessionsPoco from the database</returns>
         private LoginSessionsPoco GetSessionById(int sessionId)
         {
             var session = this.Database.QueryOne<LoginSessionsPoco>(
@@ -63,6 +86,12 @@ namespace Blog.Web.Areas.Admin.Services
             return session;
         }
 
+        /// <summary>
+        /// Creates session with userId and rememberMe boolean.
+        /// </summary>
+        /// <param name="userId">The user id</param>
+        /// <param name="rememberMe">If the session will be pernament or will expire</param>
+        /// <returns>The session key</returns>
         public string CreateSession(int userId, bool rememberMe)
         {
             string sessionKey = GetRandomSessionKey();
@@ -108,6 +137,10 @@ namespace Blog.Web.Areas.Admin.Services
             return builder.ToString();
         }
 
+        /// <summary>
+        /// Log outs the session
+        /// </summary>
+        /// <param name="requestSession">The session to be logged out</param>
         public void Logout(RequestSession requestSession)
         {
             var sessiom = this.GetSessionById(requestSession.SessionId);
@@ -120,13 +153,18 @@ namespace Blog.Web.Areas.Admin.Services
             this.Database.Update(sessiom);
         }
 
-        public bool CreateAccount(RegisterModel registerModel)
+        /// <summary>
+        /// Creates account in the databse
+        /// </summary>
+        /// <param name="registerDataModel">The registration info</param>
+        /// <returns>If the account was sucessfully created</returns>
+        public bool CreateAccount(RegisterDataModel registerDataModel)
         {
             var poco = new UserPoco
             {
-                AvatarUrl = registerModel.AvatarUrl,
-                Name = registerModel.Username,
-                Password = registerModel.Password
+                AvatarUrl = registerDataModel.AvatarUrl,
+                Name = registerDataModel.Username,
+                Password = registerDataModel.Password
             };
 
             int result = this.Database.Insert(poco);

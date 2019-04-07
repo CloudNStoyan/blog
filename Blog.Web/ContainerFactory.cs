@@ -1,8 +1,8 @@
-﻿using Autofac;
+﻿using System.Linq;
+using System.Reflection;
+using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using Blog.Web.Areas.Admin.Services;
 using Blog.Web.DAL;
-using Blog.Web.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 
@@ -18,17 +18,30 @@ namespace Blog.Web
             {
                 builder.Populate(serviceCollection);
             }
-            
+
+            builder.RegisterModule<MainModule>();
+           
+            return builder.Build();
+        }
+    }
+
+    public class MainModule : Autofac.Module
+    {
+        protected override void Load(ContainerBuilder builder)
+        {
             builder.Register((ctx, p) => new NpgsqlConnection("Server=vm13.lan;Port=4401;Database=blog;Uid=blog;Pwd=test123;")).InstancePerLifetimeScope();
 
-            builder.RegisterType<SessionCookieService>().InstancePerLifetimeScope();
-            builder.RegisterType<CookieService>().InstancePerLifetimeScope();
-            builder.RegisterType<SessionService>().InstancePerLifetimeScope();
-            builder.RegisterType<PostService>().InstancePerLifetimeScope();
             builder.RegisterType<Database>().InstancePerLifetimeScope();
-            builder.RegisterType<AuthenticationService>().InstancePerLifetimeScope();
 
-            return builder.Build();
+            var serviceTypes = Assembly.GetExecutingAssembly()
+                .DefinedTypes.Where(x => x.IsClass && x.Name.EndsWith("Service")).ToList();
+
+            foreach (var serviceType in serviceTypes)
+            {
+                builder.RegisterType(serviceType).InstancePerLifetimeScope();
+            }
+
+            base.Load(builder);
         }
     }
 }

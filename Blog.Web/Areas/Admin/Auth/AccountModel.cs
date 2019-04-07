@@ -1,4 +1,4 @@
-﻿namespace Blog.Web.Areas.Admin.Models
+﻿namespace Blog.Web.Areas.Admin.Auth
 {
     public class AccountModel
     {
