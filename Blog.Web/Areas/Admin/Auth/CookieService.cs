@@ -9,8 +9,14 @@ namespace Blog.Web.Areas.Admin.Auth
     {
         private IHttpContextAccessor ContextAccessor { get; }
 
+        /// <summary>
+        /// Returns the HttpContext Response
+        /// </summary>
         private HttpResponse Response => this.ContextAccessor.HttpContext.Response;
 
+        /// <summary>
+        /// Returns the HttpContext Request
+        /// </summary>
         private HttpRequest Request => this.ContextAccessor.HttpContext.Request;
 
         public CookieService(IHttpContextAccessor contextAccessor)
