@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Security.Cryptography;
 using System.Text;
-using Blog.Web.DAL;
-using Blog.Web.Models;
+using Blog.Web.DAL;     
 using Npgsql;
 
 namespace Blog.Web.Areas.Admin.Auth
@@ -37,10 +36,10 @@ namespace Blog.Web.Areas.Admin.Auth
 
             var parametars = new[]
             {
-                new NpgsqlParameter("u", loginModel.Username), new NpgsqlParameter("p", result)
+                new NpgsqlParameter("username", loginModel.Username), new NpgsqlParameter("password", result)
             };
 
-            var account = this.Database.QueryOne<UserPoco>("SELECT * FROM users WHERE username=@u AND password=@p;", parametars);
+            var account = this.Database.QueryOne<UserPoco>("SELECT * FROM users WHERE username=@username AND password=@password;", parametars);
 
             return account;
         }
@@ -52,9 +51,9 @@ namespace Blog.Web.Areas.Admin.Auth
         /// <returns>UserPoco filled with the data of the user.</returns>
         public UserPoco GetUserById(int userId)
         {
-            var parametar = new NpgsqlParameter("i", userId);
+            var parametar = new NpgsqlParameter("userId", userId);
 
-            return this.Database.QueryOne<UserPoco>("SELECT * FROM users WHERE user_id=@i;", parametar);
+            return this.Database.QueryOne<UserPoco>("SELECT * FROM users WHERE user_id=@userId;", parametar);
         }
 
         /// <summary>
@@ -64,11 +63,11 @@ namespace Blog.Web.Areas.Admin.Auth
         /// <returns></returns>
         public LoginSessionsPoco GetSessionBySessionKey(string sessionKey)
         {
-            var key = new NpgsqlParameter("k", sessionKey);
+            var key = new NpgsqlParameter("sessionKey", sessionKey);
 
             var session =
                 this.Database.QueryOne<LoginSessionsPoco>(
-                    "SELECT * FROM login_sessions WHERE session_key=@k AND logged_out=false;", key);
+                    "SELECT * FROM login_sessions WHERE session_key=@sessionKey AND logged_out=false;", key);
 
             return session;
         }
@@ -81,7 +80,7 @@ namespace Blog.Web.Areas.Admin.Auth
         private LoginSessionsPoco GetSessionById(int sessionId)
         {
             var session = this.Database.QueryOne<LoginSessionsPoco>(
-                    "SELECT * FROM login_sessions WHERE login_sessions_id=@i AND logged_out=false", new NpgsqlParameter("i", sessionId));
+                    "SELECT * FROM login_sessions WHERE login_sessions_id=@sessionId AND logged_out=false;", new NpgsqlParameter("sessionId", sessionId));
 
             return session;
         }
