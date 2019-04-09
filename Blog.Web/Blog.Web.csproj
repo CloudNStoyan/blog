@@ -25,9 +25,4 @@
     </Content>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Areas\Admin\Models\" />
-    <Folder Include="Areas\Admin\Services\" />
-  </ItemGroup>
-
 </Project>

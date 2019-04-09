@@ -7,7 +7,7 @@ using Npgsql;
 namespace Blog.Web.Areas.Admin.Auth
 {
     /// <summary>
-    /// Handles all the authentication calls with the database
+    /// Handles all the authentication calls with the database.
     /// </summary>
     // ReSharper disable once ClassNeverInstantiated.Global
     public class AuthenticationService
@@ -20,7 +20,7 @@ namespace Blog.Web.Areas.Admin.Auth
         }
 
         /// <summary>
-        /// Signs in the user using login account
+        /// Signs in the user using login account.
         /// </summary>
         public UserPoco Login(LoginDataModel loginModel)
         {
@@ -66,7 +66,7 @@ namespace Blog.Web.Areas.Admin.Auth
         public LoginSessionsPoco GetSessionBySessionKey(string sessionKey)
         {
             var session = this.Database.QueryOne<LoginSessionsPoco>(
-                    "SELECT * FROM login_sessions WHERE session_key=@sessionKey AND logged_out=false;", 
+                    "SELECT * FROM login_sessions WHERE session_key=@sessionKey;", 
                     new NpgsqlParameter("sessionKey", sessionKey));
 
             return session;
@@ -78,7 +78,7 @@ namespace Blog.Web.Areas.Admin.Auth
         private LoginSessionsPoco GetSessionById(int sessionId)
         {
             var session = this.Database.QueryOne<LoginSessionsPoco>(
-                    "SELECT * FROM login_sessions WHERE login_sessions_id=@sessionId AND logged_out=false;", 
+                    "SELECT * FROM login_sessions ls WHERE ls.login_sessions_id=@sessionId;", 
                     new NpgsqlParameter("sessionId", sessionId));
 
             return session;
@@ -132,7 +132,7 @@ namespace Blog.Web.Areas.Admin.Auth
         }
 
         /// <summary>
-        /// Log outs the session
+        /// Log outs the session.
         /// </summary>
         public void Logout(RequestSession requestSession)
         {

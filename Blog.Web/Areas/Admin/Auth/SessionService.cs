@@ -5,6 +5,7 @@ namespace Blog.Web.Areas.Admin.Auth
     /// <summary>
     /// Handles the use of sessions
     /// </summary>
+    // ReSharper disable once ClassNeverInstantiated.Global
     public class SessionService
     {
         private IHttpContextAccessor ContextAccessor { get; }

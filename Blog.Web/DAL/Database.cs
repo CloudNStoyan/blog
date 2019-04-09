@@ -14,7 +14,6 @@ namespace Blog.Web.DAL
         /// <summary>
         /// <paramref name="conn"/>: The NpgsqlConnection that the database class uses.
         /// </summary>
-        /// <param name="conn"></param>
         public Database(NpgsqlConnection conn)
         {
             this.Connection = conn;

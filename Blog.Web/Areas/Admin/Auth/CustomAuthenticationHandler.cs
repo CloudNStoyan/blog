@@ -7,9 +7,6 @@ using Microsoft.Extensions.Options;
 
 namespace Blog.Web.Areas.Admin.Auth
 {
-    /// <summary>
-    /// Authentication handler for authentication and authorization
-    /// </summary>
     // ReSharper disable once ClassNeverInstantiated.Global
     public class CustomAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
@@ -42,6 +39,7 @@ namespace Blog.Web.Areas.Admin.Auth
         protected override Task HandleChallengeAsync(AuthenticationProperties properties)
         {
             this.Context.Response.Redirect("/Admin/Auth/LoginPage");
+
             return Task.CompletedTask;
         }
     }

@@ -5,7 +5,7 @@ namespace Blog.Web.Controllers
 {
     public class HomeController : Controller
     {
-        private PostService PostService { get; set; }
+        private PostService PostService { get; }
 
         public HomeController(PostService postService)
         {

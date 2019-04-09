@@ -1,6 +1,5 @@
 ﻿using System;
 using Autofac.Extensions.DependencyInjection;
-using Blog.Web.Areas.Admin;
 using Blog.Web.Areas.Admin.Auth;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

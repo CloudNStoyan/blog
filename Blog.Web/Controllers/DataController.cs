@@ -6,8 +6,7 @@ namespace Blog.Web.Controllers
     public class DataController : Controller
     {
         private PostService PostService { get; }
-
-
+        
         public DataController(PostService postService)
         {
             this.PostService = postService;
