@@ -14,9 +14,6 @@ namespace Blog.Web.Areas.Admin.Auth
             this.ContextAccessor = contextAccessor;
         }
 
-        /// <summary>
-        /// Returns the current session
-        /// </summary>
         public RequestSession Session => this.ContextAccessor.HttpContext.GetSession();
     }
 

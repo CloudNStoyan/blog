@@ -29,7 +29,7 @@ namespace Blog.Web.Areas.Admin.Auth
         {
             var session = this.SessionService.Session;
 
-            if (!session.IsLogged)
+            if (!session.IsLoggedIn)
             {
                 return Task.FromResult(AuthenticateResult.Fail("Not logged!"));
             }

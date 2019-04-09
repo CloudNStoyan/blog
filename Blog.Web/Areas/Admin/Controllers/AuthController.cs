@@ -33,7 +33,7 @@ namespace Blog.Web.Areas.Admin.Controllers
                 return this.RedirectToAction("Index", "Home");
             }
 
-            string sessionKey = this.AuthService.CreateSession(user.UserId, data.RememberMe);
+            string sessionKey = this.AuthService.CreateNewSession(user.UserId, data.RememberMe);
 
             this.SessionCookieService.SetSessionKey(sessionKey);
 
@@ -46,6 +46,8 @@ namespace Blog.Web.Areas.Admin.Controllers
 
             this.AuthService.Logout(session);
 
+            this.SessionCookieService.RemoveSessionKey();
+
             return this.Redirect("LoginPage");
         }
 
@@ -53,7 +55,7 @@ namespace Blog.Web.Areas.Admin.Controllers
         {
             var session = this.SessionService.Session;
 
-            if (session.IsLogged)
+            if (session.IsLoggedIn)
             {
                 return this.RedirectToAction("Index", "Home");
             }

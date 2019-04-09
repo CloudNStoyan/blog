@@ -46,7 +46,7 @@ namespace Blog.Web.Areas.Admin.Auth
 
             context.SetSession(new RequestSession
             {
-                IsLogged = true,
+                IsLoggedIn = true,
                 SessionId = session.LoginSessionId,
                 UserAccount = new AccountModel
                 {
@@ -69,12 +69,20 @@ namespace Blog.Web.Areas.Admin.Auth
     /// </summary>
     public class RequestSession
     {
-        public bool IsLogged { get; set; }
+        public bool IsLoggedIn { get; set; }
 
         public AccountModel UserAccount { get; set; }
 
         public int SessionId { get; set; }
-     
+    }
+
+    public class AccountModel
+    {
+        public string Username { get; set; }
+
+        public int UserId { get; set; }
+
+        public string Avatar { get; set; }
     }
 
     /// <summary>

@@ -9,6 +9,7 @@ namespace Blog.Web.Areas.Admin.Auth
     /// <summary>
     /// Handles all the authentication calls with the database
     /// </summary>
+    // ReSharper disable once ClassNeverInstantiated.Global
     public class AuthenticationService
     {
         private Database Database { get; }
@@ -21,8 +22,6 @@ namespace Blog.Web.Areas.Admin.Auth
         /// <summary>
         /// Signs in the user using login account
         /// </summary>
-        /// <param name="loginModel">The user account</param>
-        /// <returns>Userpoco filled with the account data from the database.</returns>
         public UserPoco Login(LoginDataModel loginModel)
         {
             byte[] passwordBytes = Encoding.ASCII.GetBytes(loginModel.Password);
@@ -36,10 +35,14 @@ namespace Blog.Web.Areas.Admin.Auth
 
             var parametars = new[]
             {
-                new NpgsqlParameter("username", loginModel.Username), new NpgsqlParameter("password", result)
+                new NpgsqlParameter("username", loginModel.Username),
+                new NpgsqlParameter("password", result)
             };
 
-            var account = this.Database.QueryOne<UserPoco>("SELECT * FROM users WHERE username=@username AND password=@password;", parametars);
+            var account = this.Database.QueryOne<UserPoco>(
+                "SELECT * FROM users WHERE username=@username AND password=@password;", 
+                parametars
+            );
 
             return account;
         }
@@ -51,9 +54,8 @@ namespace Blog.Web.Areas.Admin.Auth
         /// <returns>UserPoco filled with the data of the user.</returns>
         public UserPoco GetUserById(int userId)
         {
-            var parametar = new NpgsqlParameter("userId", userId);
-
-            return this.Database.QueryOne<UserPoco>("SELECT * FROM users WHERE user_id=@userId;", parametar);
+            return this.Database.QueryOne<UserPoco>("SELECT * FROM users WHERE user_id=@userId;", 
+                new NpgsqlParameter("userId", userId));
         }
 
         /// <summary>
@@ -63,11 +65,9 @@ namespace Blog.Web.Areas.Admin.Auth
         /// <returns></returns>
         public LoginSessionsPoco GetSessionBySessionKey(string sessionKey)
         {
-            var key = new NpgsqlParameter("sessionKey", sessionKey);
-
-            var session =
-                this.Database.QueryOne<LoginSessionsPoco>(
-                    "SELECT * FROM login_sessions WHERE session_key=@sessionKey AND logged_out=false;", key);
+            var session = this.Database.QueryOne<LoginSessionsPoco>(
+                    "SELECT * FROM login_sessions WHERE session_key=@sessionKey AND logged_out=false;", 
+                    new NpgsqlParameter("sessionKey", sessionKey));
 
             return session;
         }
@@ -75,23 +75,19 @@ namespace Blog.Web.Areas.Admin.Auth
         /// <summary>
         /// Gets session with this <param name="sessionId">session id</param> from the database and returns it
         /// </summary>
-        /// <param name="sessionId">The session id</param>
-        /// <returns>The LoginSessionsPoco from the database</returns>
         private LoginSessionsPoco GetSessionById(int sessionId)
         {
             var session = this.Database.QueryOne<LoginSessionsPoco>(
-                    "SELECT * FROM login_sessions WHERE login_sessions_id=@sessionId AND logged_out=false;", new NpgsqlParameter("sessionId", sessionId));
+                    "SELECT * FROM login_sessions WHERE login_sessions_id=@sessionId AND logged_out=false;", 
+                    new NpgsqlParameter("sessionId", sessionId));
 
             return session;
         }
 
         /// <summary>
-        /// Creates session with userId and rememberMe boolean.
+        /// Returns the session key of the session.
         /// </summary>
-        /// <param name="userId">The user id</param>
-        /// <param name="rememberMe">If the session will be pernament or will expire</param>
-        /// <returns>The session key</returns>
-        public string CreateSession(int userId, bool rememberMe)
+        public string CreateNewSession(int userId, bool rememberMe)
         {
             string sessionKey = GetRandomSessionKey();
 
@@ -102,7 +98,6 @@ namespace Blog.Web.Areas.Admin.Auth
                 LoginTime = now,
                 SessionKey = sessionKey,
                 UserId = userId,
-
             };
 
             if (!rememberMe)
@@ -139,7 +134,6 @@ namespace Blog.Web.Areas.Admin.Auth
         /// <summary>
         /// Log outs the session
         /// </summary>
-        /// <param name="requestSession">The session to be logged out</param>
         public void Logout(RequestSession requestSession)
         {
             var sessiom = this.GetSessionById(requestSession.SessionId);
@@ -150,25 +144,6 @@ namespace Blog.Web.Areas.Admin.Auth
             sessiom.LoggedOutTime = now;
 
             this.Database.Update(sessiom);
-        }
-
-        /// <summary>
-        /// Creates account in the databse
-        /// </summary>
-        /// <param name="registerDataModel">The registration info</param>
-        /// <returns>If the account was sucessfully created</returns>
-        public bool CreateAccount(RegisterDataModel registerDataModel)
-        {
-            var poco = new UserPoco
-            {
-                AvatarUrl = registerDataModel.AvatarUrl,
-                Name = registerDataModel.Username,
-                Password = registerDataModel.Password
-            };
-
-            int result = this.Database.Insert(poco);
-
-            return result > 0;
         }
     }
 }

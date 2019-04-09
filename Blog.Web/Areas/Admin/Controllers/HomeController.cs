@@ -9,10 +9,6 @@ namespace Blog.Web.Areas.Admin.Controllers
     {
         public IActionResult Index()
         {
-            var a = this.User.Identity.IsAuthenticated;
-            var b = this.User.Identity.Name;
-            var c = this.User.Identity.AuthenticationType;
-
             return this.View();
         }
     }

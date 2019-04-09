@@ -18,8 +18,6 @@ namespace Blog.Web.Services
         /// <summary>
         /// Get post from the database with id
         /// </summary>
-        /// <param name="id">The id of the post</param>
-        /// <returns>PostModel filled with the data of the post from the database</returns>
         public PostModel GetPostById(int id)
         {
             var postPoco = this.Database.QueryOne<PostPoco>("SELECT * FROM posts WHERE post_id=@postId;", new NpgsqlParameter("postId", id));
@@ -40,10 +38,8 @@ namespace Blog.Web.Services
         }
 
         /// <summary>
-        /// Retrieves the latest N posts
+        /// Retrieves the latest posts
         /// </summary>
-        /// <param name="count">How many posts to retrieve</param>
-        /// <returns>PostModels filled with the data of the posts from the database</returns>
         public PostModel[] GetLatestPosts(int count)
         {
             var postPocos = this.Database.Query<PostPoco>("SELECT * FROM posts ORDER BY post_id LIMIT @count;", new NpgsqlParameter("count", count));
@@ -73,8 +69,6 @@ namespace Blog.Web.Services
         /// <summary>
         /// Retrieves tags from post id
         /// </summary>
-        /// <param name="id">The post id</param>
-        /// <returns>TagPocos from the database for this particular post</returns>
         private TagPoco[] GetPostTags(int id)
         {
             var tags = this.Database.Query<TagPoco>(
