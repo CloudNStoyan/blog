@@ -40,7 +40,7 @@ namespace Blog.Web.Areas.Admin.Auth
             };
 
             var account = this.Database.QueryOne<UserPoco>(
-                "SELECT * FROM users WHERE username=@username AND password=@password;", 
+                "SELECT * FROM users AS user WHERE user.username=@username AND user.password=@password;", 
                 parametars
             );
 
@@ -54,7 +54,7 @@ namespace Blog.Web.Areas.Admin.Auth
         /// <returns>UserPoco filled with the data of the user.</returns>
         public UserPoco GetUserById(int userId)
         {
-            return this.Database.QueryOne<UserPoco>("SELECT * FROM users WHERE user_id=@userId;", 
+            return this.Database.QueryOne<UserPoco>("SELECT * FROM users AS user WHERE user.user_id=@userId;", 
                 new NpgsqlParameter("userId", userId));
         }
 
@@ -66,7 +66,7 @@ namespace Blog.Web.Areas.Admin.Auth
         public LoginSessionsPoco GetSessionBySessionKey(string sessionKey)
         {
             var session = this.Database.QueryOne<LoginSessionsPoco>(
-                    "SELECT * FROM login_sessions WHERE session_key=@sessionKey;", 
+                    "SELECT * FROM login_sessions AS login_session WHERE login_session.session_key=@sessionKey;", 
                     new NpgsqlParameter("sessionKey", sessionKey));
 
             return session;

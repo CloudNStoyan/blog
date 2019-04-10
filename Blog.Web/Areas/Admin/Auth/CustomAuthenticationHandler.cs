@@ -7,6 +7,9 @@ using Microsoft.Extensions.Options;
 
 namespace Blog.Web.Areas.Admin.Auth
 {
+    /// <summary>
+    /// Its created for the authorize attribute. If session is provided will fill the Authentication which authroize attribute is for.
+    /// </summary>
     // ReSharper disable once ClassNeverInstantiated.Global
     public class CustomAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
@@ -36,6 +39,9 @@ namespace Blog.Web.Areas.Admin.Auth
             return Task.FromResult(AuthenticateResult.Success(ticket));
         }
 
+        /// <summary>
+        /// If something went wrong redirects to this method.
+        /// </summary>
         protected override Task HandleChallengeAsync(AuthenticationProperties properties)
         {
             this.Context.Response.Redirect("/Admin/Auth/LoginPage");
@@ -45,7 +51,7 @@ namespace Blog.Web.Areas.Admin.Auth
     }
 
     /// <summary>
-    /// Adds the authentication handler to the builder
+    /// Adds the authentication handler to the main builder
     /// </summary>
     public static class CustomAuthenticationExtension
     {

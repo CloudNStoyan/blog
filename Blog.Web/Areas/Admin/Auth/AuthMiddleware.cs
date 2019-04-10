@@ -7,7 +7,8 @@ using Microsoft.AspNetCore.Http;
 namespace Blog.Web.Areas.Admin.Auth
 {
     /// <summary>
-    /// Checks if authentication is provided on every request
+    /// Authenticates user by checking if the cookies contains session and if does check if its valid and,
+    /// if everything goes right will give session to the context.
     /// </summary>
     // ReSharper disable once ClassNeverInstantiated.Global
     public class AuthMiddleware
@@ -65,7 +66,7 @@ namespace Blog.Web.Areas.Admin.Auth
     }
 
     /// <summary>
-    /// The current session that user is linked with
+    /// This contains the session that the current user is connected with.
     /// </summary>
     public class RequestSession
     {
@@ -86,7 +87,7 @@ namespace Blog.Web.Areas.Admin.Auth
     }
 
     /// <summary>
-    /// Connects AuthMiddleware to the pipe
+    /// Connects the AuthMiddleware to the pipe.
     /// </summary>
     public static class MyMiddleWareExtensions
     {

@@ -20,7 +20,7 @@ namespace Blog.Web.Services
         /// </summary>
         public PostModel GetPostById(int id)
         {
-            var postPoco = this.Database.QueryOne<PostPoco>("SELECT * FROM posts WHERE post_id=@postId;", new NpgsqlParameter("postId", id));
+            var postPoco = this.Database.QueryOne<PostPoco>("SELECT * FROM posts AS post WHERE post.post_id=@postId;", new NpgsqlParameter("postId", id));
             var post = new PostModel
             {
                 Content = postPoco.Content,
@@ -42,7 +42,7 @@ namespace Blog.Web.Services
         /// </summary>
         public PostModel[] GetLatestPosts(int count)
         {
-            var postPocos = this.Database.Query<PostPoco>("SELECT * FROM posts ORDER BY post_id LIMIT @count;", new NpgsqlParameter("count", count));
+            var postPocos = this.Database.Query<PostPoco>("SELECT * FROM posts AS post ORDER BY post.post_id LIMIT @count;", new NpgsqlParameter("count", count));
             var posts = new List<PostModel>();
 
             foreach (var postPoco in postPocos)
@@ -72,8 +72,8 @@ namespace Blog.Web.Services
         private TagPoco[] GetPostTags(int id)
         {
             var tags = this.Database.Query<TagPoco>(
-                "SELECT t.tag_id, t.tag_name FROM (SELECT * FROM posts_tags INNER JOIN posts ON posts_tags.post_id = @userId)" +
-                " AS q INNER JOIN tags AS t ON q.tag_id = t.tag_id;",
+                "SELECT tag.tag_id, tag.tag_name FROM (SELECT * FROM posts_tags INNER JOIN posts ON posts_tags.post_id = @userId)" +
+                " AS query INNER JOIN tags AS tag ON query.tag_id = tag.tag_id;",
                 new NpgsqlParameter("userId", id));
 
             return tags.ToArray();
