@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using Blog.Web.DAL;     
 using Npgsql;
 
@@ -22,7 +23,7 @@ namespace Blog.Web.Areas.Admin.Auth
         /// <summary>
         /// Signs in the user using login account.
         /// </summary>
-        public UserPoco Login(LoginDataModel loginModel)
+        public async Task<UserPoco> Login(LoginDataModel loginModel)
         {
             byte[] passwordBytes = Encoding.ASCII.GetBytes(loginModel.Password);
 
@@ -39,8 +40,8 @@ namespace Blog.Web.Areas.Admin.Auth
                 new NpgsqlParameter("password", result)
             };
 
-            var account = this.Database.QueryOne<UserPoco>(
-                "SELECT * FROM users AS user WHERE user.username=@username AND user.password=@password;", 
+            var account = await this.Database.QueryOne<UserPoco>(
+                "SELECT * FROM users u WHERE u.username=@username AND u.password=@password;", 
                 parametars
             );
 
@@ -52,9 +53,9 @@ namespace Blog.Web.Areas.Admin.Auth
         /// </summary>
         /// <param name="userId">The user id</param>
         /// <returns>UserPoco filled with the data of the user.</returns>
-        public UserPoco GetUserById(int userId)
+        public async Task<UserPoco> GetUserById(int userId)
         {
-            return this.Database.QueryOne<UserPoco>("SELECT * FROM users u WHERE u.user_id=@userId;", 
+            return await this.Database.QueryOne<UserPoco>("SELECT * FROM users u WHERE u.user_id=@userId;", 
                 new NpgsqlParameter("userId", userId));
         }
 
@@ -63,9 +64,9 @@ namespace Blog.Web.Areas.Admin.Auth
         /// </summary>
         /// <param name="sessionKey">The session key</param>
         /// <returns></returns>
-        public LoginSessionsPoco GetSessionBySessionKey(string sessionKey)
+        public async Task<LoginSessionsPoco> GetSessionBySessionKey(string sessionKey)
         {
-            var session = this.Database.QueryOne<LoginSessionsPoco>(
+            var session = await this.Database.QueryOne<LoginSessionsPoco>(
                     "SELECT * FROM login_sessions ls WHERE ls.session_key=@sessionKey;", 
                     new NpgsqlParameter("sessionKey", sessionKey));
 
@@ -75,9 +76,9 @@ namespace Blog.Web.Areas.Admin.Auth
         /// <summary>
         /// Gets session with this <param name="sessionId">session id</param> from the database and returns it
         /// </summary>
-        private LoginSessionsPoco GetSessionById(int sessionId)
+        private async Task<LoginSessionsPoco> GetSessionById(int sessionId)
         {
-            var session = this.Database.QueryOne<LoginSessionsPoco>(
+            var session = await this.Database.QueryOne<LoginSessionsPoco>(
                     "SELECT * FROM login_sessions ls WHERE ls.login_sessions_id=@sessionId;", 
                     new NpgsqlParameter("sessionId", sessionId));
 
@@ -87,7 +88,7 @@ namespace Blog.Web.Areas.Admin.Auth
         /// <summary>
         /// Returns the session key of the session.
         /// </summary>
-        public string CreateNewSession(int userId, bool rememberMe)
+        public async Task<string> CreateNewSession(int userId, bool rememberMe)
         {
             string sessionKey = GetRandomSessionKey();
 
@@ -105,7 +106,7 @@ namespace Blog.Web.Areas.Admin.Auth
                 loginSession.ExpirationDate = now.Add(TimeSpan.FromMinutes(30));
             }
 
-            this.Database.Insert(loginSession);
+            await this.Database.Insert(loginSession);
 
             return loginSession.SessionKey;
         }
@@ -134,9 +135,9 @@ namespace Blog.Web.Areas.Admin.Auth
         /// <summary>
         /// Log outs the session.
         /// </summary>
-        public void Logout(RequestSession requestSession)
+        public async void Logout(RequestSession requestSession)
         {
-            var sessiom = this.GetSessionById(requestSession.SessionId);
+            var sessiom = await this.GetSessionById(requestSession.SessionId);
 
             var now = DateTime.Now;
 

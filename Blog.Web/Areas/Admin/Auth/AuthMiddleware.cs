@@ -33,7 +33,7 @@ namespace Blog.Web.Areas.Admin.Auth
                 return;
             }
 
-            var session = authService.GetSessionBySessionKey(sessionKey);
+            var session = await authService.GetSessionBySessionKey(sessionKey);
 
             var now = DateTime.Now;
 
@@ -43,7 +43,7 @@ namespace Blog.Web.Areas.Admin.Auth
                 return;
             }
 
-            var pocoUser = authService.GetUserById(session.UserId);
+            var pocoUser = await authService.GetUserById(session.UserId);
 
             context.SetSession(new RequestSession
             {

@@ -1,4 +1,5 @@
-﻿using Blog.Web.Services;
+﻿using System.Threading.Tasks;
+using Blog.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Blog.Web.Controllers
@@ -12,9 +13,9 @@ namespace Blog.Web.Controllers
             this.PostService = postService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var posts = this.PostService.GetLatestPosts(10);
+            var posts = await this.PostService.GetLatestPosts(10);
 
             return this.View(posts);
         }

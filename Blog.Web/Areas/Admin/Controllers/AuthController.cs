@@ -1,4 +1,5 @@
-﻿using Blog.Web.Areas.Admin.Auth;
+﻿using System.Threading.Tasks;
+using Blog.Web.Areas.Admin.Auth;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Blog.Web.Areas.Admin.Controllers
@@ -19,21 +20,21 @@ namespace Blog.Web.Areas.Admin.Controllers
             this.SessionCookieService = sessionCookieService;
         }
 
-        public IActionResult Login(LoginDataModel data)
+        public async Task<IActionResult> Login(LoginDataModel data)
         {
             if (string.IsNullOrWhiteSpace(data.Username) || string.IsNullOrWhiteSpace(data.Password))
             {
                 return this.RedirectToAction("Index", "Home", new { area = "" });
             }
 
-            var user = this.AuthService.Login(data);
+            var user = await this.AuthService.Login(data);
 
             if (user == null)
             {
                 return this.RedirectToAction("Index", "Home");
             }
 
-            string sessionKey = this.AuthService.CreateNewSession(user.UserId, data.RememberMe);
+            string sessionKey = await this.AuthService.CreateNewSession(user.UserId, data.RememberMe);
 
             this.SessionCookieService.SetSessionKey(sessionKey);
 

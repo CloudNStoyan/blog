@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using Npgsql;
 
 namespace Blog.Web.DAL
@@ -24,7 +25,7 @@ namespace Blog.Web.DAL
         /// </summary>
         /// <typeparam name="T">Class that will be filled with the result from the query.</typeparam>
         /// <returns><paramref name="T"/> list.</returns>
-        public List<T> Query<T>(string sql, params NpgsqlParameter[] parametars) where T : class, new()
+        public async Task<List<T>> Query<T>(string sql, params NpgsqlParameter[] parametars) where T : class, new()
         {
             ThrowIfSqlOrParamsAreNull(sql, parametars);
             this.OpenConnectionIfNot();
@@ -34,12 +35,12 @@ namespace Blog.Web.DAL
             {
                 command.Parameters.AddRange(parametars);
 
-                using (var reader = command.ExecuteReader())
+                using (var reader = await command.ExecuteReaderAsync())
                 {
                     var instanceType = typeof(T);
                     var properties = instanceType.GetProperties().ToDictionary(x => x.GetCustomAttribute<ColumnAttribute>(), x => x);
 
-                    while (reader.Read())
+                    while (await reader.ReadAsync())
                     {
                         var instance = new T();
 
@@ -88,9 +89,9 @@ namespace Blog.Web.DAL
         /// SQL Query
         /// </summary>
         /// <typeparam name="T">Class that will be filled with the result from the query.</typeparam>
-        public List<T> Query<T>(string sql, Dictionary<string, object> parametars) where T : class, new()
+        public async Task<List<T>> Query<T>(string sql, Dictionary<string, object> parametars) where T : class, new()
         {
-            return this.Query<T>(sql, ConvertDictionaryToParametars(parametars));
+            return await this.Query<T>(sql, ConvertDictionaryToParametars(parametars));
         }
 
         /// <summary>
@@ -98,11 +99,11 @@ namespace Blog.Web.DAL
         /// </summary>
         /// <typeparam name="T">Class that will be filled with the result from the query.</typeparam>
         /// <returns>Single row in type <typeparamref name="T"/>.</returns>
-        public T QueryOne<T>(string sql, params NpgsqlParameter[] parametars) where T : class, new()
+        public async Task<T> QueryOne<T>(string sql, params NpgsqlParameter[] parametars) where T : class, new()
         {
             ThrowIfSqlOrParamsAreNull(sql, parametars);
 
-            var queryResult = this.Query<T>(sql, parametars);
+            var queryResult = await this.Query<T>(sql, parametars);
 
             if (queryResult.Count < 1)
             {
@@ -122,9 +123,9 @@ namespace Blog.Web.DAL
         /// </summary>
         /// <typeparam name="T">Class that will be filled with the result from the query.</typeparam>
         /// <returns>Single row in type <typeparamref name="T"/>.</returns>
-        public T QueryOne<T>(string sql, Dictionary<string, object> parametars) where T : class, new()
+        public async Task<T> QueryOne<T>(string sql, Dictionary<string, object> parametars) where T : class, new()
         {
-            return this.QueryOne<T>(sql, ConvertDictionaryToParametars(parametars));
+            return await this.QueryOne<T>(sql, ConvertDictionaryToParametars(parametars));
         }
 
         /// <summary>
@@ -132,7 +133,7 @@ namespace Blog.Web.DAL
         /// </summary>
         /// <typeparam name="T">Class that will be filled with the result from the query.</typeparam>
         /// <returns>One element of type <paramref name="T"/>.</returns>
-        public T Execute<T>(string sql, params NpgsqlParameter[] parametars)
+        public async Task<T> Execute<T>(string sql, params NpgsqlParameter[] parametars)
         {
             ThrowIfSqlOrParamsAreNull(sql, parametars);
             this.OpenConnectionIfNot();
@@ -143,11 +144,11 @@ namespace Blog.Web.DAL
             {
                 command.Parameters.AddRange(parametars);
 
-                using (var reader = command.ExecuteReader())
+                using (var reader = await command.ExecuteReaderAsync())
                 {
                     bool valueWasExtracted = false;
 
-                    while (reader.Read())
+                    while (await reader.ReadAsync())
                     {
                         var returnedElement = reader[0];
 
@@ -185,16 +186,16 @@ namespace Blog.Web.DAL
         /// </summary>
         /// <typeparam name="T">Class that will be filled with the result from the query.</typeparam>
         /// <returns>One element of type <paramref name="T"/>.</returns>
-        public T Execute<T>(string sql, Dictionary<string, object> parametars)
+        public async Task<T> Execute<T>(string sql, Dictionary<string, object> parametars)
         {
-            return this.Execute<T>(sql, ConvertDictionaryToParametars(parametars));
+            return await this.Execute<T>(sql, ConvertDictionaryToParametars(parametars));
         }
 
         /// <summary>
         /// Execute something without query.
         /// </summary>
         /// <returns>The number of columns that are changed</returns>
-        public int ExecuteNonQuery(string sql, params NpgsqlParameter[] parametars)
+        public async Task<int> ExecuteNonQuery(string sql, params NpgsqlParameter[] parametars)
         {
             ThrowIfSqlOrParamsAreNull(sql, parametars);
             this.OpenConnectionIfNot();
@@ -203,7 +204,7 @@ namespace Blog.Web.DAL
             {
                 command.Parameters.AddRange(parametars);
 
-                return command.ExecuteNonQuery();
+                return await command.ExecuteNonQueryAsync();
             }
         }
 
@@ -211,16 +212,16 @@ namespace Blog.Web.DAL
         /// Execute something without returning a result.
         /// </summary>
         /// <returns>The number of rows that are changed.</returns>
-        public int ExecuteNonQuery(string sql, Dictionary<string, object> parametars)
+        public async Task<int> ExecuteNonQuery(string sql, Dictionary<string, object> parametars)
         {
-            return this.ExecuteNonQuery(sql, ConvertDictionaryToParametars(parametars));
+            return await this.ExecuteNonQuery(sql, ConvertDictionaryToParametars(parametars));
         }
 
         /// <summary>
         /// Insert something with poco class to the database.
         /// </summary>
         /// <returns>How many rows are changed.</returns>a
-        public int Insert<T>(T poco) where T : class, new()
+        public async Task<int> Insert<T>(T poco) where T : class, new()
         {
             this.OpenConnectionIfNot();
             var pocoType = typeof(T);
@@ -260,14 +261,14 @@ namespace Blog.Web.DAL
             using (var command = new NpgsqlCommand(sql, this.Connection))
             {
                 command.Parameters.AddRange(parametars.ToArray());
-                return (int)command.ExecuteScalar();
+                return (int) await command.ExecuteScalarAsync();
             }
         }
 
         /// <summary>
         /// Update something in the database using poco class.
         /// </summary>
-        public void Update<T>(T poco)
+        public async void Update<T>(T poco)
         {
             this.OpenConnectionIfNot();
             var pocoType = typeof(T);
@@ -309,7 +310,7 @@ namespace Blog.Web.DAL
             using (var command = new NpgsqlCommand(sql, this.Connection))
             {
                 command.Parameters.AddRange(parametars.ToArray());
-                command.ExecuteNonQuery();
+                await command.ExecuteNonQueryAsync();
             }
         }
 
@@ -317,7 +318,7 @@ namespace Blog.Web.DAL
         /// Deletes something from the database using poco class.
         /// </summary>
         /// <returns>How many rows are changed</returns>
-        public int Delete<T>(T poco)
+        public async Task<int> Delete<T>(T poco)
         {
             this.OpenConnectionIfNot();
             var pocoType = typeof(T);
@@ -341,7 +342,7 @@ namespace Blog.Web.DAL
             using (var command = new NpgsqlCommand(sql, this.Connection))
             {
                 command.Parameters.Add(parametar);
-                return command.ExecuteNonQuery();
+                return await command.ExecuteNonQueryAsync();
             }
         }
 

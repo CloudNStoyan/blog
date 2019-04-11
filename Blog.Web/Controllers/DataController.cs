@@ -1,4 +1,5 @@
-﻿using Blog.Web.Services;
+﻿using System.Threading.Tasks;
+using Blog.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Blog.Web.Controllers
@@ -12,9 +13,9 @@ namespace Blog.Web.Controllers
             this.PostService = postService;
         }
 
-        public IActionResult Post(int id)
+        public async Task<IActionResult> Post(int id)
         {
-            var post = this.PostService.GetPostById(id);
+            var post = await this.PostService.GetPostById(id);
 
             return this.View(post);
         }
