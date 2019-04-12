@@ -4,10 +4,6 @@ body {
     color: #fff;
 }
 
-.main-sidebar {
-    width: 230px;
-}
-
 .navbar-custom-menu {
     height: 100%;
 }
@@ -160,10 +156,24 @@ a:hover {
     margin-right: 5px;
 }
 
+.wrapper {
+    display: flex;
+    flex-flow: row wrap;
+}
+
+.main-header {
+    flex: 0 0 100%;
+    order: 0;
+}
+
+.main-sidebar {
+    flex: 0 0 100%;
+    order: 1;
+    max-width: 230px;
+}
+
 .wrapper > main {
-    position: absolute;
-    left: 230px;
-    top: 50px;
-    padding: 50px;
+    flex: 0 0 89%;
+    order: 1;
 }
 

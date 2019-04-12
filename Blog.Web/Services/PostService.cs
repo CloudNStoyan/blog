@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Blog.Web.Areas.Admin.Auth;
 using Blog.Web.DAL;
 using Blog.Web.Models;
 using Npgsql;
@@ -9,11 +10,13 @@ namespace Blog.Web.Services
 {
     public class PostService
     {
-        private Database Database { get; set; }
+        private Database Database { get; }
+        private SessionService SessionService { get; }
 
-        public PostService(Database database)
+        public PostService(Database database, SessionService sessionService)
         {
             this.Database = database;
+            this.SessionService = sessionService;
         }
 
         /// <summary>
@@ -73,11 +76,61 @@ namespace Blog.Web.Services
         private async Task<TagPoco[]> GetPostTags(int id)
         {
             var tags = await this.Database.Query<TagPoco>(
-                "SELECT tag.tag_id, tag.tag_name FROM (SELECT * FROM posts_tags INNER JOIN posts ON posts_tags.post_id = @userId)" +
-                " query INNER JOIN tags tag ON query.tag_id = tag.tag_id;",
-                new NpgsqlParameter("userId", id));
+                "SELECT * FROM posts_tags pt INNER JOIN tags tag ON pt.tag_id = tag.tag_id WHERE pt.post_id = @postId;",
+                new NpgsqlParameter("postId", id));
 
             return tags.ToArray();
+        }
+
+        /// <summary>
+        /// Creates post
+        /// </summary>
+        /// <param name="postModel"></param>
+        /// <returns></returns>
+
+        public async Task<int> CreatePost(FormPostModel postModel)
+        {
+            var session = this.SessionService.Session;
+            var postPoco = new PostPoco
+            {
+                Content = postModel.Content,
+                Title = postModel.Title,
+                UserId = session.UserAccount.UserId
+            };
+
+            int postId = await this.Database.Insert(postPoco);
+
+            await this.AddPostTags(postModel.Tags, postId);
+
+            return postId;
+        }
+
+        private async Task AddPostTags(string tagsInLine, int postId)
+        {
+            string[] tags = tagsInLine.Split(',');
+
+            foreach (string tag in tags)
+            {
+                var tagPoco = await this.Database.QueryOne<TagPoco>("SELECT * FROM tags t WHERE t.tag_name = @tagName",
+                    new NpgsqlParameter("tagName", tag));
+                if (tagPoco == null)
+                {
+                    tagPoco = new TagPoco
+                    {
+                        TagName = tag
+                    };
+
+                    tagPoco.TagId = await this.Database.Insert(tagPoco);
+                }
+
+                var postsTagsPoco = new PostsTagsPoco
+                {
+                    PostId = postId,
+                    TagId = tagPoco.TagId
+                };
+
+                await this.Database.Insert(postsTagsPoco);
+            }
         }
     }
 }

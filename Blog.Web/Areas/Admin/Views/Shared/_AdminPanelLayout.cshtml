@@ -28,25 +28,9 @@
 
                 <div class="navbar-custom-menu">
                     <ul class="nav navbar-nav">
-                        <!-- Messages: style can be found in dropdown.less-->
-                        <li class="dropdown messages-menu">
-                            <a href="#">
-                                <i class="far fa-envelope"></i>
-                                <span class="badge badge-pill badge-success">4</span>
-                            </a>
-                        </li>
-                        <!-- Notifications: style can be found in dropdown.less -->
-                        <li class="dropdown notifications-menu">
-                            <a href="#">
-                                <i class="far fa-bell"></i>
-                                <span class="badge badge-pill badge-warning">10</span>
-                            </a>
-                        </li>
-                        <!-- Tasks: style can be found in dropdown.less -->
-                        <li class="dropdown tasks-menu">
-                            <a href="#">
-                                <i class="far fa-flag"></i>
-                                <span class="badge badge-pill badge-danger">9</span>
+                        <li>
+                            <a asp-controller="Form" asp-action="CreateForm">
+                                <i class="fas fa-plus"></i>
                             </a>
                         </li>
                         <!-- User Account: style can be found in dropdown.less -->
@@ -77,170 +61,10 @@
                 <!-- sidebar menu: : style can be found in sidebar.less -->
                 <ul class="sidebar-menu" data-widget="tree">
                     <li class="header">MAIN NAVIGATION</li>
-                    <li class="active treeview">
-                        <a href="#">
-                            <i class="fas fa-tachometer-alt"></i> <span>Dashboard</span>
-                            <span class="pull-right-container">
-                                <i class="fa fa-angle-left pull-right"></i>
-                            </span>
-                        </a>
-                        <ul class="treeview-menu">
-                            <li class="active"><a href="index.html"><i class="far fa-circle"></i> Dashboard v1</a></li>
-                            <li><a href="index2.html"><i class="far fa-circle"></i> Dashboard v2</a></li>
-                        </ul>
-                    </li>
-                    <li class="treeview">
-                        <a href="#">
-                            <i class="far fa-copy"></i>
-                            <span>Layout Options</span>
-                            <span class="pull-right-container">
-                                <span class="badge badge-primary pull-right">4</span>
-                            </span>
-                        </a>
-                        <ul class="treeview-menu">
-                            <li><a href="pages/layout/top-nav.html"><i class="far fa-circle"></i> Top Navigation</a></li>
-                            <li><a href="pages/layout/boxed.html"><i class="far fa-circle"></i> Boxed</a></li>
-                            <li><a href="pages/layout/fixed.html"><i class="far fa-circle"></i> Fixed</a></li>
-                            <li><a href="pages/layout/collapsed-sidebar.html"><i class="far fa-circle"></i> Collapsed Sidebar</a></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="pages/widgets.html">
-                            <i class="fa fa-th"></i> <span>Widgets</span>
-                            <span class="pull-right-container">
-                                <span class="badge badge-success">new</span>
-                            </span>
-                        </a>
-                    </li>
-                    <li class="treeview">
-                        <a href="#">
-                            <i class="fas fa-chart-pie"></i>
-                            <span>Charts</span>
-                            <span class="pull-right-container">
-                                <i class="fa fa-angle-left pull-right"></i>
-                            </span>
-                        </a>
-                        <ul class="treeview-menu">
-                            <li><a href="pages/charts/chartjs.html"><i class="far fa-circle"></i> ChartJS</a></li>
-                            <li><a href="pages/charts/morris.html"><i class="far fa-circle"></i> Morris</a></li>
-                            <li><a href="pages/charts/flot.html"><i class="far fa-circle"></i> Flot</a></li>
-                            <li><a href="pages/charts/inline.html"><i class="far fa-circle"></i> Inline charts</a></li>
-                        </ul>
-                    </li>
-                    <li class="treeview">
-                        <a href="#">
-                            <i class="fa fa-laptop"></i>
-                            <span>UI Elements</span>
-                            <span class="pull-right-container">
-                                <i class="fa fa-angle-left pull-right"></i>
-                            </span>
-                        </a>
-                        <ul class="treeview-menu">
-                            <li><a href="pages/UI/general.html"><i class="far fa-circle"></i> General</a></li>
-                            <li><a href="pages/UI/icons.html"><i class="far fa-circle"></i> Icons</a></li>
-                            <li><a href="pages/UI/buttons.html"><i class="far fa-circle"></i> Buttons</a></li>
-                            <li><a href="pages/UI/sliders.html"><i class="far fa-circle"></i> Sliders</a></li>
-                            <li><a href="pages/UI/timeline.html"><i class="far fa-circle"></i> Timeline</a></li>
-                            <li><a href="pages/UI/modals.html"><i class="far fa-circle"></i> Modals</a></li>
-                        </ul>
-                    </li>
-                    <li class="treeview">
-                        <a href="#">
-                            <i class="fa fa-edit"></i> <span>Forms</span>
-                            <span class="pull-right-container">
-                                <i class="fa fa-angle-left pull-right"></i>
-                            </span>
-                        </a>
-                        <ul class="treeview-menu">
-                            <li><a href="pages/forms/general.html"><i class="far fa-circle"></i> General Elements</a></li>
-                            <li><a href="pages/forms/advanced.html"><i class="far fa-circle"></i> Advanced Elements</a></li>
-                            <li><a href="pages/forms/editors.html"><i class="far fa-circle"></i> Editors</a></li>
-                        </ul>
-                    </li>
-                    <li class="treeview">
-                        <a href="#">
-                            <i class="fa fa-table"></i> <span>Tables</span>
-                            <span class="pull-right-container">
-                                <i class="fa fa-angle-left pull-right"></i>
-                            </span>
-                        </a>
-                        <ul class="treeview-menu">
-                            <li><a href="pages/tables/simple.html"><i class="far fa-circle"></i> Simple tables</a></li>
-                            <li><a href="pages/tables/data.html"><i class="far fa-circle"></i> Data tables</a></li>
-                        </ul>
-                    </li>
                     <li>
                         <a href="pages/calendar.html">
-                            <i class="fa fa-calendar"></i> <span>Calendar</span>
-                            <span class="pull-right-container">
-                                <span class="badge badge-danger">3</span>
-                                <span class="badge badge-primary">17</span>
-                            </span>
+                            <i class="fas fa-thumbtack"></i> <span>Posts</span>
                         </a>
-                    </li>
-                    <li>
-                        <a href="pages/mailbox/mailbox.html">
-                            <i class="fa fa-envelope"></i> <span>Mailbox</span>
-                            <span class="pull-right-container">
-                                <span class="badge badge-warning text-white">12</span>
-                                <span class="badge badge-success">16</span>
-                                <span class="badge badge-danger">5</span>
-                            </span>
-                        </a>
-                    </li>
-                    <li class="treeview">
-                        <a href="#">
-                            <i class="fa fa-folder"></i> <span>Examples</span>
-                            <span class="pull-right-container">
-                                <i class="fa fa-angle-left pull-right"></i>
-                            </span>
-                        </a>
-                        <ul class="treeview-menu">
-                            <li><a href="pages/examples/invoice.html"><i class="far fa-circle"></i> Invoice</a></li>
-                            <li><a href="pages/examples/profile.html"><i class="far fa-circle"></i> Profile</a></li>
-                            <li><a href="pages/examples/login.html"><i class="far fa-circle"></i> Login</a></li>
-                            <li><a href="pages/examples/register.html"><i class="far fa-circle"></i> Register</a></li>
-                            <li><a href="pages/examples/lockscreen.html"><i class="far fa-circle"></i> Lockscreen</a></li>
-                            <li><a href="pages/examples/404.html"><i class="far fa-circle"></i> 404 Error</a></li>
-                            <li><a href="pages/examples/500.html"><i class="far fa-circle"></i> 500 Error</a></li>
-                            <li><a href="pages/examples/blank.html"><i class="far fa-circle"></i> Blank Page</a></li>
-                            <li><a href="pages/examples/pace.html"><i class="far fa-circle"></i> Pace Page</a></li>
-                        </ul>
-                    </li>
-                    <li class="treeview">
-                        <a href="#">
-                            <i class="fa fa-share"></i> <span>Multilevel</span>
-                            <span class="pull-right-container">
-                                <i class="fa fa-angle-left pull-right"></i>
-                            </span>
-                        </a>
-                        <ul class="treeview-menu">
-                            <li><a href="#"><i class="far fa-circle"></i> Level One</a></li>
-                            <li class="treeview">
-                                <a href="#">
-                                    <i class="far fa-circle"></i> Level One
-                                    <span class="pull-right-container">
-                                        <i class="fa fa-angle-left pull-right"></i>
-                                    </span>
-                                </a>
-                                <ul class="treeview-menu">
-                                    <li><a href="#"><i class="far fa-circle"></i> Level Two</a></li>
-                                    <li class="treeview">
-                                        <a href="#">
-                                            <i class="far fa-circle"></i> Level Two
-                                            <span class="pull-right-container">
-                                                <i class="fa fa-angle-left pull-right"></i>
-                                            </span>
-                                        </a>
-                                        <ul class="treeview-menu">
-                                            <li><a href="#"><i class="far fa-circle"></i> Level Three</a></li>
-                                            <li><a href="#"><i class="far fa-circle"></i> Level Three</a></li>
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li><a href="#"><i class="far fa-circle"></i> Level One</a></li>
-                        </ul>
                     </li>
                     <li class="header">LABELS</li>
                     <li><a href="#"><i class="far fa-circle text-danger"></i> <span>Important</span></a></li>
@@ -252,7 +76,7 @@
         </aside>
 
         <main>
-            @RenderBody();
+            @RenderBody()
         </main>
     </div>
 
