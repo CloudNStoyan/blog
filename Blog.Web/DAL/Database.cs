@@ -25,7 +25,7 @@ namespace Blog.Web.DAL
         /// </summary>
         /// <typeparam name="T">Class that will be filled with the result from the query.</typeparam>
         /// <returns><paramref name="T"/> list.</returns>
-        public async Task<List<T>> Query<T>(string sql, params NpgsqlParameter[] parametars) where T : class, new()
+        public async Task<List<T>> Query<T>(string sql, params NpgsqlParameter[] parametars) where T : new()
         {
             ThrowIfSqlOrParamsAreNull(sql, parametars);
             this.OpenConnectionIfNot();
@@ -89,9 +89,9 @@ namespace Blog.Web.DAL
         /// SQL Query
         /// </summary>
         /// <typeparam name="T">Class that will be filled with the result from the query.</typeparam>
-        public async Task<List<T>> Query<T>(string sql, Dictionary<string, object> parametars) where T : class, new()
+        public Task<List<T>> Query<T>(string sql, Dictionary<string, object> parametars) where T :  new()
         {
-            return await this.Query<T>(sql, ConvertDictionaryToParametars(parametars));
+            return this.Query<T>(sql, ConvertDictionaryToParametars(parametars));
         }
 
         /// <summary>
@@ -123,9 +123,9 @@ namespace Blog.Web.DAL
         /// </summary>
         /// <typeparam name="T">Class that will be filled with the result from the query.</typeparam>
         /// <returns>Single row in type <typeparamref name="T"/>.</returns>
-        public async Task<T> QueryOne<T>(string sql, Dictionary<string, object> parametars) where T : class, new()
+        public Task<T> QueryOne<T>(string sql, Dictionary<string, object> parametars) where T : class, new()
         {
-            return await this.QueryOne<T>(sql, ConvertDictionaryToParametars(parametars));
+            return this.QueryOne<T>(sql, ConvertDictionaryToParametars(parametars));
         }
 
         /// <summary>
@@ -185,10 +185,9 @@ namespace Blog.Web.DAL
         /// Get one row from a query
         /// </summary>
         /// <typeparam name="T">Class that will be filled with the result from the query.</typeparam>
-        /// <returns>One element of type <paramref name="T"/>.</returns>
-        public async Task<T> Execute<T>(string sql, Dictionary<string, object> parametars)
+        public Task<T> Execute<T>(string sql, Dictionary<string, object> parametars)
         {
-            return await this.Execute<T>(sql, ConvertDictionaryToParametars(parametars));
+            return this.Execute<T>(sql, ConvertDictionaryToParametars(parametars));
         }
 
         /// <summary>
@@ -212,16 +211,16 @@ namespace Blog.Web.DAL
         /// Execute something without returning a result.
         /// </summary>
         /// <returns>The number of rows that are changed.</returns>
-        public async Task<int> ExecuteNonQuery(string sql, Dictionary<string, object> parametars)
+        public Task<int> ExecuteNonQuery(string sql, Dictionary<string, object> parametars)
         {
-            return await this.ExecuteNonQuery(sql, ConvertDictionaryToParametars(parametars));
+            return this.ExecuteNonQuery(sql, ConvertDictionaryToParametars(parametars));
         }
 
         /// <summary>
         /// Insert something with poco class to the database.
         /// </summary>
         /// <returns>How many rows are changed.</returns>a
-        public async Task<int> Insert<T>(T poco) where T : class, new()
+        public async Task<int> Insert<T>(T poco) where T : new()
         {
             this.OpenConnectionIfNot();
             var pocoType = typeof(T);
@@ -354,16 +353,16 @@ namespace Blog.Web.DAL
             }
         }
 
-        private static NpgsqlParameter[] ConvertDictionaryToParametars(Dictionary<string, object> dic)
+        private static NpgsqlParameter[] ConvertDictionaryToParametars(Dictionary<string, object> dictionary)
         {
-            var listOfParametars = new List<NpgsqlParameter>();
+            var parametars = new List<NpgsqlParameter>();
 
-            foreach (var pair in dic)
+            foreach (var pair in dictionary)
             {
-                listOfParametars.Add(new NpgsqlParameter(pair.Key, pair.Value));
+                parametars.Add(new NpgsqlParameter(pair.Key, pair.Value));
             }
 
-            return listOfParametars.ToArray();
+            return parametars.ToArray();
         }
 
         private static void ThrowIfSqlOrParamsAreNull(string sql, NpgsqlParameter[] parameters)
@@ -387,5 +386,19 @@ namespace Blog.Web.DAL
                 }
             }
         }
+    }
+
+    public class ColumnAttribute : Attribute
+    {
+        public string Name { get; set; }
+
+        public bool IsPrimaryKey = false;
+    }
+
+    public class TableAttribute : Attribute
+    {
+        public string Name { get; set; }
+
+        public string Schema { get; set; }
     }
 }

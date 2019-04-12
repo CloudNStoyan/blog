@@ -55,7 +55,7 @@ namespace Blog.Web.Areas.Admin.Auth
         /// <returns>UserPoco filled with the data of the user.</returns>
         public async Task<UserPoco> GetUserById(int userId)
         {
-            return await this.Database.QueryOne<UserPoco>("SELECT * FROM users u WHERE u.user_id=@userId;", 
+            return await this.Database.QueryOne<UserPoco>("SELECT * FROM users u WHERE u.user_id = @userId;", 
                 new NpgsqlParameter("userId", userId));
         }
 
@@ -67,7 +67,7 @@ namespace Blog.Web.Areas.Admin.Auth
         public async Task<LoginSessionsPoco> GetSessionBySessionKey(string sessionKey)
         {
             var session = await this.Database.QueryOne<LoginSessionsPoco>(
-                    "SELECT * FROM login_sessions ls WHERE ls.session_key=@sessionKey;", 
+                    "SELECT * FROM login_sessions ls WHERE ls.session_key = @sessionKey;", 
                     new NpgsqlParameter("sessionKey", sessionKey));
 
             return session;
@@ -133,7 +133,7 @@ namespace Blog.Web.Areas.Admin.Auth
         }
 
         /// <summary>
-        /// Log outs the session.
+        /// Logs out the session.
         /// </summary>
         public async void Logout(RequestSession requestSession)
         {

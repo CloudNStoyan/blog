@@ -21,8 +21,8 @@ namespace Blog.Web.Areas.Admin.Auth
         }
         
         // ReSharper disable once UnusedMember.Global
-        public async Task Invoke(HttpContext context, AuthenticationService authService, SessionCookieService sessionCookieService) {
-
+        public async Task Invoke(HttpContext context, AuthenticationService authService, SessionCookieService sessionCookieService)
+        {
             context.SetSession(new RequestSession());
 
             string sessionKey = sessionCookieService.GetSessionKey();
