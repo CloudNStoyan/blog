@@ -1,0 +1,26 @@
+﻿@model PostModel[]
+
+@{
+    ViewData["Title"] = "Page";
+    Layout = "_AdminPanelLayout";
+}
+
+@section styles
+{
+    <link rel="stylesheet" href="~/admin/css/posts.css"/>
+}
+
+<div class="list-wrapper">
+    @foreach (var post in Model)
+    {
+        <div class="post">
+            <span class="lead text-center post-title">@post.Title</span>
+            <div class="btn-group action-buttons">
+                <a class="btn btn-info" asp-area="" asp-controller="Data" asp-action="Post" asp-route-id="@post.Id">View</a>
+                <a class="btn btn-warning" href="#">Edit</a>
+                <a class="btn btn-danger" href="#">Delete</a>
+            </div>
+        </div>
+    }
+</div>
+

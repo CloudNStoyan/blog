@@ -82,6 +82,32 @@ namespace Blog.Web.Services
             return tags.ToArray();
         }
 
+        public async Task<PostModel[]> GetAllPosts()
+        {
+            var postPocos = await this.Database.Query<PostPoco>("SELECT * FROM posts;");
+            var posts = new List<PostModel>();
+
+            foreach (var postPoco in postPocos)
+            {
+                var post = new PostModel
+                {
+                    Content = postPoco.Content,
+                    Id = postPoco.PostId,
+                    Title = postPoco.Title
+                };
+
+                var tagsPoco = await this.GetPostTags(postPoco.PostId);
+
+                var tempTags = tagsPoco.Select(tagPoco => tagPoco.TagName).ToArray();
+
+                post.Tags = tempTags;
+
+                posts.Add(post);
+            }
+
+            return posts.ToArray();
+        }
+
         /// <summary>
         /// Creates post
         /// </summary>

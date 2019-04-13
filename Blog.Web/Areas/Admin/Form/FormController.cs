@@ -28,9 +28,11 @@ namespace Blog.Web.Areas.Admin.Form
             return this.Redirect("/data/post/" + postId);
         }
 
-        public async Task<IActionResult> Page(int index)
+        public async Task<IActionResult> Posts()
         {
+            var posts = await this.PostService.GetAllPosts();
 
+            return this.View(posts);
         }
     }
 }
