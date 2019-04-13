@@ -19,13 +19,35 @@ namespace Blog.Web.Areas.Admin.Form
 
         public IActionResult CreateForm()
         {
-            return this.View("PostForm");
+            return this.View();
+        }
+
+        public async Task<IActionResult> EditForm(int id)
+        {
+            var post = await this.PostService.GetPostById(id);
+
+            return this.View(post);
         }
 
         public async Task<IActionResult> CreatePost(FormPostModel postModel)
         {
             int postId = await this.PostService.CreatePost(postModel);
             return this.Redirect("/data/post/" + postId);
+        }
+
+        public async Task<IActionResult> EditPost(FormEditModel editModel)
+        {
+            var postModel = new PostModel
+            {
+                Content = editModel.Content,
+                Id = editModel.Id,
+                Tags = editModel.Tags.Split(','),
+                Title = editModel.Title
+            };
+
+            await this.PostService.UpdatePost(postModel);
+
+            return this.Redirect("/data/post/" + postModel.Id);
         }
 
         public async Task<IActionResult> Posts()

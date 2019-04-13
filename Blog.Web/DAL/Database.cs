@@ -267,7 +267,7 @@ namespace Blog.Web.DAL
         /// <summary>
         /// Update something in the database using poco class.
         /// </summary>
-        public async void Update<T>(T poco)
+        public async Task Update<T>(T poco)
         {
             this.OpenConnectionIfNot();
             var pocoType = typeof(T);

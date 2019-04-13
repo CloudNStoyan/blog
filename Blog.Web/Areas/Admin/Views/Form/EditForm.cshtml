@@ -1,6 +1,6 @@
 ﻿@model PostModel
 @{
-    ViewData["Title"] = "Post Form";
+    ViewData["Title"] = "Edit Form";
     Layout = "_AdminPanelLayout";
 }
 
@@ -9,24 +9,24 @@
 }
 
 <div class="form-wrapper">
-    <form asp-controller="Form" asp-action="CreatePost" class="main-form">
+    <form asp-controller="Form" asp-action="EditPost" class="main-form">
         <h1 class="text-center">Creating post</h1>
         <div class="form-group">
             <label for="Title">Title</label>
-            <input class="form-control" asp-for="Title"/>
+            <input class="form-control" asp-for="Title" value="@Model.Title"/>
         </div>
         <div class="form-group">
             <label for="Content">Content</label>
-            <textarea class="form-control" asp-for="Content"></textarea>
+            <textarea class="form-control" asp-for="Content">@Model.Content</textarea>
         </div>
         <div class="form-group">
             <label for="Tags">Tags</label>
-            <input class="form-control" asp-for="Tags"/>
+            <input class="form-control" asp-for="Tags" value="@string.Join(',', Model.Tags)"/>
             <small class="form-text form-muted">
                 * Separate tags with commas
             </small>
         </div>
-        <button class="btn btn-primary" type="submit">Publish</button>
+        <input type="hidden" name="id" value="@Model.Id"/>
+        <button class="btn btn-primary" type="submit">Save</button>
     </form>
 </div>
-

@@ -1,0 +1,32 @@
+﻿@model PostModel
+@{
+    ViewData["Title"] = "Create Form";
+    Layout = "_AdminPanelLayout";
+}
+
+@section styles {
+    <link rel="stylesheet" href="~/admin/css/create-post.css" />
+}
+
+<div class="form-wrapper">
+    <form asp-controller="Form" asp-action="CreatePost" class="main-form">
+        <h1 class="text-center">Creating post</h1>
+        <div class="form-group">
+            <label for="Title">Title</label>
+            <input class="form-control" asp-for="Title"/>
+        </div>
+        <div class="form-group">
+            <label for="Content">Content</label>
+            <textarea class="form-control" asp-for="Content"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="Tags">Tags</label>
+            <input class="form-control" asp-for="Tags"/>
+            <small class="form-text form-muted">
+                * Separate tags with commas
+            </small>
+        </div>
+        <button class="btn btn-primary" type="submit">Publish</button>
+    </form>
+</div>
+

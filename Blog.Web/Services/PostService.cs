@@ -20,7 +20,7 @@ namespace Blog.Web.Services
         }
 
         /// <summary>
-        /// Get post from the database with id
+        /// Get post from the database with id.
         /// </summary>
         public async Task<PostModel> GetPostById(int id)
         {
@@ -42,7 +42,7 @@ namespace Blog.Web.Services
         }
 
         /// <summary>
-        /// Retrieves the latest posts
+        /// Retrieves the latest posts.
         /// </summary>
         public async Task<PostModel[]> GetLatestPosts(int count)
         {
@@ -70,8 +70,39 @@ namespace Blog.Web.Services
             return posts.ToArray();
         }
 
+        public async Task UpdatePost(PostModel post)
+        {
+            var session = this.SessionService.Session;
+            var postPoco = new PostPoco
+            {
+                Content = post.Content,
+                Title = post.Title,
+                UserId = session.UserAccount.UserId,
+                PostId = post.Id
+            };
+
+            var postTagPocos = await this.GetPostTags(post.Id);
+            string[] postTags = post.Tags;
+
+            string[] postTagPocoNames = postTagPocos.Select(x => x.TagName).ToArray();
+            var list = postTagPocos.Select(postTagPoco => postTagPoco.TagName).ToList();
+
+            var tagsToBeDeleted = postTagPocos.Where(x => !postTags.Contains(x.TagName)).ToArray();
+
+            foreach (var tagPoco in tagsToBeDeleted)
+            {
+                await this.DeletePostTag(tagPoco);
+            }
+
+            var tagsToBeAdded = postTags.Where(x => !postTagPocoNames.Contains(x)).ToArray();
+
+            await this.AddPostTags(tagsToBeAdded, post.Id);
+
+            await this.Database.Update(postPoco);
+        }
+
         /// <summary>
-        /// Retrieves tags from post id
+        /// Retrieves tags from post id.
         /// </summary>
         private async Task<TagPoco[]> GetPostTags(int id)
         {
@@ -82,6 +113,9 @@ namespace Blog.Web.Services
             return tags.ToArray();
         }
 
+        /// <summary>
+        /// Retrieves all posts from the database.
+        /// </summary>
         public async Task<PostModel[]> GetAllPosts()
         {
             var postPocos = await this.Database.Query<PostPoco>("SELECT * FROM posts;");
@@ -109,11 +143,8 @@ namespace Blog.Web.Services
         }
 
         /// <summary>
-        /// Creates post
+        /// Creates post.
         /// </summary>
-        /// <param name="postModel"></param>
-        /// <returns></returns>
-
         public async Task<int> CreatePost(FormPostModel postModel)
         {
             var session = this.SessionService.Session;
@@ -131,10 +162,13 @@ namespace Blog.Web.Services
             return postId;
         }
 
-        private async Task AddPostTags(string tagsInLine, int postId)
+        private Task AddPostTags(string tagsInLine, int postId)
         {
-            string[] tags = tagsInLine.Split(',');
+            return this.AddPostTags(tagsInLine.Split(','), postId);
+        }
 
+        private async Task AddPostTags(string[] tags, int postId)
+        {
             foreach (string tag in tags)
             {
                 var tagPoco = await this.Database.QueryOne<TagPoco>("SELECT * FROM tags t WHERE t.tag_name = @tagName",
@@ -157,6 +191,16 @@ namespace Blog.Web.Services
 
                 await this.Database.Insert(postsTagsPoco);
             }
+        }
+
+        private async Task DeletePostTag(TagPoco tag)
+        {
+            var postsTagsPoco = await this.Database.QueryOne<PostsTagsPoco>("SELECT * FROM posts_tags pt WHERE pt.tag_id=@tagId",
+                new NpgsqlParameter("tagId", tag.TagId));
+
+            postsTagsPoco.Deleted = true;
+
+            await this.Database.Update(postsTagsPoco);
         }
     }
 }

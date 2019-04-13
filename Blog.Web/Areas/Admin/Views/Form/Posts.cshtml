@@ -17,7 +17,7 @@
             <span class="lead text-center post-title">@post.Title</span>
             <div class="btn-group action-buttons">
                 <a class="btn btn-info" asp-area="" asp-controller="Data" asp-action="Post" asp-route-id="@post.Id">View</a>
-                <a class="btn btn-warning" href="#">Edit</a>
+                <a class="btn btn-warning" asp-controller="Form" asp-action="EditForm" asp-route-id="@post.Id">Edit</a>
                 <a class="btn btn-danger" href="#">Delete</a>
             </div>
         </div>
