@@ -85,13 +85,12 @@ namespace Blog.Web.Services
             string[] postTags = post.Tags;
 
             string[] postTagPocoNames = postTagPocos.Select(x => x.TagName).ToArray();
-            var list = postTagPocos.Select(postTagPoco => postTagPoco.TagName).ToList();
 
             var tagsToBeDeleted = postTagPocos.Where(x => !postTags.Contains(x.TagName)).ToArray();
 
             foreach (var tagPoco in tagsToBeDeleted)
             {
-                await this.DeletePostTag(tagPoco);
+                await this.DeletePostTag(tagPoco, post.Id);
             }
 
             var tagsToBeAdded = postTags.Where(x => !postTagPocoNames.Contains(x)).ToArray();
@@ -193,14 +192,12 @@ namespace Blog.Web.Services
             }
         }
 
-        private async Task DeletePostTag(TagPoco tag)
+        private async Task DeletePostTag(TagPoco tag, int postId)
         {
-            var postsTagsPoco = await this.Database.QueryOne<PostsTagsPoco>("SELECT * FROM posts_tags pt WHERE pt.tag_id=@tagId",
-                new NpgsqlParameter("tagId", tag.TagId));
+            var postsTagsPoco = await this.Database.QueryOne<PostsTagsPoco>("SELECT * FROM posts_tags pt WHERE pt.tag_id=@tagId AND pt.post_id=@postId",
+                new NpgsqlParameter("tagId", tag.TagId), new NpgsqlParameter("postId", postId));
 
-            postsTagsPoco.Deleted = true;
-
-            await this.Database.Update(postsTagsPoco);
+            await this.Database.Delete(postsTagsPoco);
         }
     }
 }
