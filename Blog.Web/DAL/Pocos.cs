@@ -55,6 +55,9 @@ namespace Blog.Web.DAL
 
         [Column(Name = "tag_id")]
         public int TagId { get; set; }
+
+        [Column(Name = "position")]
+        public int Position { get; set; }
     }
 
     [Table(Name = "login_sessions", Schema = "public")]
