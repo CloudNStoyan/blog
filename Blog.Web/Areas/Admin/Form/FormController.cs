@@ -32,7 +32,7 @@ namespace Blog.Web.Areas.Admin.Form
         public async Task<IActionResult> CreatePost(FormPostModel postModel)
         {
             int postId = await this.PostService.CreatePost(postModel);
-            return this.Redirect("/data/post/" + postId);
+            return this.RedirectToAction("Post", "Data", postId);
         }
 
         public async Task<IActionResult> EditPost(FormEditModel editModel)
@@ -48,6 +48,20 @@ namespace Blog.Web.Areas.Admin.Form
             await this.PostService.UpdatePost(postModel);
 
             return this.Redirect("/data/post/" + postModel.Id);
+        }
+
+        public async Task<IActionResult> DeletePostForm(int id)
+        {
+            var post = await this.PostService.GetPostById(id);
+
+            return this.View(post);
+        }
+
+        public async Task<IActionResult> DeletePost(int id)
+        {
+            await this.PostService.DeletePost(id);
+
+            return this.RedirectToAction("Posts", "Form");
         }
 
         public async Task<IActionResult> Posts()

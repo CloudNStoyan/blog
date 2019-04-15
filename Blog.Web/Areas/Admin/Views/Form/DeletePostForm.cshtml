@@ -1,0 +1,21 @@
+﻿@model PostModel
+@{
+    ViewData["Title"] = "DeletePostForm";
+    Layout = "_AdminPanelLayout";
+}
+
+@section styles {
+    <link rel="stylesheet" href="~/admin/css/delete-form.css" />
+}
+<form asp-controller="Form" asp-action="DeletePost" asp-route-id="@Model.Id">
+    <div class="card">
+        <div class="card-header">
+            Delete Alert: You are gonna delete post: @Model.Title
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">Are you sure?</h5>
+            <p class="card-text">After deleting post it will be lost forever!</p>
+            <button type="submit" class="btn btn-danger">Delete</button>
+        </div>
+    </div>
+</form>

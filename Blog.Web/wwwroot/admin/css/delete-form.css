@@ -1,0 +1,7 @@
+main {
+    color: #333;
+}
+
+main > .card {
+    margin: 150px;
+}

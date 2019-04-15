@@ -8,6 +8,7 @@ using Npgsql;
 
 namespace Blog.Web.Services
 {
+    // ReSharper disable once ClassNeverInstantiated.Global
     public class PostService
     {
         private Database Database { get; }
@@ -170,7 +171,7 @@ namespace Blog.Web.Services
         {
             foreach (string tag in tags)
             {
-                var tagPoco = await this.Database.QueryOne<TagPoco>("SELECT * FROM tags t WHERE t.tag_name = @tagName",
+                var tagPoco = await this.Database.QueryOne<TagPoco>("SELECT * FROM tags t WHERE t.tag_name = @tagName;",
                     new NpgsqlParameter("tagName", tag));
                 if (tagPoco == null)
                 {
@@ -194,10 +195,25 @@ namespace Blog.Web.Services
 
         private async Task DeletePostTag(TagPoco tag, int postId)
         {
-            var postsTagsPoco = await this.Database.QueryOne<PostsTagsPoco>("SELECT * FROM posts_tags pt WHERE pt.tag_id=@tagId AND pt.post_id=@postId",
+            var postsTagsPoco = await this.Database.QueryOne<PostsTagsPoco>("SELECT * FROM posts_tags pt WHERE pt.tag_id=@tagId AND pt.post_id = @postId;",
                 new NpgsqlParameter("tagId", tag.TagId), new NpgsqlParameter("postId", postId));
 
             await this.Database.Delete(postsTagsPoco);
+        }
+
+        public async Task DeletePost(int id)
+        {
+            var postTags = await this.Database.Query<PostsTagsPoco>(
+                "SELECT * FROM posts_tags pt WHERE pt.post_id = @postId;", new NpgsqlParameter("postId", id));
+
+            foreach (var postsTagsPoco in postTags)
+            {
+                await this.Database.Delete(postsTagsPoco);
+            }
+
+            var postPoco = await this.Database.QueryOne<PostPoco>("SELECT * FROM posts p WHERE p.post_id = @postId;",
+                new NpgsqlParameter("postId", id));
+            await this.Database.Delete(postPoco);
         }
     }
 }
