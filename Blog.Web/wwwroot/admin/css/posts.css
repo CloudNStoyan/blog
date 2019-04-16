@@ -1,20 +1,24 @@
 .list-wrapper {
-    padding: 5%;
+    padding: 2% 5%;
+    margin-right: 20%;
 }
 
-.post {
-    width: 600px;
-    padding: 10px 10px;
-    height: 100%;
-    display: flex;
-    flex-flow: row wrap;
-    justify-content: space-between;
+.my-table th , .my-table td { 
+    padding: 0;
+    text-align: center;
+    padding: 10px 0;
 }
 
-.post:nth-child(odd) {
-    background-color: #333;
+.my-table th:first-child {
+    width: 1px;
 }
 
-.post:nth-child(even) {
-    background-color: #444;
+.my-table td:nth-child(2) {
+    text-align: left;
+    width: 300px;
+}
+
+.my-table td:last-child {
+    text-align: left;
+    width: 10px;
 }

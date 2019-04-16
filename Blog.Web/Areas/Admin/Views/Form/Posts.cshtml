@@ -11,16 +11,29 @@
 }
 
 <div class="list-wrapper">
-    @foreach (var post in Model)
-    {
-        <div class="post">
-            <span class="lead text-center post-title">@post.Title</span>
-            <div class="btn-group action-buttons">
-                <a class="btn btn-info" asp-area="" asp-controller="Data" asp-action="Post" asp-route-id="@post.Id">View</a>
-                <a class="btn btn-warning" asp-controller="Form" asp-action="EditForm" asp-route-id="@post.Id">Edit</a>
-                <a class="btn btn-danger" asp-controller="Form" asp-action="DeletePostForm" asp-route-id="@post.Id">Delete</a>
-            </div>
-        </div>
-    }
+    <table class="table table-striped table-dark table-bordered my-table">
+        <thead class="thead-dark">
+        <tr>
+            <th># Id</th>
+            <th>Title</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var post in Model)
+        {
+            <tr>
+                <th>@post.Id</th>
+                <td>@post.Title</td>
+                <td>
+                    <div class="btn-group">
+                        <a class="btn btn-info" asp-area="" asp-controller="Data" asp-action="Post" asp-route-id="@post.Id">View</a>
+                        <a class="btn btn-warning" asp-controller="Form" asp-action="EditForm" asp-route-id="@post.Id">Edit</a>
+                        <a class="btn btn-danger" asp-controller="Form" asp-action="DeletePostForm" asp-route-id="@post.Id">Delete</a>
+                    </div>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
 </div>
-

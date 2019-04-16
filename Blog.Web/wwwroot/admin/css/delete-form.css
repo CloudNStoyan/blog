@@ -2,6 +2,6 @@ main {
     color: #333;
 }
 
-main > .card {
-    margin: 150px;
+.inner-wrapper {
+    margin: 10% 30%;
 }

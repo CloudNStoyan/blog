@@ -12,6 +12,7 @@ namespace Blog.Web.Services
     public class PostService
     {
         private Database Database { get; }
+
         private SessionService SessionService { get; }
 
         public PostService(Database database, SessionService sessionService)
@@ -109,7 +110,7 @@ namespace Blog.Web.Services
         /// </summary>
         public async Task<PostModel[]> GetAllPosts()
         {
-            var postPocos = await this.Database.Query<PostPoco>("SELECT * FROM posts;");
+            var postPocos = await this.Database.Query<PostPoco>("SELECT * FROM posts p ORDER BY p.post_id;");
             var posts = new List<PostModel>();
 
             foreach (var postPoco in postPocos)
