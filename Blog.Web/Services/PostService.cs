@@ -27,6 +27,12 @@ namespace Blog.Web.Services
         public async Task<PostModel> GetPostById(int id)
         {
             var postPoco = await this.Database.QueryOne<PostPoco>("SELECT * FROM posts p WHERE p.post_id=@postId;", new NpgsqlParameter("postId", id));
+
+            if (postPoco == null)
+            {
+                return null;
+            }
+
             var post = new PostModel
             {
                 Content = postPoco.Content,

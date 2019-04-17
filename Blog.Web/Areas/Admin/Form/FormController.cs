@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Blog.Web.Areas.Admin.Form
 {
-    [Area("Admin")]
+    [Area(Utilities.AdminArea)]
     [Authorize]
     public class FormController : Controller
     {

@@ -1,6 +1,7 @@
 ﻿using System;
 using Autofac.Extensions.DependencyInjection;
 using Blog.Web.Areas.Admin.Auth;
+using Blog.Web.ErrorHandling;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,6 +32,8 @@ namespace Blog.Web
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseNotFoundMiddleware();
 
             app.UseStaticFiles();
 

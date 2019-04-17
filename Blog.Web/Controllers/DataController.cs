@@ -17,6 +17,11 @@ namespace Blog.Web.Controllers
         {
             var post = await this.PostService.GetPostById(id);
 
+            if (post == null)
+            {
+                return this.RedirectToAction("PageNotFound", "Error");
+            }
+
             return this.View(post);
         }
     }

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Blog.Web.Areas.Admin.Controllers
 {
-    [Area("Admin")]
+    [Area(Utilities.AdminArea)]
     [Authorize]
     public class HomeController : Controller
     {
