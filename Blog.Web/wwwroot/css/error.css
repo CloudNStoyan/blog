@@ -1,0 +1,44 @@
+body {
+    font-family: 'Capriola', sans-serif;
+    background-color: #f1f1f1;
+    color: black;
+}
+
+h1 {
+    font-size: 200px;
+    text-align: center;
+    margin-bottom: 1px;
+    text-shadow: 4px 4px 1px orangered;    
+    color: red;
+}
+
+p {
+    text-align: center;
+    color: grey;
+}
+
+a {
+    color: #fff;
+    background-color: #337ab7;
+    border-color: #2e6da4;
+    border: 1px solid transparent;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    border-radius: 4px;
+    float: right;
+}
+
+a:hover {
+    color: #fff;
+    background-color: #286090;
+    border-color: #204d74;
+    display: block;
+}
+
+.wrapper {
+    margin: 0 40%;
+    align-items: center;
+    justify-content: center;
+
+}
