@@ -1,10 +1,9 @@
 ﻿using System.Threading.Tasks;
-using Blog.Web.Areas.Admin.Auth;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Blog.Web.Areas.Admin.Controllers
+namespace Blog.Web.Areas.Admin.Auth
 {
-    [Area("Admin")]
+    [Area(Roles.Admin)]
     public class AuthController : Controller
     {
         private AuthenticationService AuthService { get; }
@@ -31,7 +30,7 @@ namespace Blog.Web.Areas.Admin.Controllers
 
             if (user == null)
             {
-                return this.RedirectToAction("Index", "Home");
+                return this.RedirectToAction("Index", "Home", new { area = "" });
             }
 
             string sessionKey = await this.AuthService.CreateNewSession(user.UserId, data.RememberMe);
@@ -41,15 +40,15 @@ namespace Blog.Web.Areas.Admin.Controllers
             return this.RedirectToAction("Index", "Home");
         }
 
-        public IActionResult LogOut()
+        public async Task<IActionResult> LogOut()
         {
             var session = this.SessionService.Session;
 
-            this.AuthService.Logout(session);
+            await this.AuthService.Logout(session);
 
             this.SessionCookieService.RemoveSessionKey();
 
-            return this.Redirect("LoginPage");
+            return this.RedirectToAction("LoginPage", "Auth");
         }
 
         public IActionResult LoginPage()

@@ -135,7 +135,7 @@ namespace Blog.Web.Areas.Admin.Auth
         /// <summary>
         /// Logs out the session.
         /// </summary>
-        public async void Logout(RequestSession requestSession)
+        public async Task Logout(RequestSession requestSession)
         {
             var sessiom = await this.GetSessionById(requestSession.SessionId);
 
@@ -144,7 +144,7 @@ namespace Blog.Web.Areas.Admin.Auth
             sessiom.LoggedOut = true;
             sessiom.LoggedOutTime = now;
 
-            this.Database.Update(sessiom);
+            await this.Database.Update(sessiom);
         }
     }
 }

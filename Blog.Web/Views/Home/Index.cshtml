@@ -15,7 +15,7 @@
                 <a asp-controller="Data" asp-action="Post" asp-route-id="@post.Id">@post.Title</a>
             </header>
             <div class="line"></div>
-            <p>@post.Content.Remove(post.Content.Length - 1)...</p>
+            <p>@post.Content</p>
             <div class="tags">
                 @foreach (var tag in post.Tags)
                 {

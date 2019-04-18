@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Blog.Web.Areas.Admin.Auth;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Blog.Web.Areas.Admin.Controllers
 {
-    [Area(Utilities.AdminArea)]
+    [Area(Roles.Admin)]
     [Authorize]
     public class HomeController : Controller
     {

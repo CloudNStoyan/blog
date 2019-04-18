@@ -8,5 +8,10 @@ namespace Blog.Web.ErrorHandling
         {
             return this.View();
         }
+
+        public IActionResult SomethingWentWrong()
+        {
+            return this.View();
+        }
     }
 }

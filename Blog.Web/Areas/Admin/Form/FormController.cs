@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using Blog.Web.Areas.Admin.Auth;
 using Blog.Web.Models;
 using Blog.Web.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -6,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Blog.Web.Areas.Admin.Form
 {
-    [Area(Utilities.AdminArea)]
+    [Area(Roles.Admin)]
     [Authorize]
     public class FormController : Controller
     {
@@ -31,17 +33,31 @@ namespace Blog.Web.Areas.Admin.Form
 
         public async Task<IActionResult> CreatePost(FormPostModel postModel)
         {
+            string[] tags = postModel.Tags?.Split(',').Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
+
+            if (!this.PostService.ValidatePost(postModel.Title, postModel.Content, tags))
+            {
+                return this.RedirectToAction("SomethingWentWrong", "Error", new { area = "" });
+            }
+
             int postId = await this.PostService.CreatePost(postModel);
             return this.RedirectToAction("Post", "Data", postId);
         }
 
         public async Task<IActionResult> EditPost(FormEditModel editModel)
         {
+            string[] tags = editModel.Tags?.Split(',').Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
+
+            if (!this.PostService.ValidatePost(editModel.Title, editModel.Content, tags))
+            {
+                return this.RedirectToAction("SomethingWentWrong", "Error", new { area = "" });
+            }
+
             var postModel = new PostModel
             {
                 Content = editModel.Content,
                 Id = editModel.Id,
-                Tags = editModel.Tags.Split(','),
+                Tags = tags,
                 Title = editModel.Title
             };
 

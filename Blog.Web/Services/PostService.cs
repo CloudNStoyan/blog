@@ -201,6 +201,11 @@ namespace Blog.Web.Services
             }
         }
 
+        public bool ValidatePost(string title, string content, string[] tags)
+        {
+            return !string.IsNullOrWhiteSpace(content) && !string.IsNullOrWhiteSpace(title) && tags != null && tags.Length >= 1;
+        }
+
         private async Task DeletePostTags(int postId)
         {
             var postsTagsPocos = await this.Database.Query<PostsTagsPoco>("SELECT * FROM posts_tags pt WHERE pt.post_id = @postId;",
