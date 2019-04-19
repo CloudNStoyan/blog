@@ -201,9 +201,27 @@ namespace Blog.Web.Services
             }
         }
 
-        public bool ValidatePost(string title, string content, string[] tags)
+        public string[] ValidatePost(string title, string content, string[] tags)
         {
-            return !string.IsNullOrWhiteSpace(content) && !string.IsNullOrWhiteSpace(title) && tags != null && tags.Length >= 1;
+            var errors = new List<string>();
+
+            if (string.IsNullOrWhiteSpace(title))
+            {
+                errors.Add("invalidTitle");
+            }
+
+            if (string.IsNullOrWhiteSpace(content))
+            {
+                errors.Add("invalidContent");
+            }
+
+            if (tags == null || tags.Length < 1)
+            {
+                errors.Add("invalidTags");
+            }
+
+
+            return errors.ToArray();
         }
 
         private async Task DeletePostTags(int postId)

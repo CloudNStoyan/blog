@@ -24,20 +24,53 @@ namespace Blog.Web.Areas.Admin.Form
             return this.View();
         }
 
-        public async Task<IActionResult> EditForm(int id)
+        public async Task<IActionResult> EditForm(int id, [FromQuery] string alert)
         {
             var post = await this.PostService.GetPostById(id);
 
-            return this.View(post);
+            string[] alerts = alert?.Split(',');
+
+            if (alerts != null && alerts.Length > 0)
+            {
+                for (int i = 0; i < alerts.Length; i++)
+                {
+                    if (alerts[i] == "invalidTitle")
+                    {
+                        alerts[i] = "* Title cannot be empty or whitespaces only!";
+                    } else if (alerts[i] == "invalidContent")
+                    {
+                        alerts[i] = "* Content cannot be empty or whitespaces only!";
+                    } else if (alerts[i] == "invalidTags")
+                    {
+                        alerts[i] = "* There must be at least 1 valid tag!";
+                    }
+                    else
+                    {
+                        alerts[i] = "";
+                    }
+                }
+
+                alerts = alerts.Select(x => x).Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
+            }
+
+            var editModel = new EditModel
+            {
+                Alerts = alerts,
+                Post = post
+            };
+
+            return this.View(editModel);
         }
 
         public async Task<IActionResult> CreatePost(FormPostModel postModel)
         {
             string[] tags = postModel.Tags?.Split(',').Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
 
-            if (!this.PostService.ValidatePost(postModel.Title, postModel.Content, tags))
+            string[] errors = this.PostService.ValidatePost(postModel.Title, postModel.Content, tags);
+
+            if (errors.Length > 0)
             {
-                return this.RedirectToAction("SomethingWentWrong", "Error", new { area = "" });
+                return this.RedirectToAction("EditForm", "Form", new { id = postModel, alert = string.Join(",", errors) });
             }
 
             int postId = await this.PostService.CreatePost(postModel);
@@ -48,9 +81,11 @@ namespace Blog.Web.Areas.Admin.Form
         {
             string[] tags = editModel.Tags?.Split(',').Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
 
-            if (!this.PostService.ValidatePost(editModel.Title, editModel.Content, tags))
+            string[] errors = this.PostService.ValidatePost(editModel.Title, editModel.Content, tags);
+
+            if (errors.Length > 0)
             {
-                return this.RedirectToAction("SomethingWentWrong", "Error", new { area = "" });
+                return this.RedirectToAction("EditForm", "Form", new {id = editModel.Id ,alert = string.Join(",", errors)});
             }
 
             var postModel = new PostModel

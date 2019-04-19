@@ -14,4 +14,10 @@
         public string Tags { get; set; }
         public int Id { get; set; }
     }
+
+    public class EditModel
+    {
+        public PostModel Post { get; set; }
+        public string[] Alerts { get; set; }
+    }
 }
