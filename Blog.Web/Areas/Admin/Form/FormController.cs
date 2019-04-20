@@ -19,12 +19,52 @@ namespace Blog.Web.Areas.Admin.Form
             this.PostService = postService;
         }
 
-        public IActionResult CreateForm()
+        public IActionResult CreateForm([FromQuery] string alert, [FromQuery] string title, [FromQuery] string content,
+            [FromQuery] string tags)
         {
-            return this.View();
+            string[] alerts = alert?.Split(',');
+
+            if (alerts != null && alerts.Length > 0)
+            {
+                for (int i = 0; i < alerts.Length; i++)
+                {
+                    if (alerts[i] == "invalidTitle")
+                    {
+                        alerts[i] = "* Title cannot be empty or whitespaces only!";
+                    }
+                    else if (alerts[i] == "invalidContent")
+                    {
+                        alerts[i] = "* Content cannot be empty or whitespaces only!";
+                    }
+                    else if (alerts[i] == "invalidTags")
+                    {
+                        alerts[i] = "* There must be at least 1 valid tag!";
+                    }
+                    else
+                    {
+                        alerts[i] = "";
+                    }
+                }
+
+                alerts = alerts.Select(x => x).Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
+            }
+
+            var editModel = new EditModel
+            {
+                Alerts = alerts,
+                Post = new PostModel
+                {
+                    Content = content,
+                    Tags = !string.IsNullOrWhiteSpace(tags) ? tags.Split(',') : new string[] {""},
+                    Title = title
+                }
+
+            };
+
+            return this.View(editModel);
         }
 
-        public async Task<IActionResult> EditForm(int id, [FromQuery] string alert)
+        public async Task<IActionResult> EditForm(int id, [FromQuery] string alert, [FromQuery] string title, [FromQuery] string content, [FromQuery] string tags)
         {
             var post = await this.PostService.GetPostById(id);
 
@@ -53,6 +93,18 @@ namespace Blog.Web.Areas.Admin.Form
                 alerts = alerts.Select(x => x).Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
             }
 
+            if (!string.IsNullOrWhiteSpace(title))
+            {
+                post.Title = title;
+            }
+
+            if (!string.IsNullOrWhiteSpace(content))
+            {
+                post.Content = content;
+            }
+
+            post.Tags = !string.IsNullOrWhiteSpace(tags) ? tags.Split(',') : new string[]{""};
+
             var editModel = new EditModel
             {
                 Alerts = alerts,
@@ -70,7 +122,8 @@ namespace Blog.Web.Areas.Admin.Form
 
             if (errors.Length > 0)
             {
-                return this.RedirectToAction("EditForm", "Form", new { id = postModel, alert = string.Join(",", errors) });
+                var routeObject = new { alert = string.Join(",", errors), title = postModel.Title, content = postModel.Content, tags = postModel.Tags ?? "" };
+                return this.RedirectToAction("CreateForm", "Form", routeObject);
             }
 
             int postId = await this.PostService.CreatePost(postModel);
@@ -85,7 +138,8 @@ namespace Blog.Web.Areas.Admin.Form
 
             if (errors.Length > 0)
             {
-                return this.RedirectToAction("EditForm", "Form", new {id = editModel.Id ,alert = string.Join(",", errors)});
+                var routeObject = new { id = editModel.Id, alert = string.Join(",", errors), title = editModel.Title, content = editModel.Content, tags = editModel.Tags ?? "" };
+                return this.RedirectToAction("EditForm", "Form", routeObject);
             }
 
             var postModel = new PostModel
