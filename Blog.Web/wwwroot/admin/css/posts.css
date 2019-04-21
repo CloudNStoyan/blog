@@ -4,21 +4,20 @@
 }
 
 .my-table th , .my-table td { 
-    padding: 0;
     text-align: center;
-    padding: 10px 0;
+    vertical-align: middle;
 }
 
 .my-table th:first-child {
-    width: 1px;
+    width: 50px;
 }
 
 .my-table td:nth-child(2) {
+    width: auto;
     text-align: left;
-    width: 300px;
+    padding-left: 20px;
 }
 
 .my-table td:last-child {
-    text-align: left;
-    width: 10px;
+    width: 200px;
 }
