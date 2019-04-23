@@ -64,11 +64,11 @@ namespace Blog.Web.Areas.Admin.Form
             return this.View(editModel);
         }
 
-        public async Task<IActionResult> EditForm(int id, [FromQuery] string alert, [FromQuery] string title, [FromQuery] string content, [FromQuery] string tags)
+        public async Task<IActionResult> EditForm(int id, [FromBody]EditModel returnedEditModel)
         {
             var post = await this.PostService.GetPostById(id);
 
-            string[] alerts = alert?.Split(',');
+            string[] alerts = returnedEditModel.Alerts;
 
             if (alerts != null && alerts.Length > 0)
             {
@@ -92,24 +92,20 @@ namespace Blog.Web.Areas.Admin.Form
 
                 alerts = alerts.Select(x => x).Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
             }
-
-            if (!string.IsNullOrWhiteSpace(title))
-            {
-                post.Title = title;
-            }
-
-            if (!string.IsNullOrWhiteSpace(content))
-            {
-                post.Content = content;
-            }
-
-            post.Tags = !string.IsNullOrWhiteSpace(tags) ? tags.Split(',') : new string[]{""};
-
             var editModel = new EditModel
             {
                 Alerts = alerts,
                 Post = post
             };
+
+            if (returnedEditModel.Post != null)
+            {
+                editModel = new EditModel
+                {
+                    Alerts = alerts,
+                    Post = returnedEditModel.Post
+                };
+            }
 
             return this.View(editModel);
         }
@@ -136,12 +132,6 @@ namespace Blog.Web.Areas.Admin.Form
 
             string[] errors = this.PostService.ValidatePost(editModel.Title, editModel.Content, tags);
 
-            if (errors.Length > 0)
-            {
-                var routeObject = new { id = editModel.Id, alert = string.Join(",", errors), title = editModel.Title, content = editModel.Content, tags = editModel.Tags ?? "" };
-                return this.RedirectToAction("EditForm", "Form", routeObject);
-            }
-
             var postModel = new PostModel
             {
                 Content = editModel.Content,
@@ -149,6 +139,16 @@ namespace Blog.Web.Areas.Admin.Form
                 Tags = tags,
                 Title = editModel.Title
             };
+
+            if (errors.Length > 0)
+            {
+                var routeObject = new { id = editModel.Id, returnedEditModel = new EditModel
+                {
+                    Alerts = errors,
+                    Post = postModel
+                }};
+                return this.RedirectToAction("EditForm", "Form", routeObject);
+            }
 
             await this.PostService.UpdatePost(postModel);
 
