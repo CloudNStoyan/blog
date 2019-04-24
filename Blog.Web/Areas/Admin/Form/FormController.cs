@@ -5,6 +5,7 @@ using Blog.Web.Models;
 using Blog.Web.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 
 namespace Blog.Web.Areas.Admin.Form
 {
@@ -64,7 +65,7 @@ namespace Blog.Web.Areas.Admin.Form
             return this.View(editModel);
         }
 
-        public async Task<IActionResult> EditForm(int id, [FromBody]EditModel returnedEditModel)
+        public async Task<IActionResult> EditForm(int id, [FromQuery]EditModel returnedEditModel)
         {
             var post = await this.PostService.GetPostById(id);
 
@@ -128,6 +129,13 @@ namespace Blog.Web.Areas.Admin.Form
 
         public async Task<IActionResult> EditPost(FormEditModel editModel)
         {
+
+            if (dwdwdw)
+            {
+
+                return this.View(editModel);
+            }
+
             string[] tags = editModel.Tags?.Split(',').Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
 
             string[] errors = this.PostService.ValidatePost(editModel.Title, editModel.Content, tags);
@@ -142,12 +150,16 @@ namespace Blog.Web.Areas.Admin.Form
 
             if (errors.Length > 0)
             {
-                var routeObject = new { id = editModel.Id, returnedEditModel = new EditModel
+                var routeObject = new
                 {
-                    Alerts = errors,
-                    Post = postModel
-                }};
-                return this.RedirectToAction("EditForm", "Form", routeObject);
+                    id = postModel.Id,
+                    returnedEditModel = new EditModel
+                    {
+                        Alerts = errors,
+                        Post = postModel
+                    }
+                };
+                return this.RedirectToAction("EditForm", routeObject);
             }
 
             await this.PostService.UpdatePost(postModel);

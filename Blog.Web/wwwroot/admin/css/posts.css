@@ -46,7 +46,6 @@
     outline: 0;
     background: none;
     width: 0;
-    caret-color:transparent;
     line-height: 40px;
     transition: width 0.4s linear;
 }
@@ -54,7 +53,6 @@
 .searchbar:hover > .search-input{
     padding: 0 10px;
     width: 450px;
-    caret-color:red;
     transition: width 0.4s linear;
 }
 
