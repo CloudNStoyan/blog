@@ -1,4 +1,4 @@
-﻿@model EditModel
+﻿@model FormEditModel
 @{
     ViewData["Title"] = "Edit Form";
     Layout = "_AdminPanelLayout";
@@ -9,33 +9,27 @@
 }
 
 <div class="form-wrapper">
-    <form asp-controller="Form" asp-action="EditPost" class="main-form">
+    <form asp-controller="Form" asp-action="EditForm" class="main-form">
         <h1 class="text-center">Editing post</h1>
         <div class="form-group">
-            <label for="Post_Title">Title</label>
-            <input class="form-control" asp-for="Post.Title" name="Title" value="@Model.Post.Title"/>
+            <label for="Title">Title</label>
+            <input class="form-control" asp-for="Title" value="@Model.Title" />
         </div>
         <div class="form-group">
-            <label for="Post_Content">Content</label>
-            <textarea class="form-control" asp-for="Post.Content" name="Content">@Model.Post.Content</textarea>
+            <label for="Content">Content</label>
+            <textarea class="form-control" asp-for="Content">@Model.Content</textarea>
         </div>
         <div class="form-group">
-            <label for="Post_Tags">Tags</label>
-            <input class="form-control" asp-for="Post.Tags" name="Tags" value="@string.Join(',', Model.Post.Tags)"/>
+            <label for="Tags">Tags</label>
+            <input class="form-control" asp-for="Tags" value="@Model.Tags" />
             <small class="form-text form-muted">
                 * Separate tags with commas
             </small>
         </div>
-        @if (Model.Alerts != null && Model.Alerts.Length > 0)
-        {
-            <div class="alert alert-danger">
-                @foreach (string alert in Model.Alerts)
-                {
-                    <div>@alert</div>
-                }
-            </div>
-        }
-        <input type="hidden" name="id" value="@Model.Post.Id"/>
+        @Html.ValidationMessageFor(x => x.Title, null, new { @class = "alert alert-danger" }, "div")
+        @Html.ValidationMessageFor(x => x.Content, null, new { @class = "alert alert-danger" }, "div")
+        @Html.ValidationMessageFor(x => x.Tags, null, new { @class = "alert alert-danger" }, "div")
+        <input type="hidden" name="id" value="@Model.Id" />
         <button class="btn btn-primary" type="submit">Save</button>
     </form>
 </div>

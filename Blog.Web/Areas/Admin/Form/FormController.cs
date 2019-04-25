@@ -1,11 +1,12 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using Blog.Web.Areas.Admin.Auth;
 using Blog.Web.Models;
 using Blog.Web.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
 
 namespace Blog.Web.Areas.Admin.Form
 {
@@ -20,147 +21,66 @@ namespace Blog.Web.Areas.Admin.Form
             this.PostService = postService;
         }
 
-        public IActionResult CreateForm([FromQuery] string alert, [FromQuery] string title, [FromQuery] string content,
-            [FromQuery] string tags)
+        [HttpGet]
+        public IActionResult CreateForm()
         {
-            string[] alerts = alert?.Split(',');
-
-            if (alerts != null && alerts.Length > 0)
-            {
-                for (int i = 0; i < alerts.Length; i++)
-                {
-                    if (alerts[i] == "invalidTitle")
-                    {
-                        alerts[i] = "* Title cannot be empty or whitespaces only!";
-                    }
-                    else if (alerts[i] == "invalidContent")
-                    {
-                        alerts[i] = "* Content cannot be empty or whitespaces only!";
-                    }
-                    else if (alerts[i] == "invalidTags")
-                    {
-                        alerts[i] = "* There must be at least 1 valid tag!";
-                    }
-                    else
-                    {
-                        alerts[i] = "";
-                    }
-                }
-
-                alerts = alerts.Select(x => x).Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
-            }
-
-            var editModel = new EditModel
-            {
-                Alerts = alerts,
-                Post = new PostModel
-                {
-                    Content = content,
-                    Tags = !string.IsNullOrWhiteSpace(tags) ? tags.Split(',') : new string[] {""},
-                    Title = title
-                }
-
-            };
-
-            return this.View(editModel);
+            return this.View();
         }
 
-        public async Task<IActionResult> EditForm(int id, [FromQuery]EditModel returnedEditModel)
+        [HttpPost]
+        public async Task<IActionResult> CreateForm(FormPostModel formPostModel)
         {
-            var post = await this.PostService.GetPostById(id);
+            var context = new ValidationContext(formPostModel, null, null);
+            var results = new List<ValidationResult>();
 
-            string[] alerts = returnedEditModel.Alerts;
+            bool valid = Validator.TryValidateObject(formPostModel, context, results, true);
 
-            if (alerts != null && alerts.Length > 0)
+            if (!valid)
             {
-                for (int i = 0; i < alerts.Length; i++)
-                {
-                    if (alerts[i] == "invalidTitle")
-                    {
-                        alerts[i] = "* Title cannot be empty or whitespaces only!";
-                    } else if (alerts[i] == "invalidContent")
-                    {
-                        alerts[i] = "* Content cannot be empty or whitespaces only!";
-                    } else if (alerts[i] == "invalidTags")
-                    {
-                        alerts[i] = "* There must be at least 1 valid tag!";
-                    }
-                    else
-                    {
-                        alerts[i] = "";
-                    }
-                }
-
-                alerts = alerts.Select(x => x).Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
-            }
-            var editModel = new EditModel
-            {
-                Alerts = alerts,
-                Post = post
-            };
-
-            if (returnedEditModel.Post != null)
-            {
-                editModel = new EditModel
-                {
-                    Alerts = alerts,
-                    Post = returnedEditModel.Post
-                };
+                return this.View(formPostModel);
             }
 
-            return this.View(editModel);
-        }
-
-        public async Task<IActionResult> CreatePost(FormPostModel postModel)
-        {
-            string[] tags = postModel.Tags?.Split(',').Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
-
-            string[] errors = this.PostService.ValidatePost(postModel.Title, postModel.Content, tags);
-
-            if (errors.Length > 0)
-            {
-                var routeObject = new { alert = string.Join(",", errors), title = postModel.Title, content = postModel.Content, tags = postModel.Tags ?? "" };
-                return this.RedirectToAction("CreateForm", "Form", routeObject);
-            }
-
-            int postId = await this.PostService.CreatePost(postModel);
+            int postId = await this.PostService.CreatePost(formPostModel);
             return this.RedirectToAction("Post", "Data", postId);
         }
 
-        public async Task<IActionResult> EditPost(FormEditModel editModel)
+        [HttpGet]
+        public async Task<IActionResult> EditForm(int id)
         {
+            var post = await this.PostService.GetPostById(id);
 
-            if (dwdwdw)
+            var formEditModel = new FormEditModel
             {
+                Content = post.Content,
+                Tags = string.Join(',',post.Tags),
+                Title = post.Title
+            };
 
-                return this.View(editModel);
+            return this.View(formEditModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditForm(FormEditModel formEditModel)
+        {
+            var context = new ValidationContext(formEditModel, null, null);
+            var results = new List<ValidationResult>();
+
+            bool valid = Validator.TryValidateObject(formEditModel, context, results, true);
+
+            if (!valid)
+            {
+                return this.View(formEditModel);
             }
 
-            string[] tags = editModel.Tags?.Split(',').Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
-
-            string[] errors = this.PostService.ValidatePost(editModel.Title, editModel.Content, tags);
+            string[] tags = formEditModel.Tags?.Split(',').Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
 
             var postModel = new PostModel
             {
-                Content = editModel.Content,
-                Id = editModel.Id,
+                Content = formEditModel.Content,
+                Id = formEditModel.Id,
                 Tags = tags,
-                Title = editModel.Title
+                Title = formEditModel.Title
             };
-
-            if (errors.Length > 0)
-            {
-                var routeObject = new
-                {
-                    id = postModel.Id,
-                    returnedEditModel = new EditModel
-                    {
-                        Alerts = errors,
-                        Post = postModel
-                    }
-                };
-                return this.RedirectToAction("EditForm", routeObject);
-            }
 
             await this.PostService.UpdatePost(postModel);
 

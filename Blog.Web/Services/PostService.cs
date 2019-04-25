@@ -201,29 +201,6 @@ namespace Blog.Web.Services
             }
         }
 
-        public string[] ValidatePost(string title, string content, string[] tags)
-        {
-            var errors = new List<string>();
-
-            if (string.IsNullOrWhiteSpace(title))
-            {
-                errors.Add("invalidTitle");
-            }
-
-            if (string.IsNullOrWhiteSpace(content))
-            {
-                errors.Add("invalidContent");
-            }
-
-            if (tags == null || tags.Length < 1)
-            {
-                errors.Add("invalidTags");
-            }
-
-
-            return errors.ToArray();
-        }
-
         private async Task DeletePostTags(int postId)
         {
             var postsTagsPocos = await this.Database.Query<PostsTagsPoco>("SELECT * FROM posts_tags pt WHERE pt.post_id = @postId;",

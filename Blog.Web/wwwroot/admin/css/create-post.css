@@ -5,3 +5,7 @@
     border-radius: 5px;
     background-color: #333;
 }
+
+.field-validation-valid {
+    display: none;
+}
