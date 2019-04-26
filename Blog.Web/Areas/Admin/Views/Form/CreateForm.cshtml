@@ -13,15 +13,15 @@
         <h1 class="text-center">Creating post</h1>
         <div class="form-group">
             <label for="Title">Title</label>
-            <input class="form-control" asp-for="Title" value="@Model.Title" />
+            <input class="form-control" asp-for="Title" value="@Model?.Title" />
         </div>
         <div class="form-group">
             <label for="Content">Content</label>
-            <textarea class="form-control" asp-for="Content">@Model.Content</textarea>
+            <textarea class="form-control" asp-for="Content">@Model?.Content</textarea>
         </div>
         <div class="form-group">
             <label for="Tags">Tags</label>
-            <input class="form-control" asp-for="Tags" value="@string.Join(',', Model.Tags)" />
+            <input class="form-control" asp-for="Tags" value="@string.Join(',', Model?.Tags)" />
             <small class="form-text form-muted">
                 * Separate tags with commas
             </small>
