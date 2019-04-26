@@ -24,50 +24,30 @@
 
 .actions {
     display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.search-group {
+    flex: 0 0 30%;
+}
+
+.search-btn {
+    background-color: white;
+}
+
+.search-btn i {
+    color: black;
+    font-size: 15px;
+    padding: 0;
+    margin: 10px 10px;
 }
 
 .create-post {
-    flex: 0 0 100%;
+    flex: 0 0 10%;
 }
 
-.searchbar {
-    margin-bottom: auto;
-    margin-top: auto;
-    height: 60px;
-    background-color: #353b48;
-    border-radius: 30px;
-    padding: 10px;
-    flex: 0 0 100%;
-}
-
-.search-input {
-    color: white;
-    border: 0;
-    outline: 0;
-    background: none;
-    width: 0;
-    line-height: 40px;
-    transition: width 0.4s linear;
-}
-
-.searchbar:hover > .search-input{
-    padding: 0 10px;
-    width: 450px;
-    transition: width 0.4s linear;
-}
-
-.searchbar:hover > .search-icon{
-    background: white;
-    color: #e74c3c;
-}
-
-.search-icon{
-    height: 40px;
-    width: 40px;
-    float: right;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 50%;
-    color:white;
+.create-post-btn i {
+    margin-left: 5px;
 }

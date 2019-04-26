@@ -12,13 +12,14 @@
 
 <div class="list-wrapper">
     <div class="actions">
-        <div class="searchbar">
-            <input class="search-input" type="text" name="" placeholder="Search...">
-            <a href="#" class="search-icon"><i class="fas fa-search"></i></a>
+        <div class="input-group search-group">
+            <input type="text" class="form-control" placeholder="Search"/>
+            <div class="input-group-append">
+                <a class="search-btn" href="#"><i class="fa fa-search "></i></a>
+            </div>
         </div>
         <div class="create-post">
-            <label for="new-post">Create post</label>
-            <a class="btn btn-primary" id="new-post"><i class="fa fa-plus"></i></a>
+            <a class="btn btn-primary create-post-btn" asp-controller="Form" asp-action="CreateForm">Create post<i class="fa fa-plus"></i></a>
         </div>
     </div>
     <table class="table table-striped table-dark table-bordered my-table">
