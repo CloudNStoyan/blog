@@ -19,7 +19,7 @@
             </div>
         </div>
         <div class="create-post">
-            <a class="btn btn-primary create-post-btn" asp-controller="Form" asp-action="CreateForm">Create post<i class="fa fa-plus"></i></a>
+            <a class="btn btn-primary create-post-btn" asp-controller="Form" asp-action="Create">Create post<i class="fa fa-plus"></i></a>
         </div>
     </div>
     <table class="table table-striped table-dark table-bordered my-table">
@@ -39,8 +39,8 @@
                 <td>
                     <div class="btn-group">
                         <a class="btn btn-info" asp-area="" asp-controller="Data" asp-action="Post" asp-route-id="@post.Id">View</a>
-                        <a class="btn btn-warning" asp-controller="Form" asp-action="EditForm" asp-route-id="@post.Id">Edit</a>
-                        <a class="btn btn-danger" asp-controller="Form" asp-action="DeletePostForm" asp-route-id="@post.Id">Delete</a>
+                        <a class="btn btn-warning" asp-controller="Form" asp-action="Edit" asp-route-id="@post.Id">Edit</a>
+                        <a class="btn btn-danger" asp-controller="Form" asp-action="DeletePost" asp-route-id="@post.Id">Delete</a>
                     </div>
                 </td>
             </tr>
