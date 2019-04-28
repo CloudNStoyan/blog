@@ -13,11 +13,11 @@ namespace Blog.Web.DAL
         private NpgsqlConnection Connection { get; }
 
         /// <summary>
-        /// <paramref name="conn"/>: The NpgsqlConnection that the database class uses.
+        /// <paramref name="connection"/>: The NpgsqlConnection that the database class uses.
         /// </summary>
-        public Database(NpgsqlConnection conn)
+        public Database(NpgsqlConnection connection)
         {
-            this.Connection = conn;
+            this.Connection = connection;
         }
 
         /// <summary>
@@ -28,7 +28,8 @@ namespace Blog.Web.DAL
         public async Task<List<T>> Query<T>(string sql, params NpgsqlParameter[] parametars) where T : new()
         {
             ThrowIfSqlOrParamsAreNull(sql, parametars);
-            this.OpenConnectionIfNot();
+
+            await this.OpenConnectionIfNeeded();
 
             var result = new List<T>();
             using (var command = new NpgsqlCommand(sql, this.Connection))
@@ -136,7 +137,8 @@ namespace Blog.Web.DAL
         public async Task<T> Execute<T>(string sql, params NpgsqlParameter[] parametars)
         {
             ThrowIfSqlOrParamsAreNull(sql, parametars);
-            this.OpenConnectionIfNot();
+
+            await this.OpenConnectionIfNeeded();
 
             T result = default;
 
@@ -197,7 +199,8 @@ namespace Blog.Web.DAL
         public async Task<int> ExecuteNonQuery(string sql, params NpgsqlParameter[] parametars)
         {
             ThrowIfSqlOrParamsAreNull(sql, parametars);
-            this.OpenConnectionIfNot();
+
+            await this.OpenConnectionIfNeeded();
 
             using (var command = new NpgsqlCommand(sql, this.Connection))
             {
@@ -222,7 +225,8 @@ namespace Blog.Web.DAL
         /// <returns>How many rows are changed.</returns>a
         public async Task<int> Insert<T>(T poco) where T : new()
         {
-            this.OpenConnectionIfNot();
+            await this.OpenConnectionIfNeeded();
+
             var pocoType = typeof(T);
 
             var tableAttribute = pocoType.GetCustomAttribute<TableAttribute>();
@@ -269,7 +273,8 @@ namespace Blog.Web.DAL
         /// </summary>
         public async Task Update<T>(T poco)
         {
-            this.OpenConnectionIfNot();
+            await this.OpenConnectionIfNeeded();
+
             var pocoType = typeof(T);
 
             var tableAttribute = pocoType.GetCustomAttribute<TableAttribute>();
@@ -319,7 +324,8 @@ namespace Blog.Web.DAL
         /// <returns>How many rows are changed</returns>
         public async Task<int> Delete<T>(T poco)
         {
-            this.OpenConnectionIfNot();
+            await this.OpenConnectionIfNeeded();
+
             var pocoType = typeof(T);
 
             var properties = pocoType.GetProperties();
@@ -345,12 +351,14 @@ namespace Blog.Web.DAL
             }
         }
 
-        private void OpenConnectionIfNot()
+        private Task OpenConnectionIfNeeded()
         {
-            if (this.Connection != null && this.Connection.State == ConnectionState.Closed)
+            if (this.Connection.State == ConnectionState.Closed)
             {
-                this.Connection.Open();
+                return this.Connection.OpenAsync();
             }
+
+            return Task.CompletedTask;
         }
 
         private static NpgsqlParameter[] ConvertDictionaryToParametars(Dictionary<string, object> dictionary)

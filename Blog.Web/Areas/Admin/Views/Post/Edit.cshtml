@@ -9,7 +9,7 @@
 }
 
 <div class="form-wrapper">
-    <form asp-controller="Form" asp-action="Edit" class="main-form">
+    <form asp-controller="Post" asp-action="Edit" class="main-form">
         <h1 class="text-center">Editing post</h1>
         <div class="form-group">
             <label for="Title">Title</label>
@@ -26,9 +26,7 @@
                 * Separate tags with commas
             </small>
         </div>
-        @Html.ValidationMessageFor(x => x.Title, null, new { @class = "alert alert-danger" }, "div")
-        @Html.ValidationMessageFor(x => x.Content, null, new { @class = "alert alert-danger" }, "div")
-        @Html.ValidationMessageFor(x => x.Tags, null, new { @class = "alert alert-danger" }, "div")
+
         <input type="hidden" name="id" value="@Model.Id" />
         <button class="btn btn-primary" type="submit">Save</button>
     </form>

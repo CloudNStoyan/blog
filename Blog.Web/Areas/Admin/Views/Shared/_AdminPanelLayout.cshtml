@@ -11,28 +11,18 @@
     <link rel="stylesheet" href="~/admin/css/admin.css" />
     @RenderSection("styles", false)
 </head>
-<body class="hold-transition skin-blue sidebar-mini">
+<body>
     <div class="wrapper">
-
         <header class="main-header">
-            <!-- Logo -->
             <a asp-area="" asp-controller="Home" asp-action="Index" class="logo">
-                <!-- logo for regular state and mobile devices -->
-                <span class="logo-lg"><b>Admin</b>LTE</span>
+                <span class="logo-lg">Stoyan's Blog</span>
             </a>
-            <!-- Header Navbar: style can be found in header.less -->
-            <nav class="navbar navbar-static-top">
-                <!-- Sidebar toggle button-->
-                <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
-                    <li class="fa fa-bars"></li>
-                </a>
-
+            <nav class="navbar navbar-static-top">  
                 <div class="navbar-custom-menu">
                     <ul class="nav navbar-nav">
-                        <!-- User Account: style can be found in dropdown.less -->
                         <li class="dropdown user user-menu">
                             <a href="#">
-                                <span class="hidden-xs">DarkMagican</span>
+                                <span class="hidden-xs">@this.User.Identity.Name</span><i class="fas fa-angle-down"></i>
                             </a>
                             <ul class="user-sub-menu">
                                 <li>
@@ -42,23 +32,21 @@
                                 </li>
                             </ul>
                         </li>
-                        <!-- Control Sidebar Toggle Button -->
-                        <li>
-                            <a href="#" data-toggle="control-sidebar"><i class="fas fa-cogs"></i></a>
-                        </li>
                     </ul>
                 </div>
             </nav>
         </header>
-        <!-- Left side column. contains the logo and sidebar -->
         <aside class="main-sidebar">
-            <!-- sidebar: style can be found in sidebar.less -->
             <section class="sidebar">
-                <!-- sidebar menu: : style can be found in sidebar.less -->
-                <ul class="sidebar-menu" data-widget="tree">
+                <ul class="sidebar-menu">
                     <li class="header">MAIN NAVIGATION</li>
                     <li>
-                        <a asp-controller="Form" asp-action="AllPosts">
+                        <a asp-controller="Home" asp-action="Index">
+                            <i class="fas fa-home"></i> <span>Home</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-controller="Post" asp-action="All">
                             <i class="fas fa-thumbtack"></i> <span>Posts</span>
                         </a>
                     </li>
@@ -68,15 +56,11 @@
                     <li><a href="#"><i class="far fa-circle text-info"></i> <span>Information</span></a></li>
                 </ul>
             </section>
-            <!-- /.sidebar -->
         </aside>
-
         <main>
             @RenderBody()
         </main>
     </div>
-
     <script src="~/admin/js/adminpanel.js"></script>
-
 </body>
 </html>

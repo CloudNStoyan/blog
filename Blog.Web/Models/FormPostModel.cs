@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Blog.Web.Infrastructure;
 
 namespace Blog.Web.Models
 {
-    public class FormPostModel
+    public class FormPostModel : ViewModel
     {
         [Required(AllowEmptyStrings = false, ErrorMessage = "* Title cannot be empty or whitespaces only!")]
         public string Title { get; set; }
@@ -14,7 +15,7 @@ namespace Blog.Web.Models
         public string Tags { get; set; }
     }
 
-    public class FormEditModel
+    public class FormEditModel : ViewModel
     {
         [Required(AllowEmptyStrings = false,ErrorMessage = "* Title cannot be empty or whitespaces only!")]
         public string Title { get; set; }

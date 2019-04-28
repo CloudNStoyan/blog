@@ -6,6 +6,11 @@ body {
 
 .navbar-custom-menu {
     height: 100%;
+    float: right;
+}
+
+.navbar-static-top {
+    justify-content: flex-end;
 }
 
 .nav {
@@ -19,16 +24,16 @@ body {
 
 .nav li a {
     height: 100%;
-    display: block;
     padding: 15px;
     color: #fff;
+    display: flex;
+    float: right;
 }
 
-.nav li a span.badge {
-    position: absolute;
-    top: 9px;
-    right: 7px;
-    padding: 2px 3px;
+.nav li a i {
+    font-size: 15px;
+    padding: 0;
+    margin: 5px 10px;
 }
 
 .nav li a:hover {
@@ -170,6 +175,8 @@ a:hover {
     flex: 0 0 100%;
     order: 1;
     max-width: 230px;
+    height: 100vh;
+    background-color: #273238;
 }
 
 .wrapper > main {

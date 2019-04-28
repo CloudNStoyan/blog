@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Blog.Web.Areas.Admin.Auth;
 using Blog.Web.Infrastructure;
@@ -13,11 +11,11 @@ namespace Blog.Web.Areas.Admin.Form
 {
     [Area(Roles.Admin)]
     [Authorize]
-    public class FormController : Controller
+    public class PostController : Controller
     {
         private PostService PostService { get; }
 
-        public FormController(PostService postService)
+        public PostController(PostService postService)
         {
             this.PostService = postService;
         }
@@ -31,16 +29,14 @@ namespace Blog.Web.Areas.Admin.Form
         [HttpPost]
         public async Task<IActionResult> Create(FormPostModel formPostModel)
         {
-            bool valid = CustomValidator.Validate(formPostModel);
-
-            if (!valid)
+            if (!CustomValidator.Validate(formPostModel))
             {
                 return this.View(formPostModel);
             }
 
             int postId = await this.PostService.CreatePost(formPostModel);
 
-            return this.RedirectToAction("Post", "Data", postId);
+            return this.RedirectToAction("Post", "Data", new {area="", id= postId});
         }
 
         [HttpGet]
@@ -51,8 +47,9 @@ namespace Blog.Web.Areas.Admin.Form
             var formEditModel = new FormEditModel
             {
                 Content = post.Content,
-                Tags = string.Join(',',post.Tags),
-                Title = post.Title
+                Tags = string.Join(", ",post.Tags),
+                Title = post.Title,
+                Id = id
             };
 
             return this.View(formEditModel);
@@ -61,14 +58,15 @@ namespace Blog.Web.Areas.Admin.Form
         [HttpPost]
         public async Task<IActionResult> Edit(FormEditModel formEditModel)
         {
-            bool valid = CustomValidator.Validate(formEditModel);
-
-            if (!valid)
+            if (!CustomValidator.Validate(formEditModel))
             {
                 return this.View(formEditModel);
             }
 
-            string[] tags = formEditModel.Tags?.Split(',').Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
+            string[] tags = formEditModel.Tags?.Split(',')
+                .Select(x => x.Trim())
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .ToArray();
 
             var postModel = new PostModel
             {
@@ -83,7 +81,7 @@ namespace Blog.Web.Areas.Admin.Form
             return this.Redirect("/data/post/" + postModel.Id);
         }
 
-        public async Task<IActionResult> DeletePost(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var post = await this.PostService.GetPostById(id);
 
@@ -94,10 +92,10 @@ namespace Blog.Web.Areas.Admin.Form
         {
             await this.PostService.DeletePost(id);
 
-            return this.RedirectToAction("AllPosts", "Form");
+            return this.RedirectToAction("All", "Post");
         }
 
-        public async Task<IActionResult> AllPosts()
+        public async Task<IActionResult> All()
         {
             var posts = await this.PostService.GetAllPosts();
 

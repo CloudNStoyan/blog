@@ -175,7 +175,7 @@ namespace Blog.Web.Services
         {
             for (var i = 0; i < tags.Length; i++)
             {
-                string tag = tags[i];
+                string tag = tags[i].Trim();
                 var tagPoco = await this.Database.QueryOne<TagPoco>("SELECT * FROM tags t WHERE t.tag_name = @tagName;",
                     new NpgsqlParameter("tagName", tag));
                 if (tagPoco == null)

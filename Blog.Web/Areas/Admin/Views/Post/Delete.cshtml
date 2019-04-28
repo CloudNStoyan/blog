@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="~/admin/css/delete-form.css" />
 }
 <div class="inner-wrapper">
-    <form asp-controller="Form" asp-action="TakeDelete" asp-route-id="@Model.Id">
+    <form asp-controller="Post" asp-action="TakeDelete" asp-route-id="@Model.Id">
         <div class="card">
             <div class="card-header alert alert-danger">
                 <h2>Delete Alert</h2>
@@ -17,13 +17,11 @@
             <div class="card-body">
                 <h5 class="card-title">Are you sure?</h5>
                 <p class="card-text">After deleting post it will be lost forever!</p>
-                <a type="submit" class="btn btn-info" asp-controller="Form" asp-action="AllPosts">Cancel</a>
+                <a type="submit" class="btn btn-info" asp-controller="Post" asp-action="All">Cancel</a>
                 <button type="submit" class="btn btn-danger">Delete</button>
             </div>
         </div>
     </form>
-    
-
 </div>
 
 
