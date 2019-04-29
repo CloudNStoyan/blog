@@ -26,7 +26,13 @@
                 * Separate tags with commas
             </small>
         </div>
-
+        @if (Model?.ErrorMessages != null)
+        {
+            foreach (string errorMessage in Model.ErrorMessages)
+            {
+                <div class="alert alert-danger">@errorMessage</div>
+            }
+        }
         <input type="hidden" name="id" value="@Model.Id" />
         <button class="btn btn-primary" type="submit">Save</button>
     </form>

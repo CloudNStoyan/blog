@@ -5,6 +5,7 @@ using Blog.Web.Areas.Admin.Auth;
 using Blog.Web.DAL;
 using Blog.Web.Models;
 using Npgsql;
+using NpgsqlTypes;
 
 namespace Blog.Web.Services
 {
@@ -89,7 +90,8 @@ namespace Blog.Web.Services
                 Content = post.Content,
                 Title = post.Title,
                 UserId = session.UserAccount.UserId,
-                PostId = post.Id
+                PostId = post.Id,
+                SearchVector = NpgsqlTsVector.Parse(post.Title + " " + string.Join(',', post.Tags))
             };
 
             await this.DeletePostTags(post.Id);
@@ -140,22 +142,54 @@ namespace Blog.Web.Services
             return posts.ToArray();
         }
 
+        public async Task<PostModel[]> GetAllPostsWithTerms(string[] terms)
+        {
+            var tsQuery = new NpgsqlTsQueryLexeme(string.Join('&', terms));
+            var tsQuerys = terms.Select(NpgsqlTsQuery.Parse).ToArray();
+
+            var postPocos = await this.Database.Query<PostPoco>(
+                "SELECT * FROM posts p WHERE p.search_vector @@ @postQuery", new NpgsqlParameter("postQuery", tsQuery));
+
+            var posts = new List<PostModel>();
+
+            foreach (var postPoco in postPocos)
+            {
+                var post = new PostModel
+                {
+                    Content = postPoco.Content,
+                    Id = postPoco.PostId,
+                    Title = postPoco.Title
+                };
+
+                var tagsPoco = await this.GetPostTags(postPoco.PostId);
+
+                var tempTags = tagsPoco.Select(tagPoco => tagPoco.TagName).ToArray();
+
+                post.Tags = tempTags;
+
+                posts.Add(post);
+            }
+
+            return posts.ToArray();
+        }
+
         /// <summary>
         /// Creates post.
         /// </summary>
-        public async Task<int> CreatePost(FormPostModel postModel)
+        public async Task<int> CreatePost(FormPostModel model)
         {
             var session = this.SessionService.Session;
             var postPoco = new PostPoco
             {
-                Content = postModel.Content,
-                Title = postModel.Title,
-                UserId = session.UserAccount.UserId
+                Content = model.Content,
+                Title = model.Title,
+                UserId = session.UserAccount.UserId,
+                SearchVector = NpgsqlTsVector.Parse(model.Title + " " + model.Tags)
             };
 
             int postId = await this.Database.Insert(postPoco);
 
-            await this.AddPostTags(postModel.Tags, postId);
+            await this.AddPostTags(model.Tags, postId);
 
             return postId;
         }

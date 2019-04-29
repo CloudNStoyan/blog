@@ -13,10 +13,12 @@
 <div class="list-wrapper">
     <div class="actions">
         <div class="input-group search-group">
-            <input type="text" class="form-control" placeholder="Search"/>
-            <div class="input-group-append">
-                <a class="search-btn" href="#"><i class="fa fa-search "></i></a>
-            </div>
+            <form asp-controller="Post" asp-action="All">
+                <input type="text" class="form-control" placeholder="Search" name="searchTerms"/>
+                <div class="input-group-append">
+                    <a class="search-btn" href="#"><i class="fa fa-search "></i></a>
+                </div>
+            </form>
         </div>
         <div class="create-post">
             <a class="btn btn-primary create-post-btn" asp-controller="Post" asp-action="Create">Create post<i class="fa fa-plus"></i></a>

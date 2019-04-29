@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Blog.Web.Areas.Admin.Auth
 {
-    [Area(Roles.Admin)]
+    [Area(AuthenticationAreas.Admin)]
     public class AuthController : Controller
     {
         private AuthenticationService AuthService { get; }

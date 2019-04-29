@@ -1,4 +1,5 @@
 ﻿using System;
+using NpgsqlTypes;
 
 namespace Blog.Web.DAL
 {
@@ -32,6 +33,9 @@ namespace Blog.Web.DAL
 
         [Column(Name = "user_id")]
         public int UserId { get; set; }
+
+        [Column(Name = "search_vector")]
+        public NpgsqlTsVector SearchVector { get; set; }
     }
 
     [Table(Name = "tags", Schema = "public")]

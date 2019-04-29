@@ -9,8 +9,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Blog.Web.Areas.Admin.Form
 {
-    [Area(Roles.Admin)]
     [Authorize]
+    [Area(AuthenticationAreas.Admin)]
     public class PostController : Controller
     {
         private PostService PostService { get; }
@@ -27,14 +27,14 @@ namespace Blog.Web.Areas.Admin.Form
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(FormPostModel formPostModel)
+        public async Task<IActionResult> Create(FormPostModel model)
         {
-            if (!CustomValidator.Validate(formPostModel))
+            if (!CustomValidator.Validate(model))
             {
-                return this.View(formPostModel);
+                return this.View(model);
             }
 
-            int postId = await this.PostService.CreatePost(formPostModel);
+            int postId = await this.PostService.CreatePost(model);
 
             return this.RedirectToAction("Post", "Data", new {area="", id= postId});
         }
@@ -44,7 +44,7 @@ namespace Blog.Web.Areas.Admin.Form
         {
             var post = await this.PostService.GetPostById(id);
 
-            var formEditModel = new FormEditModel
+            var model = new FormEditModel
             {
                 Content = post.Content,
                 Tags = string.Join(", ",post.Tags),
@@ -52,28 +52,28 @@ namespace Blog.Web.Areas.Admin.Form
                 Id = id
             };
 
-            return this.View(formEditModel);
+            return this.View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(FormEditModel formEditModel)
+        public async Task<IActionResult> Edit(FormEditModel model)
         {
-            if (!CustomValidator.Validate(formEditModel))
+            if (!CustomValidator.Validate(model))
             {
-                return this.View(formEditModel);
+                return this.View(model);
             }
 
-            string[] tags = formEditModel.Tags?.Split(',')
+            string[] tags = model.Tags?.Split(',')
                 .Select(x => x.Trim())
                 .Where(x => !string.IsNullOrWhiteSpace(x))
                 .ToArray();
 
             var postModel = new PostModel
             {
-                Content = formEditModel.Content,
-                Id = formEditModel.Id,
+                Content = model.Content,
+                Id = model.Id,
                 Tags = tags,
-                Title = formEditModel.Title
+                Title = model.Title
             };
 
             await this.PostService.UpdatePost(postModel);
@@ -95,9 +95,18 @@ namespace Blog.Web.Areas.Admin.Form
             return this.RedirectToAction("All", "Post");
         }
 
+        [HttpGet]
         public async Task<IActionResult> All()
         {
             var posts = await this.PostService.GetAllPosts();
+
+            return this.View(posts);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> All(string searchTerms)
+        {
+            var posts = await this.PostService.GetAllPostsWithTerms(searchTerms.Split(' '));
 
             return this.View(posts);
         }
