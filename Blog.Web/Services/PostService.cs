@@ -142,14 +142,16 @@ namespace Blog.Web.Services
             return posts.ToArray();
         }
 
-        public async Task<PostModel[]> GetAllPostsWithTerms(string[] terms)
+        public async Task<PostModel[]> GetAllPostsWithTerms(string terms)
         {
-            var tsQuery = new NpgsqlTsQueryLexeme(string.Join('&', terms));
-            var tsQuerys = terms.Select(NpgsqlTsQuery.Parse).ToArray();
+            if (string.IsNullOrWhiteSpace(terms))
+            {
+                return await this.GetAllPosts();
+            }
 
+            var tsQuery = NpgsqlTsQuery.Parse(string.Join('&', terms.Trim().Split(' ')));
             var postPocos = await this.Database.Query<PostPoco>(
                 "SELECT * FROM posts p WHERE p.search_vector @@ @postQuery", new NpgsqlParameter("postQuery", tsQuery));
-
             var posts = new List<PostModel>();
 
             foreach (var postPoco in postPocos)

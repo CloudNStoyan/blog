@@ -106,7 +106,7 @@ namespace Blog.Web.Areas.Admin.Form
         [HttpPost]
         public async Task<IActionResult> All(string searchTerms)
         {
-            var posts = await this.PostService.GetAllPostsWithTerms(searchTerms.Split(' '));
+            var posts = await this.PostService.GetAllPostsWithTerms(searchTerms);
 
             return this.View(posts);
         }

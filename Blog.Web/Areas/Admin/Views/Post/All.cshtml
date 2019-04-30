@@ -14,10 +14,8 @@
     <div class="actions">
         <div class="input-group search-group">
             <form asp-controller="Post" asp-action="All">
-                <input type="text" class="form-control" placeholder="Search" name="searchTerms"/>
-                <div class="input-group-append">
-                    <a class="search-btn" href="#"><i class="fa fa-search "></i></a>
-                </div>
+                <input type="text" class="form-control" placeholder="Search" name="searchTerms" />
+                <button class="search-btn" type="submit"><i class="fa fa-search "></i></button>
             </form>
         </div>
         <div class="create-post">
@@ -38,7 +36,7 @@
             <tr>
                 <th>@post.Id</th>
                 <td>@post.Title</td>
-                <td>
+                <td class="action-wrapper">
                     <div class="btn-group">
                         <a class="btn btn-info" asp-area="" asp-controller="Data" asp-action="Post" asp-route-id="@post.Id">View</a>
                         <a class="btn btn-warning" asp-controller="Post" asp-action="Edit" asp-route-id="@post.Id">Edit</a>
@@ -49,4 +47,8 @@
         }
         </tbody>
     </table>
+    @if (Model.Length < 1)
+    {
+        <div>No post were found please try to use less words or more specific ones.</div>
+    }
 </div>
