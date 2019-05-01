@@ -1,6 +1,9 @@
 .list-wrapper {
-    padding: 2% 5%;
-    margin-right: 20%;
+    margin: 5% 10%;
+    padding: 1%;
+    border: 2px solid grey;
+    border-radius: 5px;
+    background-color: #3339;
 }
 
 .my-table th , .my-table td { 
@@ -24,34 +27,32 @@
 }
 
 .actions {
-    display: flex;
-    flex-flow: row wrap;
-    justify-content: space-between;
     margin-bottom: 20px;
-}
-
-.search-group {
-    flex: 0 0 30%;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
 }
 
 .search-group > form {
-    display: inline-flex;
+    display: flex;
 }
 
-.search-btn {
-    background-color: white;
-    padding: 0;
+.search-group > form > input {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
 }
 
-.search-btn i {
-    color: black;
-    font-size: 15px;
-    padding: 0;
-    margin: 10px 10px;
+.search-group > form > button {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.search-group {
+    flex: 0 0 90%;
 }
 
 .create-post {
-    flex: 0 0 10%;
+    flex: 0 0 7%;
 }
 
 .create-post-btn i {
