@@ -37,7 +37,7 @@
                 <th>@post.Id</th>
                 <td>@post.Title</td>
                 <td class="action-wrapper">
-                    <div class="btn-group">
+                    <div>
                         <a class="btn btn-info" asp-area="" asp-controller="Data" asp-action="Post" asp-route-id="@post.Id">View</a>
                         <a class="btn btn-warning" asp-controller="Post" asp-action="Edit" asp-route-id="@post.Id">Edit</a>
                         <a class="btn btn-danger" asp-controller="Post" asp-action="Delete" asp-route-id="@post.Id">Delete</a>

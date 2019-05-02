@@ -1,9 +1,9 @@
 .list-wrapper {
-    margin: 5% 10%;
-    padding: 1%;
+    margin: 2rem;
+    padding: 1rem;
     border: 2px solid grey;
     border-radius: 5px;
-    background-color: #3339;
+    background-color: #333900;
 }
 
 .my-table th , .my-table td { 
