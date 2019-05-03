@@ -3,11 +3,10 @@ using System.Threading.Tasks;
 using Blog.Web.Areas.Admin.Auth;
 using Blog.Web.Infrastructure;
 using Blog.Web.Models;
-using Blog.Web.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Blog.Web.Areas.Admin.Form
+namespace Blog.Web.Areas.Admin.Posts
 {
     [Authorize]
     [Area(AuthenticationAreas.Admin)]
@@ -36,7 +35,7 @@ namespace Blog.Web.Areas.Admin.Form
 
             int postId = await this.PostService.CreatePost(model);
 
-            return this.RedirectToAction("Post", "Data", new {area="", id= postId});
+            return this.RedirectToAction("Post", "Home", new {area="", id= postId});
         }
 
         [HttpGet]

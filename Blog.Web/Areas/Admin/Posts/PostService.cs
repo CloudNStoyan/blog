@@ -7,7 +7,7 @@ using Blog.Web.Models;
 using Npgsql;
 using NpgsqlTypes;
 
-namespace Blog.Web.Services
+namespace Blog.Web.Areas.Admin.Posts
 {
     // ReSharper disable once ClassNeverInstantiated.Global
     public class PostService

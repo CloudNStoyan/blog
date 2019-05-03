@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Blog.Web.Services;
+using Blog.Web.Areas.Admin.Posts;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Blog.Web.Controllers
@@ -18,6 +18,18 @@ namespace Blog.Web.Controllers
             var posts = await this.PostService.GetLatestPosts(10);
 
             return this.View(posts);
+        }
+
+        public async Task<IActionResult> Post(int id)
+        {
+            var post = await this.PostService.GetPostById(id);
+
+            if (post == null)
+            {
+                return this.RedirectToAction("PageNotFound", "Error");
+            }
+
+            return this.View(post);
         }
     }
 }

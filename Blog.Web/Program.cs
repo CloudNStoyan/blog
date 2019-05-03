@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore;
+﻿using Blog.Web.Infrastructure;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
 namespace Blog.Web

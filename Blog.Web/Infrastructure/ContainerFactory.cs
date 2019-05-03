@@ -6,7 +6,7 @@ using Blog.Web.DAL;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 
-namespace Blog.Web
+namespace Blog.Web.Infrastructure
 {
     public static class ContainerFactory
     {

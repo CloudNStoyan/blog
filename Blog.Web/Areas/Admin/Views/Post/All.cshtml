@@ -2,7 +2,6 @@
 
 @{
     ViewData["Title"] = "Page";
-    Layout = "_AdminPanelLayout";
 }
 
 @section styles
@@ -11,10 +10,11 @@
 }
 
 <div class="list-wrapper">
+    <h1 class="text-center">All Posts</h1>
     <div class="actions">
         <div class="search-group">
             <form asp-controller="Post" asp-action="All">
-                <input type="text" class="form-control" placeholder="Search" name="searchTerms" />
+                <input type="text" class="form-control" placeholder="Search" name="searchTerms"/>
                 <button class="btn btn-rounded btn-info" type="submit"><i class="fa fa-search "></i></button>
             </form>
         </div>
@@ -38,7 +38,7 @@
                 <td>@post.Title</td>
                 <td class="action-wrapper">
                     <div>
-                        <a class="btn btn-info" asp-area="" asp-controller="Data" asp-action="Post" asp-route-id="@post.Id">View</a>
+                        <a class="btn btn-info" asp-area="" asp-controller="Home" asp-action="Post" asp-route-id="@post.Id">View</a>
                         <a class="btn btn-warning" asp-controller="Post" asp-action="Edit" asp-route-id="@post.Id">Edit</a>
                         <a class="btn btn-danger" asp-controller="Post" asp-action="Delete" asp-route-id="@post.Id">Delete</a>
                     </div>

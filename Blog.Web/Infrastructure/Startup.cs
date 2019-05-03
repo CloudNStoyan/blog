@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Blog.Web
+namespace Blog.Web.Infrastructure
 {
     public class Startup
     {
