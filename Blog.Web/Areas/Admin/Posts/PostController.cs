@@ -80,6 +80,43 @@ namespace Blog.Web.Areas.Admin.Posts
             return this.Redirect("/data/post/" + postModel.Id);
         }
 
+        public async Task<IActionResult> CreateOrEdit(FormPostModel inputModel)
+        {
+            if (!CustomValidator.Validate(inputModel))
+            {
+                return this.View(inputModel);
+            }
+
+            int postId = await this.PostService.CreatePost(inputModel);
+
+
+            var model = new FormEditModel()
+            {
+                Content = inputModel.Content,
+                Id = 0,
+                Title = inputModel.Title,
+                Tags = inputModel.Tags
+            };
+
+
+            return this.RedirectToAction("Post", "Home", new { area = "", id = postId });
+        }
+
+        public async Task<IActionResult> CreateOrEdit(int id)
+        {
+            var post = await this.PostService.GetPostById(id);
+
+            var model = new FormEditModel
+            {
+                Content = post.Content,
+                Tags = string.Join(", ", post.Tags),
+                Title = post.Title,
+                Id = id
+            };
+
+            return this.View(model);
+        }
+
         public async Task<IActionResult> Delete(int id)
         {
             var post = await this.PostService.GetPostById(id);
