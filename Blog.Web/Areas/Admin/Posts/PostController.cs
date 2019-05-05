@@ -19,102 +19,95 @@ namespace Blog.Web.Areas.Admin.Posts
             this.PostService = postService;
         }
 
-        [HttpGet]
-        public IActionResult Create()
-        {
-            return this.View();
-        }
-
         [HttpPost]
-        public async Task<IActionResult> Create(FormPostModel model)
+        public async Task<ActionResult> CreateOrEdit(FormEditModel model)
         {
-            if (!CustomValidator.Validate(model))
+            if (model.Id > 0)
             {
-                return this.View(model);
+                if (!CustomValidator.Validate(model))
+                {
+                    var invalidEditModel = new CreateOrEditModel()
+                    {
+                        Header = "Editing Post",
+                        Post = model
+                    };
+
+                    return this.View(invalidEditModel);
+                }
+
+                string[] tags = model.Tags?.Split(',')
+                    .Select(x => x.Trim())
+                    .Where(x => !string.IsNullOrWhiteSpace(x))
+                    .ToArray();
+
+                var postModel = new PostModel
+                {
+                    Content = model.Content,
+                    Id = model.Id,
+                    Tags = tags,
+                    Title = model.Title
+                };
+
+                await this.PostService.UpdatePost(postModel);
+
+                return this.Redirect("/home/post/" + postModel.Id);
             }
 
-            int postId = await this.PostService.CreatePost(model);
-
-            return this.RedirectToAction("Post", "Home", new {area="", id= postId});
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Edit(int id)
-        {
-            var post = await this.PostService.GetPostById(id);
-
-            var model = new FormEditModel
-            {
-                Content = post.Content,
-                Tags = string.Join(", ",post.Tags),
-                Title = post.Title,
-                Id = id
-            };
-
-            return this.View(model);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Edit(FormEditModel model)
-        {
             if (!CustomValidator.Validate(model))
             {
-                return this.View(model);
+                model.Id = 0;
+                var invalidCreateModel = new CreateOrEditModel()
+                {
+                    Header = "Create Post",
+                    Post = model
+                };
+
+                return this.View(invalidCreateModel);
             }
 
-            string[] tags = model.Tags?.Split(',')
-                .Select(x => x.Trim())
-                .Where(x => !string.IsNullOrWhiteSpace(x))
-                .ToArray();
-
-            var postModel = new PostModel
+            var validCreateModel = new FormPostModel()
             {
                 Content = model.Content,
-                Id = model.Id,
-                Tags = tags,
+                Tags = model.Tags,
                 Title = model.Title
             };
 
-            await this.PostService.UpdatePost(postModel);
-
-            return this.Redirect("/data/post/" + postModel.Id);
-        }
-
-        public async Task<IActionResult> CreateOrEdit(FormPostModel inputModel)
-        {
-            if (!CustomValidator.Validate(inputModel))
-            {
-                return this.View(inputModel);
-            }
-
-            int postId = await this.PostService.CreatePost(inputModel);
-
-
-            var model = new FormEditModel()
-            {
-                Content = inputModel.Content,
-                Id = 0,
-                Title = inputModel.Title,
-                Tags = inputModel.Tags
-            };
-
+            int postId = await this.PostService.CreatePost(validCreateModel);
 
             return this.RedirectToAction("Post", "Home", new { area = "", id = postId });
         }
 
-        public async Task<IActionResult> CreateOrEdit(int id)
+        [HttpGet]
+        public async Task<IActionResult> CreateOrEdit(int? id)
         {
-            var post = await this.PostService.GetPostById(id);
-
-            var model = new FormEditModel
+            if (id == null)
             {
-                Content = post.Content,
-                Tags = string.Join(", ", post.Tags),
-                Title = post.Title,
-                Id = id
+                var createModel = new CreateOrEditModel
+                {
+                    Header = "Creating Post",
+                    Post = null
+                };
+
+                return this.View(createModel);
+            }
+
+            int postId = id.Value;
+
+            var post = await this.PostService.GetPostById(postId);
+
+            var editModel = new CreateOrEditModel
+            {
+                Header = "Editing Post",
+                Post = new FormEditModel
+                {
+                    Content = post.Content,
+                    Tags = string.Join(", ", post.Tags),
+                    Title = post.Title,
+                    Id = postId
+                }
             };
 
-            return this.View(model);
+            return this.View(editModel);
         }
 
         public async Task<IActionResult> Delete(int id)

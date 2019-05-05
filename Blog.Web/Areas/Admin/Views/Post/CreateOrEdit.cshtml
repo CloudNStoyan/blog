@@ -1,4 +1,4 @@
-﻿@model FormEditModel
+﻿@model CreateOrEditModel
 @{
     ViewData["Title"] = "Create Form";
 }
@@ -8,33 +8,37 @@
 }
 
 <div class="form-wrapper">
-    <form asp-controller="Post" asp-action="Create" class="main-form">
-        <h1 class="text-center">Creating post</h1>
+    <form asp-controller="Post" asp-action="CreateOrEdit" class="main-form">
+        <h1 class="text-center">@Model.Header</h1>
         <div class="form-group">
             <label for="Title">Title</label>
-            <input class="form-control" asp-for="Title" value="@Model?.Title" />
+            <input class="form-control" asp-for="Post.Title" name="title" value="@Model.Post?.Title" />
         </div>
         <div class="form-group">
             <label for="Content">Content</label>
-            <textarea class="form-control" asp-for="Content">@Model?.Content</textarea>
+            <textarea class="form-control" asp-for="Post.Content" name="content">@Model.Post?.Content</textarea>
         </div>
         <div class="form-group">
             <label for="Tags">Tags</label>
-            <input class="form-control" asp-for="Tags" value="@string.Join(',', Model?.Tags)" />
+            <input class="form-control" asp-for="Post.Tags" name="tags" value="@string.Join(',', Model.Post?.Tags)" />
             <small class="form-text form-muted">
                 * Separate tags with commas
             </small>
         </div>
+        @if (Model.Post != null && Model.Post.Id > 0)
+        {
+            <input type="hidden" value="@Model.Post.Id" name="id"/>
+        }
         <div>
-            @if (Model?.ErrorMessages != null)
+            @if (Model.Post?.ErrorMessages != null)
             {
-                foreach (string errorMessage in Model.ErrorMessages)
+                foreach (string errorMessage in Model.Post.ErrorMessages)
                 {
                     <div class="alert alert-danger">@errorMessage</div>
                 }
             }
         </div>
-        <button class="btn btn-primary" type="submit">Publish</button>
+        <button class="btn btn-primary" type="submit">Save</button>
     </form>
 </div>
 
