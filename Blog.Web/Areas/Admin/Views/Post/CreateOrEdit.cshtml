@@ -8,11 +8,11 @@
 }
 
 <div class="form-wrapper">
-    <form asp-controller="Post" asp-action="CreateOrEdit" class="main-form">
+    <form asp-controller="Post" asp-action="" class="main-form">
         <h1 class="text-center">@Model.Header</h1>
         <div class="form-group">
             <label for="Title">Title</label>
-            <input class="form-control" asp-for="Post.Title" name="title" value="@Model.Post?.Title" />
+            <input class="form-control" asp-for="Post.Title" name="title" value="@Model.Post?.Title"/>
         </div>
         <div class="form-group">
             <label for="Content">Content</label>
@@ -20,7 +20,7 @@
         </div>
         <div class="form-group">
             <label for="Tags">Tags</label>
-            <input class="form-control" asp-for="Post.Tags" name="tags" value="@string.Join(',', Model.Post?.Tags)" />
+            <input class="form-control" asp-for="Post.Tags" name="tags" value="@string.Join(',', Model.Post?.Tags)"/>
             <small class="form-text form-muted">
                 * Separate tags with commas
             </small>
