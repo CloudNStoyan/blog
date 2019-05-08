@@ -1,6 +1,7 @@
 ﻿@model CreateOrEditModel
 @{
-    ViewData["Title"] = "Create Form";
+    string actionName = ViewData["actionName"].ToString();
+    ViewData["Title"] = actionName;
 }
 
 @section styles {
@@ -9,7 +10,7 @@
 
 <div class="form-wrapper">
     <form asp-controller="Post" asp-action="" class="main-form">
-        <h1 class="text-center">@Model.Header</h1>
+        <h1 class="text-center">@actionName</h1>
         <div class="form-group">
             <label for="Title">Title</label>
             <input class="form-control" asp-for="Post.Title" name="title" value="@Model.Post?.Title"/>

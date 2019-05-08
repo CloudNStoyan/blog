@@ -33,6 +33,11 @@ namespace Blog.Web.Areas.Admin.Posts
             return this.RedirectToAction("All", "Post");
         }
 
+        public IActionResult Create()
+        {
+            return this.View("CreateOrEdit");
+        }
+
         [HttpGet]
         public async Task<IActionResult> All()
         {
