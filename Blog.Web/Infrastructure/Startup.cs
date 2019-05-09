@@ -42,18 +42,6 @@ namespace Blog.Web.Infrastructure
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
-                    name: "create",
-                    template: "{area:exists}/{controller}/create",
-                    defaults: new { controller = "Posts", action = "CreateOrEdit" }
-                );
-
-                routes.MapRoute(
-                    name: "edit",
-                    template: "{area:exists}/{controller}/edit/{id}",
-                    defaults: new { controller = "Posts", action = "CreateOrEdit" }
-                );
-
-                routes.MapRoute(
                     name: "areas",
                     template: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
                 );

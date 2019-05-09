@@ -33,10 +33,77 @@ namespace Blog.Web.Areas.Admin.Posts
             return this.RedirectToAction("All", "Post");
         }
 
+        [HttpGet]
         public IActionResult Create()
         {
-            return this.View("CreateOrEdit");
+            this.ViewData.Add("actionName", nameof(this.Create));
+            return this.View("Create");
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var pocoPost = await this.PostService.GetPostById(id);
+            var model = new FormEditModel
+            {
+                Title = pocoPost.Title,
+                Content = pocoPost.Content,
+                Id = pocoPost.Id,
+                Tags = string.Join(',' ,pocoPost.Tags)
+            };
+
+            this.ViewData.Add("actionName", nameof(this.Edit));
+            return this.View("Create", model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(FormPostModel model)
+        {
+            if (!CustomValidator.Validate(model))
+            {
+                return this.View("Create", new FormEditModel
+                {
+                    Content = model.Content,
+                    Tags = model.Tags,
+                    Title = model.Title
+                });
+            }
+
+            int postId = await this.PostService.CreatePost(model);
+
+
+            this.ViewData.Add("actionName", nameof(this.Create));
+            return this.RedirectToAction("Post", "Home", new { id = postId });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(FormEditModel model)
+        {
+            if (!CustomValidator.Validate(model))
+            {
+                return this.View(model);
+            }
+
+            string[] tags = model.Tags?.Split(',')
+                .Select(x => x.Trim())
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .ToArray();
+
+            var postModel = new PostModel
+            {
+                Content = model.Content,
+                Id = model.Id,
+                Tags = tags,
+                Title = model.Title
+            };
+
+            await this.PostService.UpdatePost(postModel);
+
+            this.ViewData.Add("actionName", nameof(this.Edit));
+            return this.RedirectToAction("Post", "Home", new { id = model.Id });
+        }
+
+        
 
         [HttpGet]
         public async Task<IActionResult> All()
