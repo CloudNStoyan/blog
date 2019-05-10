@@ -28,11 +28,4 @@ namespace Blog.Web.Models
 
         public int Id { get; set; }
     }
-
-    public class CreateOrEditModel
-    {
-        public string Header { get; set; }
-
-        public FormEditModel Post { get; set; }
-    }
 }

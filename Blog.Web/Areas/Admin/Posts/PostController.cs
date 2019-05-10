@@ -37,7 +37,7 @@ namespace Blog.Web.Areas.Admin.Posts
         public IActionResult Create()
         {
             this.ViewData.Add("actionName", nameof(this.Create));
-            return this.View("Create");
+            return this.View("CreateOrEdit");
         }
 
         [HttpGet]
@@ -53,27 +53,28 @@ namespace Blog.Web.Areas.Admin.Posts
             };
 
             this.ViewData.Add("actionName", nameof(this.Edit));
-            return this.View("Create", model);
+            return this.View("CreateOrEdit", model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(FormPostModel model)
+        public async Task<IActionResult> Create(FormPostModel inputModel)
         {
+            var model = new FormEditModel
+            {
+                Content = inputModel.Content,
+                Tags = inputModel.Tags,
+                Title = inputModel.Title
+            };
+
             if (!CustomValidator.Validate(model))
             {
-                return this.View("Create", new FormEditModel
-                {
-                    Content = model.Content,
-                    Tags = model.Tags,
-                    Title = model.Title
-                });
+                this.ViewData.Add("actionName", nameof(this.Create));
+                return this.View("CreateOrEdit", model);
             }
 
-            int postId = await this.PostService.CreatePost(model);
+            int postId = await this.PostService.CreatePost(inputModel);
 
-
-            this.ViewData.Add("actionName", nameof(this.Create));
-            return this.RedirectToAction("Post", "Home", new { id = postId });
+            return this.RedirectToAction("Post", "Home", new { area = "", id = postId });
         }
 
         [HttpPost]
@@ -81,7 +82,8 @@ namespace Blog.Web.Areas.Admin.Posts
         {
             if (!CustomValidator.Validate(model))
             {
-                return this.View(model);
+                this.ViewData.Add("actionName", nameof(this.Edit));
+                return this.View("CreateOrEdit", model);
             }
 
             string[] tags = model.Tags?.Split(',')
@@ -99,11 +101,8 @@ namespace Blog.Web.Areas.Admin.Posts
 
             await this.PostService.UpdatePost(postModel);
 
-            this.ViewData.Add("actionName", nameof(this.Edit));
-            return this.RedirectToAction("Post", "Home", new { id = model.Id });
+            return this.RedirectToAction("Post", "Home", new { area = "", id = model.Id });
         }
-
-        
 
         [HttpGet]
         public async Task<IActionResult> All()
