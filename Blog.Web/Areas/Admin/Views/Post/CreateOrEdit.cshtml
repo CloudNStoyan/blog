@@ -39,15 +39,15 @@
         {
             <input type="hidden" value="@Model.Id" name="id"/>
         }
-        <div>
-            @if (Model?.ErrorMessages != null)
-            {
-                foreach (string errorMessage in Model.ErrorMessages)
-                 {
-                     <div class="alert alert-danger">@errorMessage</div>
-                 }
-            }
-        </div>
+        @if (Model?.ErrorMessages != null)
+        {
+            <div>
+                @foreach (string errorMessage in Model.ErrorMessages)
+                {
+                    <div class="alert alert-danger">@errorMessage</div>
+                }
+            </div>
+        }
         <button class="btn btn-primary" type="submit">Save</button>
     </form>
 </div>
