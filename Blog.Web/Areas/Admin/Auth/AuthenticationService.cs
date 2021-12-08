@@ -29,7 +29,7 @@ namespace Blog.Web.Areas.Admin.Auth
 
             byte[] result;
 
-            using (var shaM = new SHA512Managed())
+            using (var shaM = SHA512.Create())
             {
                 result = shaM.ComputeHash(passwordBytes);
             }

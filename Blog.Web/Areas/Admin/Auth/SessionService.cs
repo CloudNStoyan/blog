@@ -18,7 +18,7 @@ namespace Blog.Web.Areas.Admin.Auth
         public RequestSession Session => this.ContextAccessor.HttpContext.GetSession();
     }
 
-    public static class ExtensionSessionService
+    public static class ExtensionSession
     {
         private const string SessionKey = "__session__";
 

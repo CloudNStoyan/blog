@@ -3,6 +3,7 @@ using System.Reflection;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Blog.Web.DAL;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 
@@ -10,7 +11,7 @@ namespace Blog.Web.Infrastructure
 {
     public static class ContainerFactory
     {
-        public static IContainer Create(IServiceCollection serviceCollection = null)
+        public static IContainer Create(IConfiguration configuration, IServiceCollection serviceCollection = null)
         {
             var builder = new ContainerBuilder();
             
@@ -19,17 +20,24 @@ namespace Blog.Web.Infrastructure
                 builder.Populate(serviceCollection);
             }
 
-            builder.RegisterModule<MainModule>();
-           
+            builder.RegisterModule(new MainModule(configuration));
+
             return builder.Build();
         }
     }
 
     public class MainModule : Autofac.Module
     {
+        private IConfiguration Configuration { get; }
+
+        public MainModule(IConfiguration configuration)
+        {
+            this.Configuration = configuration;
+        }
+
         protected override void Load(ContainerBuilder builder)
         {
-            builder.Register((ctx, p) => new NpgsqlConnection("Server=vm13.lan;Port=4401;Database=blog;Uid=blog;Pwd=test123;")).InstancePerLifetimeScope();
+            builder.Register((ctx, p) => new NpgsqlConnection(this.Configuration.GetValue<string>("DatabaseConnectionString"))).InstancePerLifetimeScope();
 
             builder.RegisterType<Database>().InstancePerLifetimeScope();
 

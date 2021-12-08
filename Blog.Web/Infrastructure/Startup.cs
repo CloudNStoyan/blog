@@ -4,12 +4,22 @@ using Blog.Web.Areas.Admin.Auth;
 using Blog.Web.ErrorHandling;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Blog.Web.Infrastructure
 {
     public class Startup
     {
+        private IConfiguration Configuration { get; }
+
+        public Startup(IConfiguration configuration)
+        {
+            this.Configuration = configuration;
+        }
+
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddAuthorization();
@@ -19,14 +29,19 @@ namespace Blog.Web.Infrastructure
             services.AddAuthentication(customName)
                 .AddCustomAuthentication(customName);
 
-            services.AddMvc();
+            services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
+
+            services.AddMvc(options =>
+            {
+                options.EnableEndpointRouting = false;
+            });
 
             services.AddHttpContextAccessor();
 
-            return new AutofacServiceProvider(ContainerFactory.Create(services));
+            return new AutofacServiceProvider(ContainerFactory.Create(this.Configuration, services));
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
