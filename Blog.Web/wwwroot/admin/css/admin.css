@@ -180,7 +180,7 @@ a:hover {
 }
 
 .wrapper > main {
-    flex: 0 0 89%;
-    order: 1;
+    order: 2;
+    flex-grow: 1;
 }
 
