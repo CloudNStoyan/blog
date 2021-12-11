@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Blog.Web.Areas.Admin.Auth;
 using Blog.Web.DAL;
@@ -22,6 +24,29 @@ namespace Blog.Web.Areas.Admin.Posts
             this.SessionService = sessionService;
         }
 
+        private async Task<PostModel> ConvertPostPocoToPostModel(PostPoco postPoco)
+        {
+            var model = PostModel.FromPoco(postPoco);
+
+            var tagsPoco = await this.GetPostTags(postPoco.PostId);
+
+            model.Tags = tagsPoco.Select(tagPoco => tagPoco.TagName).ToArray();
+
+            return model;
+        }
+
+        private async Task<PostModel[]> ConvertPostPocoToPostModel(PostPoco[] postPocos)
+        {
+            var models = new List<PostModel>();
+
+            foreach (var postPoco in postPocos)
+            {
+                models.Add(await this.ConvertPostPocoToPostModel(postPoco));
+            }
+
+            return models.ToArray();
+        }
+
         /// <summary>
         /// Get post from the database with id.
         /// </summary>
@@ -34,20 +59,7 @@ namespace Blog.Web.Areas.Admin.Posts
                 return null;
             }
 
-            var post = new PostModel
-            {
-                Content = postPoco.Content,
-                Id = postPoco.PostId,
-                Title = postPoco.Title
-            };
-
-            var tagsPoco = await this.GetPostTags(postPoco.PostId);
-
-            var tempTags = tagsPoco.Select(tagPoco => tagPoco.TagName).ToArray();
-
-            post.Tags = tempTags;
-
-            return post;
+            return await this.ConvertPostPocoToPostModel(postPoco);
         }
 
         /// <summary>
@@ -56,27 +68,8 @@ namespace Blog.Web.Areas.Admin.Posts
         public async Task<PostModel[]> GetLatestPosts(int count)
         {
             var postPocos = await this.Database.Query<PostPoco>("SELECT * FROM posts p ORDER BY p.post_id LIMIT @count;", new NpgsqlParameter("count", count));
-            var posts = new List<PostModel>();
-
-            foreach (var postPoco in postPocos)
-            {
-                var post = new PostModel
-                {
-                    Content = postPoco.Content,
-                    Id = postPoco.PostId,
-                    Title = postPoco.Title
-                };
-
-                var tagsPoco = await this.GetPostTags(postPoco.PostId);
-
-                var tempTags = tagsPoco.Select(tagPoco => tagPoco.TagName).ToArray();
-
-                post.Tags = tempTags;
-
-                posts.Add(post);
-            }
-
-            return posts.ToArray();
+            
+            return await this.ConvertPostPocoToPostModel(postPocos.ToArray());
         }
 
         /// <summary>
@@ -119,27 +112,8 @@ namespace Blog.Web.Areas.Admin.Posts
         public async Task<PostModel[]> GetAllPosts()
         {
             var postPocos = await this.Database.Query<PostPoco>("SELECT * FROM posts p ORDER BY p.post_id;");
-            var posts = new List<PostModel>();
 
-            foreach (var postPoco in postPocos)
-            {
-                var post = new PostModel
-                {
-                    Content = postPoco.Content,
-                    Id = postPoco.PostId,
-                    Title = postPoco.Title
-                };
-
-                var tagsPoco = await this.GetPostTags(postPoco.PostId);
-
-                var tempTags = tagsPoco.Select(tagPoco => tagPoco.TagName).ToArray();
-
-                post.Tags = tempTags;
-
-                posts.Add(post);
-            }
-
-            return posts.ToArray();
+            return await this.ConvertPostPocoToPostModel(postPocos.ToArray());
         }
 
         public async Task<PostModel[]> GetAllPostsWithTerms(string terms)
@@ -149,30 +123,13 @@ namespace Blog.Web.Areas.Admin.Posts
                 return await this.GetAllPosts();
             }
 
-            var tsQuery = NpgsqlTsQuery.Parse(string.Join('&', terms.Trim().Split(' ')));
+            string[] escapedTerms = EscapeInputForTsQuery(terms.Trim());
+            var tsQuery = NpgsqlTsQuery.Parse(string.Join('&', escapedTerms.Select(term => $"{term.ToLower()}:*")));
+
             var postPocos = await this.Database.Query<PostPoco>(
                 "SELECT * FROM posts p WHERE p.search_vector @@ @postQuery", new NpgsqlParameter("postQuery", tsQuery));
-            var posts = new List<PostModel>();
 
-            foreach (var postPoco in postPocos)
-            {
-                var post = new PostModel
-                {
-                    Content = postPoco.Content,
-                    Id = postPoco.PostId,
-                    Title = postPoco.Title
-                };
-
-                var tagsPoco = await this.GetPostTags(postPoco.PostId);
-
-                var tempTags = tagsPoco.Select(tagPoco => tagPoco.TagName).ToArray();
-
-                post.Tags = tempTags;
-
-                posts.Add(post);
-            }
-
-            return posts.ToArray();
+            return await this.ConvertPostPocoToPostModel(postPocos.ToArray());
         }
 
         /// <summary>
@@ -196,10 +153,7 @@ namespace Blog.Web.Areas.Admin.Posts
             return postId;
         }
 
-        private Task AddPostTags(string tagsInLine, int postId)
-        {
-            return this.AddPostTags(tagsInLine.Split(','), postId);
-        }
+        private Task AddPostTags(string tagsInLine, int postId) => this.AddPostTags(tagsInLine.Split(','), postId);
 
         /// <summary>
         /// Links tag to the post if the tag doesn't exist creates one
@@ -261,6 +215,29 @@ namespace Blog.Web.Areas.Admin.Posts
             var postPoco = await this.Database.QueryOne<PostPoco>("SELECT * FROM posts p WHERE p.post_id = @postId;",
                 new NpgsqlParameter("postId", id));
             await this.Database.Delete(postPoco);
+        }
+
+        /// <summary>
+        /// Escapes and prepares user input to be used in a NpgsqlTsQuery by removing every
+        /// character that is not a letter or a number
+        /// </summary>
+        /// <param name="input">User's raw input</param>
+        /// <returns>Escaped and prepared for NpgsqlTsQuery array of words</returns>
+        public static string[] EscapeInputForTsQuery(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                return null;
+            }
+
+            // We get only the words (which are separated by whitespace, remove the empty lines and trim the words)
+            string[] words = input.Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(word => word.Trim()).ToArray();
+
+            // And then we remove every non-digit and non-letter character in
+            // a word to prevent the user to interfer with the tsquery
+            words = words.Select(word => Regex.Replace(word, "[^A-ZА-Яа-яa-z0-9]", "")).Where(word => !string.IsNullOrWhiteSpace(word)).ToArray();
+
+            return words;
         }
     }
 }
