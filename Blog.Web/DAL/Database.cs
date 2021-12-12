@@ -222,7 +222,7 @@ namespace Blog.Web.DAL
         /// <summary>
         /// Insert something with poco class to the database.
         /// </summary>
-        /// <returns>How many rows are changed.</returns>a
+        /// <returns>The primary key of the created poco.</returns>
         public async Task<int> Insert<T>(T poco) where T : new()
         {
             await this.OpenConnectionIfNeeded();
