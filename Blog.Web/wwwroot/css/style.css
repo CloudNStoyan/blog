@@ -9,8 +9,6 @@ header.navigation > a > h1 {
 
 footer {
     background-color: #333;
-    position: fixed;
-    bottom: 0;
     display: flex;
     flex-flow: row wrap;
     font-size: 1em;
@@ -60,8 +58,10 @@ footer a {
         display: flex;
         flex-flow: row wrap;
         padding: 2.8px 0;
-        position: sticky;
+        position: fixed;
         top: 0;
+        left: 0;
+        width: 100%;
         margin-bottom: 26px;
         height: 70px;
     }
@@ -117,7 +117,7 @@ footer a {
     }   
 
     main {
-        margin-top: 2%;
+        margin-top: 100px;
         margin-bottom: 130px;
     }
 }
