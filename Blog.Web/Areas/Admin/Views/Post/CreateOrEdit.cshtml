@@ -38,6 +38,7 @@
         @if (actionName == "Edit")
         {
             <input type="hidden" value="@Model.Id" name="id"/>
+            <input type="hidden" asp-for="CreatedOn" value="@Model?.CreatedOn"/>
         }
         @if (Model?.ErrorMessages != null)
         {

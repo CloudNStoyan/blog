@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Blog.Web.Areas.Admin.Auth;
 using Blog.Web.Infrastructure;
@@ -49,7 +50,9 @@ namespace Blog.Web.Areas.Admin.Posts
                 Title = pocoPost.Title,
                 Content = pocoPost.Content,
                 Id = pocoPost.Id,
-                Tags = string.Join(',' ,pocoPost.Tags)
+                Tags = string.Join(',' ,pocoPost.Tags),
+                UpdatedOn = pocoPost.UpdatedOn,
+                CreatedOn = pocoPost.CreatedOn
             };
 
             this.ViewData.Add("actionName", nameof(this.Edit));
@@ -59,11 +62,15 @@ namespace Blog.Web.Areas.Admin.Posts
         [HttpPost]
         public async Task<IActionResult> Create(FormPostModel inputModel)
         {
+            var now = DateTime.Now;
+
             var model = new FormEditModel
             {
                 Content = inputModel.Content,
                 Tags = inputModel.Tags,
-                Title = inputModel.Title
+                Title = inputModel.Title,
+                UpdatedOn = now,
+                CreatedOn = now,
             };
 
             if (!CustomValidator.Validate(model))
@@ -91,12 +98,16 @@ namespace Blog.Web.Areas.Admin.Posts
                 .Where(x => !string.IsNullOrWhiteSpace(x))
                 .ToArray();
 
+            var now = DateTime.Now;
+
             var postModel = new PostModel
             {
                 Content = model.Content,
                 Id = model.Id,
                 Tags = tags,
-                Title = model.Title
+                Title = model.Title,
+                CreatedOn = model.CreatedOn,
+                UpdatedOn = now
             };
 
             await this.PostService.UpdatePost(postModel);

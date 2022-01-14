@@ -36,6 +36,12 @@ namespace Blog.Web.DAL
 
         [Column(Name = "search_vector")]
         public NpgsqlTsVector SearchVector { get; set; }
+
+        [Column(Name = "created_on")]
+        public DateTime CreatedOn { get; set; }
+
+        [Column(Name = "updated_on")]
+        public DateTime UpdatedOn { get; set; }
     }
 
     [Table(Name = "tags", Schema = "public")]

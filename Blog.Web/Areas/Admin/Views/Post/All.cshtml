@@ -27,6 +27,8 @@
         <tr>
             <th>#</th>
             <th>Title</th>
+            <th>Updated On</th>
+            <th>Created On</th>
             <th>Action</th>
         </tr>
         </thead>
@@ -36,6 +38,8 @@
             <tr>
                 <th>@post.Id</th>
                 <td>@post.Title</td>
+                <td>@post.UpdatedOn</td>
+                <td>@post.CreatedOn</td>
                 <td class="action-wrapper">
                     <div>
                         <a class="btn btn-info" asp-area="" asp-controller="Home" asp-action="Post" asp-route-id="@post.Id">View</a>

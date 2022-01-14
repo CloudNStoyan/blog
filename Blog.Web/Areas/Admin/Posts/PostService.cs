@@ -67,7 +67,7 @@ namespace Blog.Web.Areas.Admin.Posts
         /// </summary>
         public async Task<PostModel[]> GetLatestPosts(int count)
         {
-            var postPocos = await this.Database.Query<PostPoco>("SELECT * FROM posts p ORDER BY p.post_id LIMIT @count;", new NpgsqlParameter("count", count));
+            var postPocos = await this.Database.Query<PostPoco>("SELECT * FROM posts p ORDER BY p.created_on, p.post_id ASC LIMIT @count;", new NpgsqlParameter("count", count));
             
             return await this.ConvertPostPocoToPostModel(postPocos.ToArray());
         }
@@ -111,7 +111,7 @@ namespace Blog.Web.Areas.Admin.Posts
         /// </summary>
         public async Task<PostModel[]> GetAllPosts()
         {
-            var postPocos = await this.Database.Query<PostPoco>("SELECT * FROM posts p ORDER BY p.post_id;");
+            var postPocos = await this.Database.Query<PostPoco>("SELECT * FROM posts p ORDER BY p.created_on, p.post_id ASC;");
 
             return await this.ConvertPostPocoToPostModel(postPocos.ToArray());
         }
