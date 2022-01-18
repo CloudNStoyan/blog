@@ -116,6 +116,18 @@ namespace Blog.Web.Areas.Admin.Posts
             return await this.ConvertPostPocoToPostModel(postPocos.ToArray());
         }
 
+        public async Task<PostModel[]> GetPostsByUserId(int userId, int offset = 0, int limit = 20)
+        {
+            var postPocos = await this.Database.Query<PostPoco>(
+                "SELECT * FROM posts p WHERE p.user_id=@userId ORDER by p.created_on, p.post_id DESC OFFSET @offset LIMIT @limit;",
+                new NpgsqlParameter("userId", userId),
+                new NpgsqlParameter("offset", offset),
+                new NpgsqlParameter("limit", limit)
+            );
+
+            return await this.ConvertPostPocoToPostModel(postPocos.ToArray());
+        }
+
         public async Task<PostModel[]> GetAllPostsWithTerms(string terms)
         {
             if (string.IsNullOrWhiteSpace(terms))

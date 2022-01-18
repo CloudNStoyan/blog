@@ -1,0 +1,30 @@
+﻿@model PostModel[]
+
+@{
+    ViewData["Title"] = "My posts";
+}
+
+@section styles {
+    <link href="/css/myposts.css" rel="stylesheet" />
+}
+<main>
+    @if (Model != null)
+    {
+        foreach (var post in Model)
+        {
+            <article>
+                <header>
+                    <a asp-controller="Home" asp-action="Post" asp-route-id="@post.Id">@post.Title</a>
+                </header>
+                <div class="line"></div>
+                <p>@post.Content</p>
+                <div class="tags">
+                    @foreach (var tag in post.Tags)
+                    {
+                        <a href="#">@tag</a>
+                    }
+                </div>
+            </article>
+        }
+    }
+</main>
