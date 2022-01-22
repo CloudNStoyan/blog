@@ -41,22 +41,11 @@ namespace Blog.Web.Areas.Admin.Auth
             };
 
             var account = await this.Database.QueryOne<UserPoco>(
-                "SELECT * FROM users u WHERE u.username=@username AND u.password=@password;", 
+                "SELECT * FROM users u WHERE u.username=@username AND u.password=@password AND u.is_deleted=false;", 
                 parametars
             );
 
             return account;
-        }
-
-        /// <summary>
-        /// Gets user with this <param name="userId">id</param> from the database and returns it
-        /// </summary>
-        /// <param name="userId">The user id</param>
-        /// <returns>UserPoco filled with the data of the user.</returns>
-        public async Task<UserPoco> GetUserById(int userId)
-        {
-            return await this.Database.QueryOne<UserPoco>("SELECT * FROM users u WHERE u.user_id = @userId;", 
-                new NpgsqlParameter("userId", userId));
         }
 
         /// <summary>
@@ -83,6 +72,21 @@ namespace Blog.Web.Areas.Admin.Auth
                     new NpgsqlParameter("sessionId", sessionId));
 
             return session;
+        }
+
+        /// <summary>
+        /// Logs out all sessions with this <param name="userId">user id</param>
+        /// Mostly used when user profile is deleted
+        /// </summary>
+        public async Task LogoutAllSessionsWithUserId(int userId)
+        {
+            var now = DateTime.Now;
+
+            await this.Database.ExecuteNonQuery(
+                "UPDATE login_sessions SET logged_out = true AND logout_time = @logoutTime WHERE user_id=@userId;",
+                new NpgsqlParameter("logoutTime", now),
+                new NpgsqlParameter("userId", userId)
+            );
         }
 
         /// <summary>

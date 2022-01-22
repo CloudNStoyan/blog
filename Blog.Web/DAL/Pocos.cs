@@ -17,6 +17,8 @@ namespace Blog.Web.DAL
 
         [Column(Name = "avatar_url")]
         public string AvatarUrl { get; set; }
+        [Column(Name = "is_deleted")]
+        public bool IsDeleted { get; set; }
     }
 
     [Table(Name = "posts", Schema = "public")]

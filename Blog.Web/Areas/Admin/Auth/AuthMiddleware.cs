@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Blog.Web.Areas.Admin.Users;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 
@@ -21,7 +22,8 @@ namespace Blog.Web.Areas.Admin.Auth
         }
         
         // ReSharper disable once UnusedMember.Global
-        public async Task Invoke(HttpContext context, AuthenticationService authService, SessionCookieService sessionCookieService)
+        public async Task Invoke(HttpContext context, AuthenticationService authService,
+            SessionCookieService sessionCookieService, UserService userService)
         {
             context.SetSession(new RequestSession());
 
@@ -43,7 +45,7 @@ namespace Blog.Web.Areas.Admin.Auth
                 return;
             }
 
-            var pocoUser = await authService.GetUserById(session.UserId);
+            var pocoUser = await userService.GetUserById(session.UserId);
 
             context.SetSession(new RequestSession
             {

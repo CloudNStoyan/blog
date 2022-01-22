@@ -1,0 +1,42 @@
+.list-wrapper {
+    margin: 2rem;
+    padding: 1rem;
+    border: 2px solid grey;
+    border-radius: 5px;
+    background-color: #2d2d2d;
+}
+
+.my-table th , .my-table td { 
+    text-align: center;
+    vertical-align: middle;
+}
+
+.my-table th:first-child {
+    width: 50px;
+}
+
+.my-table td:nth-child(2) {
+    width: auto;
+    text-align: left;
+    padding-left: 20px;
+}
+
+.my-table td:last-child {
+    width: 300px;
+    padding: .2rem;
+}
+
+.actions {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.create-user {
+    flex: 0 0 7%;
+}
+
+.create-user-btn i {
+    margin-left: 5px;
+}

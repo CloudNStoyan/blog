@@ -1,0 +1,52 @@
+﻿@model Blog.Web.DAL.UserPoco[]
+
+@{
+    ViewData["Title"] = "All Users";
+}
+
+@section styles
+{
+    <link rel="stylesheet" href="~/admin/css/users.css"/>
+}
+
+<div class="list-wrapper">
+    <h1 class="text-center">All Users</h1>
+    <div class="actions">
+        <div class="create-user">
+            <a class="btn btn-primary create-user-btn" asp-controller="User" asp-action="Create">Create<i class="fa fa-plus"></i></a>
+        </div>
+    </div>
+    <table class="table table-striped table-dark table-bordered my-table">
+        <thead class="thead-dark">
+        <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        @if (Model != null)
+        {
+            foreach (var user in Model)
+            {
+                <tr>
+                    <td>@user.UserId</td>
+                    <td>@user.Name</td>
+                    <td class="action-wrapper">
+                        <div>
+                            <a class="btn btn-warning" 
+                               asp-controller="User" asp-action="ChangePassword" asp-route-id="@user.UserId">Change Password</a>
+                            <a class="btn btn-danger" 
+                               asp-controller="User" asp-action="Delete" asp-route-id="@user.UserId">Delete</a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        }
+        </tbody>
+    </table>
+    @if (Model.Length < 1)
+    {
+        <div>No post were found please try to use less words or more specific ones.</div>
+    }
+</div>
