@@ -83,7 +83,7 @@ namespace Blog.Web.Areas.Admin.Auth
             var now = DateTime.Now;
 
             await this.Database.ExecuteNonQuery(
-                "UPDATE login_sessions SET logged_out = true AND logout_time = @logoutTime WHERE user_id=@userId;",
+                "UPDATE login_sessions SET logged_out = true, logout_time = @logoutTime WHERE user_id=@userId;",
                 new NpgsqlParameter("logoutTime", now),
                 new NpgsqlParameter("userId", userId)
             );
