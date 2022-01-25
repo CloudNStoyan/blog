@@ -139,7 +139,12 @@ namespace Blog.Web.Areas.Admin.Posts
             var tsQuery = NpgsqlTsQuery.Parse(string.Join('&', escapedTerms.Select(term => $"{term.ToLower()}:*")));
 
             var postPocos = await this.Database.Query<PostPoco>(
-                "SELECT * FROM posts p WHERE p.search_vector @@ @postQuery", new NpgsqlParameter("postQuery", tsQuery));
+                "SELECT * FROM posts p WHERE p.search_vector @@ @postQuery", new NpgsqlParameter
+                {
+                    Value = tsQuery,
+                    ParameterName = "postQuery",
+                    DataTypeName = "tsquery"
+                });
 
             return await this.ConvertPostPocoToPostModel(postPocos.ToArray());
         }
