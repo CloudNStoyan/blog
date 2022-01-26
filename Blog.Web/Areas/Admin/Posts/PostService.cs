@@ -163,11 +163,11 @@ namespace Blog.Web.Areas.Admin.Posts
                 SearchVector = NpgsqlTsVector.Parse(model.Title + " " + model.Tags)
             };
 
-            int postId = await this.Database.Insert(postPoco);
+            int? postId = await this.Database.Insert(postPoco);
 
-            await this.AddPostTags(model.Tags, postId);
+            await this.AddPostTags(model.Tags, postId!.Value);
 
-            return postId;
+            return postId.Value;
         }
 
         private Task AddPostTags(string tagsInLine, int postId) => this.AddPostTags(tagsInLine.Split(','), postId);
@@ -180,11 +180,13 @@ namespace Blog.Web.Areas.Admin.Posts
         /// <returns></returns>
         private async Task AddPostTags(string[] tags, int postId)
         {
-            for (var i = 0; i < tags.Length; i++)
+            for (int i = 0; i < tags.Length; i++)
             {
                 string tag = tags[i].Trim();
+
                 var tagPoco = await this.Database.QueryOne<TagPoco>("SELECT * FROM tags t WHERE t.tag_name = @tagName;",
                     new NpgsqlParameter("tagName", tag));
+
                 if (tagPoco == null)
                 {
                     tagPoco = new TagPoco
@@ -193,7 +195,7 @@ namespace Blog.Web.Areas.Admin.Posts
 
                     };
 
-                    tagPoco.TagId = await this.Database.Insert(tagPoco);
+                    tagPoco.TagId = (await this.Database.Insert(tagPoco))!.Value;
                 }
 
                 var postsTagsPoco = new PostsTagsPoco
