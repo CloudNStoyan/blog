@@ -67,7 +67,7 @@ namespace Blog.Web.Areas.Admin.Posts
         /// </summary>
         public async Task<PostModel[]> GetLatestPosts(int count)
         {
-            var postPocos = await this.Database.Query<PostPoco>("SELECT * FROM posts p ORDER BY p.created_on, p.post_id ASC LIMIT @count;", new NpgsqlParameter("count", count));
+            var postPocos = await this.Database.Query<PostPoco>("SELECT * FROM posts p ORDER BY p.updated_on DESC LIMIT @count;", new NpgsqlParameter("count", count));
             
             return await this.ConvertPostPocoToPostModel(postPocos.ToArray());
         }
@@ -84,7 +84,9 @@ namespace Blog.Web.Areas.Admin.Posts
                 Title = post.Title,
                 UserId = session.UserAccount.UserId,
                 PostId = post.Id,
-                SearchVector = NpgsqlTsVector.Parse(post.Title + " " + string.Join(',', post.Tags))
+                SearchVector = NpgsqlTsVector.Parse(post.Title + " " + string.Join(',', post.Tags)),
+                CreatedOn = post.CreatedOn,
+                UpdatedOn = post.UpdatedOn
             };
 
             await this.DeletePostTags(post.Id);
@@ -111,7 +113,7 @@ namespace Blog.Web.Areas.Admin.Posts
         /// </summary>
         public async Task<PostModel[]> GetAllPosts()
         {
-            var postPocos = await this.Database.Query<PostPoco>("SELECT * FROM posts p ORDER BY p.created_on, p.post_id ASC;");
+            var postPocos = await this.Database.Query<PostPoco>("SELECT * FROM posts p ORDER BY p.updated_on DESC;");
 
             return await this.ConvertPostPocoToPostModel(postPocos.ToArray());
         }
@@ -160,7 +162,9 @@ namespace Blog.Web.Areas.Admin.Posts
                 Content = model.Content,
                 Title = model.Title,
                 UserId = session.UserAccount.UserId,
-                SearchVector = NpgsqlTsVector.Parse(model.Title + " " + model.Tags)
+                SearchVector = NpgsqlTsVector.Parse(model.Title + " " + model.Tags),
+                CreatedOn = model.CreatedOn,
+                UpdatedOn = model.UpdatedOn
             };
 
             int? postId = await this.Database.Insert(postPoco);

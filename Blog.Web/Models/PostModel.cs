@@ -9,8 +9,8 @@ namespace Blog.Web.Models
         public string Content { get; set; }
         public int Id { get; set; }
         public string[] Tags { get; set; }
-        public DateTime CreatedOn { get; set; }
-        public DateTime UpdatedOn { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public DateTime? UpdatedOn { get; set; }
 
         public static PostModel FromPoco(PostPoco poco) => new()
         {

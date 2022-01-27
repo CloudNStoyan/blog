@@ -45,7 +45,7 @@ namespace Blog.Web.Areas.Admin.Posts
         public async Task<IActionResult> Edit(int id)
         {
             var pocoPost = await this.PostService.GetPostById(id);
-            var model = new FormEditModel
+            var model = new FormPostModel
             {
                 Title = pocoPost.Title,
                 Content = pocoPost.Content,
@@ -64,7 +64,7 @@ namespace Blog.Web.Areas.Admin.Posts
         {
             var now = DateTime.Now;
 
-            var model = new FormEditModel
+            var model = new FormPostModel
             {
                 Content = inputModel.Content,
                 Tags = inputModel.Tags,
@@ -79,13 +79,13 @@ namespace Blog.Web.Areas.Admin.Posts
                 return this.View("CreateOrEdit", model);
             }
 
-            int postId = await this.PostService.CreatePost(inputModel);
+            int postId = await this.PostService.CreatePost(model);
 
             return this.RedirectToAction("Post", "Home", new { area = "", id = postId });
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(FormEditModel model)
+        public async Task<IActionResult> Edit(FormPostModel model)
         {
             if (!CustomValidator.Validate(model))
             {
