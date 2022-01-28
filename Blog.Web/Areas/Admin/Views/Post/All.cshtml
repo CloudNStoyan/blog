@@ -1,7 +1,8 @@
-﻿@model PostModel[]
+﻿@using Blog.Web.Areas.Admin.Posts
+@model Blog.Web.Areas.Admin.Posts.FilteredPostsModel
 
 @{
-    ViewData["Title"] = "Page";
+    ViewData["Title"] = "All Posts";
 }
 
 @section styles
@@ -9,12 +10,55 @@
     <link rel="stylesheet" href="~/admin/css/posts.css"/>
 }
 
+@section footer {
+    <script src="/admin/js/posts.js"></script>
+}
+
 <div class="list-wrapper">
     <h1 class="text-center">All Posts</h1>
     <div class="actions">
-        <div class="search-group">
-            <form asp-controller="Post" asp-action="All">
-                <input type="text" class="form-control" placeholder="Search" name="searchTerms"/>
+        <div class="filter-group">
+            <form asp-controller="Post" asp-action="All" method="get">
+                <input type="hidden" asp-for="Filter.Offset" value="@Model?.Filter?.Offset"/>
+                <input type="hidden" asp-for="Filter.Limit" value="@Model?.Filter?.Limit"/>
+                <input type="hidden" asp-for="Filter.OrderBy" value="@Model?.Filter?.OrderBy"/>
+                <input type="hidden" asp-for="Filter.Sort" value="@Model?.Filter?.Sort"/>
+                <input type="text" class="form-control" placeholder="Search"
+                       asp-for="Filter.Search" value="@Model?.Filter?.Search"/>
+                <select id="OrderBy">
+                    @{
+                        var orderByValues = Enum.GetValues(typeof(PostFilterOrderBy));
+
+                        foreach (var option in orderByValues)
+                        {
+                            if ((PostFilterOrderBy)option != Model?.Filter?.OrderBy)
+                            {
+                                <option value="@option">@option</option>
+                            }
+                            else
+                            {
+                                <option value="@option" selected>@option</option>
+                            }
+                        }
+                    }
+                </select>
+                <select id="Sort">
+                    @{
+                        var sortValues = Enum.GetValues(typeof(PostFilterSort));
+
+                        foreach (var option in sortValues)
+                        {
+                            if ((PostFilterSort)option != Model?.Filter?.Sort)
+                            {
+                                <option value="@option">@option</option>
+                            }
+                            else
+                            {
+                                <option value="@option" selected>@option</option>
+                            }
+                        }
+                    }
+                </select>
                 <button class="btn btn-rounded btn-info" type="submit"><i class="fa fa-search "></i></button>
             </form>
         </div>
@@ -33,7 +77,7 @@
         </tr>
         </thead>
         <tbody>
-        @foreach (var post in Model)
+        @foreach (var post in Model.Posts)
         {
             <tr>
                 <th>@post.Id</th>
@@ -51,7 +95,7 @@
         }
         </tbody>
     </table>
-    @if (Model.Length < 1)
+    @if (Model.Posts.Length < 1)
     {
         <div>No post were found please try to use less words or more specific ones.</div>
     }

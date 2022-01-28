@@ -65,6 +65,7 @@
         <main>
             @RenderBody()
         </main>
+        @await RenderSectionAsync("footer", false)
     </div>
     <script src="~/admin/js/adminpanel.js"></script>
 </body>

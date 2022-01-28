@@ -33,21 +33,21 @@
     width: 100%;
 }
 
-.search-group > form {
+.filter-group > form {
     display: flex;
 }
 
-.search-group > form > input {
+.filter-group > form > input {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
 }
 
-.search-group > form > button {
+.filter-group > form > button {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
 }
 
-.search-group {
+.filter-group {
     flex: 0 0 90%;
 }
 

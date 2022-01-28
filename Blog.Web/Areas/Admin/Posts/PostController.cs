@@ -116,19 +116,11 @@ namespace Blog.Web.Areas.Admin.Posts
         }
 
         [HttpGet]
-        public async Task<IActionResult> All()
+        public async Task<IActionResult> All(FilteredPostsModel inputModel)
         {
-            var posts = await this.PostService.GetAllPosts();
+            var filteredPostsModel = await this.PostService.GetPosts(inputModel?.Filter);
 
-            return this.View(posts);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> All(string searchTerms)
-        {
-            var posts = await this.PostService.GetAllPostsWithTerms(searchTerms);
-
-            return this.View(posts);
+            return this.View(filteredPostsModel);
         }
     }
 }

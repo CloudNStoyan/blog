@@ -18,7 +18,16 @@ public class HomeController : Controller
 
     public async Task<IActionResult> Index()
     {
-        var posts = await this.PostService.GetLatestPosts(10);
+        var filter = new PostFilter
+        {
+            Limit = 10,
+            OrderBy = PostFilterOrderBy.UpdatedOn,
+            Sort = PostFilterSort.Descending
+        };
+
+        var filteredPostsModel = await this.PostService.GetPosts(filter);
+
+        var posts = filteredPostsModel.Posts;
 
         return this.View(posts);
     }
@@ -44,8 +53,15 @@ public class HomeController : Controller
             return this.RedirectToAction("Index");
         }
 
-        var posts = await this.PostService.GetPostsByUserId(session.UserAccount.UserId);
+        var filter = new PostFilter
+        {
+            OrderBy = PostFilterOrderBy.UpdatedOn,
+            Sort = PostFilterSort.Descending,
+            UserId = session.UserAccount.UserId
+        };
 
-        return this.View(posts);
+        var filteredPostsModel = await this.PostService.GetPosts(filter);
+
+        return this.View(filteredPostsModel.Posts);
     }
 }

@@ -62,14 +62,68 @@ namespace Blog.Web.Areas.Admin.Posts
             return await this.ConvertPostPocoToPostModel(postPoco);
         }
 
-        /// <summary>
-        /// Retrieves the latest posts.
-        /// </summary>
-        public async Task<PostModel[]> GetLatestPosts(int count)
+        public async Task<FilteredPostsModel> GetPosts(PostFilter filter)
         {
-            var postPocos = await this.Database.Query<PostPoco>("SELECT * FROM posts p ORDER BY p.updated_on DESC LIMIT @count;", new NpgsqlParameter("count", count));
-            
-            return await this.ConvertPostPocoToPostModel(postPocos.ToArray());
+            filter ??= new PostFilter();
+
+            var postgresFilters = new List<string>();
+            var postgresParameters = new List<NpgsqlParameter>();
+
+            string[] tsQueryValues = EscapeInputForTsQuery(filter.Search);
+
+            if (tsQueryValues is { Length: > 0 })
+            {
+                var tsQuery = NpgsqlTsQuery.Parse(string.Join('&', tsQueryValues.Select(term => $"{term.ToLower()}:*")));
+
+                postgresFilters.Add("search_vector @@ @postQuery");
+                postgresParameters.Add(new NpgsqlParameter
+                {
+                    DataTypeName = "tsquery",
+                    ParameterName = "postQuery",
+                    Value = tsQuery
+                });
+            }
+
+            if (filter.UserId > 0)
+            {
+                postgresFilters.Add("user_id = @userId");
+                postgresParameters.Add(new NpgsqlParameter("userId", filter.UserId));
+            }
+
+            string orderBy = PostFilter.PostFilterOrderByToSqlColumn(filter.OrderBy);
+
+            string sort = PostFilter.PostFilterSortToSql(filter.Sort);
+
+            string filters = postgresFilters.Count > 0
+                ? $"WHERE {string.Join(" AND ", postgresFilters)}"
+                : string.Empty;
+
+            string offsetSql = string.Empty;
+
+            if (filter.Offset > 0)
+            {
+                offsetSql = "OFFSET @offset";
+                postgresParameters.Add(new NpgsqlParameter("offset", filter.Offset));
+            }
+
+            string limitSql = string.Empty;
+
+            if (filter.Limit > 1)
+            {
+                limitSql = "LIMIT @limit";
+                postgresParameters.Add(new NpgsqlParameter("limit", filter.Limit));
+            }
+
+            string sql = 
+                $"SELECT * FROM posts {filters} ORDER BY {orderBy} {sort} {offsetSql} {limitSql};";
+
+            var filteredPosts = await this.Database.Query<PostPoco>(sql, postgresParameters.ToArray());
+
+            return new FilteredPostsModel
+            {
+                Posts = await this.ConvertPostPocoToPostModel(filteredPosts.ToArray()),
+                Filter = filter
+            };
         }
 
         /// <summary>
@@ -106,49 +160,6 @@ namespace Blog.Web.Areas.Admin.Posts
                 new NpgsqlParameter("postId", id));
 
             return tags.ToArray();
-        }
-
-        /// <summary>
-        /// Retrieves all posts from the database.
-        /// </summary>
-        public async Task<PostModel[]> GetAllPosts()
-        {
-            var postPocos = await this.Database.Query<PostPoco>("SELECT * FROM posts p ORDER BY p.updated_on DESC;");
-
-            return await this.ConvertPostPocoToPostModel(postPocos.ToArray());
-        }
-
-        public async Task<PostModel[]> GetPostsByUserId(int userId, int offset = 0, int limit = 20)
-        {
-            var postPocos = await this.Database.Query<PostPoco>(
-                "SELECT * FROM posts p WHERE p.user_id=@userId ORDER by p.created_on, p.post_id DESC OFFSET @offset LIMIT @limit;",
-                new NpgsqlParameter("userId", userId),
-                new NpgsqlParameter("offset", offset),
-                new NpgsqlParameter("limit", limit)
-            );
-
-            return await this.ConvertPostPocoToPostModel(postPocos.ToArray());
-        }
-
-        public async Task<PostModel[]> GetAllPostsWithTerms(string terms)
-        {
-            if (string.IsNullOrWhiteSpace(terms))
-            {
-                return await this.GetAllPosts();
-            }
-
-            string[] escapedTerms = EscapeInputForTsQuery(terms.Trim());
-            var tsQuery = NpgsqlTsQuery.Parse(string.Join('&', escapedTerms.Select(term => $"{term.ToLower()}:*")));
-
-            var postPocos = await this.Database.Query<PostPoco>(
-                "SELECT * FROM posts p WHERE p.search_vector @@ @postQuery", new NpgsqlParameter
-                {
-                    Value = tsQuery,
-                    ParameterName = "postQuery",
-                    DataTypeName = "tsquery"
-                });
-
-            return await this.ConvertPostPocoToPostModel(postPocos.ToArray());
         }
 
         /// <summary>
@@ -246,7 +257,7 @@ namespace Blog.Web.Areas.Admin.Posts
         /// </summary>
         /// <param name="input">User's raw input</param>
         /// <returns>Escaped and prepared for NpgsqlTsQuery array of words</returns>
-        public static string[] EscapeInputForTsQuery(string input)
+        private static string[] EscapeInputForTsQuery(string input)
         {
             if (string.IsNullOrWhiteSpace(input))
             {
