@@ -6,5 +6,6 @@ namespace Blog.Web.Areas.Admin.Posts
     {
         public PostModel[] Posts { get; set; }
         public PostFilter Filter { get; set; }
+        public int PostsCount { get; set; }
     }
 }

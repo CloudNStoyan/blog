@@ -52,7 +52,8 @@ namespace Blog.Web.Areas.Admin.Posts
         /// </summary>
         public async Task<PostModel> GetPostById(int id)
         {
-            var postPoco = await this.Database.QueryOne<PostPoco>("SELECT * FROM posts p WHERE p.post_id=@postId;", new NpgsqlParameter("postId", id));
+            var postPoco = await this.Database.QueryOne<PostPoco>("SELECT * FROM posts p WHERE p.post_id=@postId;",
+                new NpgsqlParameter("postId", id));
 
             if (postPoco == null)
             {
@@ -73,7 +74,8 @@ namespace Blog.Web.Areas.Admin.Posts
 
             if (tsQueryValues is { Length: > 0 })
             {
-                var tsQuery = NpgsqlTsQuery.Parse(string.Join('&', tsQueryValues.Select(term => $"{term.ToLower()}:*")));
+                var tsQuery =
+                    NpgsqlTsQuery.Parse(string.Join('&', tsQueryValues.Select(term => $"{term.ToLower()}:*")));
 
                 postgresFilters.Add("search_vector @@ @postQuery");
                 postgresParameters.Add(new NpgsqlParameter
@@ -114,15 +116,22 @@ namespace Blog.Web.Areas.Admin.Posts
                 postgresParameters.Add(new NpgsqlParameter("limit", filter.Limit));
             }
 
-            string sql = 
+            string sql =
                 $"SELECT * FROM posts {filters} ORDER BY {orderBy} {sort} {offsetSql} {limitSql};";
 
             var filteredPosts = await this.Database.Query<PostPoco>(sql, postgresParameters.ToArray());
 
+            // We clone the parameters because the original ones belong to the filtered query
+            int postsCount = await this.Database.Execute<int>(
+                $"SELECT COUNT(*)::int FROM posts {filters};",
+                postgresParameters.Select(x => x.Clone()).ToArray()
+            );
+
             return new FilteredPostsModel
             {
                 Posts = await this.ConvertPostPocoToPostModel(filteredPosts.ToArray()),
-                Filter = filter
+                Filter = filter,
+                PostsCount = postsCount
             };
         }
 
@@ -207,7 +216,6 @@ namespace Blog.Web.Areas.Admin.Posts
                     tagPoco = new TagPoco
                     {
                         TagName = tag
-
                     };
 
                     tagPoco.TagId = (await this.Database.Insert(tagPoco))!.Value;
@@ -218,7 +226,6 @@ namespace Blog.Web.Areas.Admin.Posts
                     PostId = postId,
                     TagId = tagPoco.TagId,
                     Position = i
-                    
                 };
 
                 await this.Database.Insert(postsTagsPoco);
@@ -227,7 +234,8 @@ namespace Blog.Web.Areas.Admin.Posts
 
         private async Task DeletePostTags(int postId)
         {
-            var postsTagsPocos = await this.Database.Query<PostsTagsPoco>("SELECT * FROM posts_tags pt WHERE pt.post_id = @postId;",
+            var postsTagsPocos = await this.Database.Query<PostsTagsPoco>(
+                "SELECT * FROM posts_tags pt WHERE pt.post_id = @postId;",
                 new NpgsqlParameter("postId", postId));
 
             foreach (var postsTagsPoco in postsTagsPocos)
@@ -265,11 +273,13 @@ namespace Blog.Web.Areas.Admin.Posts
             }
 
             // We get only the words (which are separated by whitespace, remove the empty lines and trim the words)
-            string[] words = input.Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(word => word.Trim()).ToArray();
+            string[] words = input.Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(word => word.Trim())
+                .ToArray();
 
             // And then we remove every non-digit and non-letter character in
             // a word to prevent the user to interfer with the tsquery
-            words = words.Select(word => Regex.Replace(word, "[^A-ZА-Яа-яa-z0-9]", "")).Where(word => !string.IsNullOrWhiteSpace(word)).ToArray();
+            words = words.Select(word => Regex.Replace(word, "[^A-ZА-Яа-яa-z0-9]", ""))
+                .Where(word => !string.IsNullOrWhiteSpace(word)).ToArray();
 
             return words;
         }

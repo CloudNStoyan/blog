@@ -12,11 +12,11 @@
 }
 
 .my-table th:first-child {
-    width: 50px;
+    text-align: left;
+    padding-left: 20px;
 }
 
-.my-table td:nth-child(2) {
-    width: auto;
+.my-table td:first-child {
     text-align: left;
     padding-left: 20px;
 }
@@ -33,22 +33,19 @@
     width: 100%;
 }
 
-.filter-group > form {
+.filter-group {
+    flex: 0 0 90%;
     display: flex;
 }
 
-.filter-group > form > input {
+.filter-group > input {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
 }
 
-.filter-group > form > button {
+.filter-group > button {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
-}
-
-.filter-group {
-    flex: 0 0 90%;
 }
 
 .create-post {
