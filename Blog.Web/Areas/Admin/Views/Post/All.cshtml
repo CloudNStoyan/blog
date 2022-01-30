@@ -24,40 +24,6 @@
         <div class="filter-group">
             <input type="text" class="form-control" placeholder="Search"
                    asp-for="Filter.Search" value="@Model?.Filter?.Search"/>
-            <select id="OrderBy">
-                @{
-                    var orderByValues = Enum.GetValues(typeof(PostFilterOrderBy));
-
-                    foreach (var option in orderByValues)
-                    {
-                        if ((PostFilterOrderBy)option != Model?.Filter?.OrderBy)
-                        {
-                            <option value="@option">@option</option>
-                        }
-                        else
-                        {
-                            <option value="@option" selected>@option</option>
-                        }
-                    }
-                }
-            </select>
-            <select id="Sort">
-                @{
-                    var sortValues = Enum.GetValues(typeof(PostFilterSort));
-
-                    foreach (var option in sortValues)
-                    {
-                        if ((PostFilterSort)option != Model?.Filter?.Sort)
-                        {
-                            <option value="@option">@option</option>
-                        }
-                        else
-                        {
-                            <option value="@option" selected>@option</option>
-                        }
-                    }
-                }
-            </select>
             <button class="btn btn-rounded btn-info" type="submit">
                 <i class="fa fa-search "></i>
             </button>
@@ -72,9 +38,18 @@
         </caption>
         <thead class="thead-dark">
         <tr>
-            <th>Title</th>
-            <th>Updated On</th>
-            <th>Created On</th>
+            <th class="order">
+                <a href="#" data-order-by="Title" data-sort="@Model.Filter?.Sort"
+                   class="@(Model.Filter.OrderBy == PostFilterOrderBy.Title ? "active" : "")">Title</a>
+            </th>
+            <th class="order">
+                <a href="#" data-order-by="UpdatedOn" data-sort="@Model.Filter?.Sort"
+                   class="@(Model.Filter.OrderBy == PostFilterOrderBy.UpdatedOn ? "active" : "")">Updated On</a>
+            </th>
+            <th class="order">
+                <a href="#" data-order-by="CreatedOn" data-sort="@Model.Filter?.Sort"
+                   class="@(Model.Filter.OrderBy == PostFilterOrderBy.CreatedOn ? "active" : "")">Created On</a>
+            </th>
             <th>Action</th>
         </tr>
         </thead>
@@ -95,6 +70,23 @@
             </tr>
         }
         </tbody>
+        <tfoot>
+        <tr>
+            <th class="order">
+                <a href="#" data-order-by="Title" data-sort="@Model.Filter?.Sort"
+                   class="@(Model.Filter.OrderBy == PostFilterOrderBy.Title ? "active" : "")">Title</a>
+            </th>
+            <th class="order">
+                <a href="#" data-order-by="UpdatedOn" data-sort="@Model.Filter?.Sort"
+                   class="@(Model.Filter.OrderBy == PostFilterOrderBy.UpdatedOn ? "active" : "")">Updated On</a>
+            </th>
+            <th class="order">
+                <a href="#" data-order-by="CreatedOn" data-sort="@Model.Filter?.Sort"
+                   class="@(Model.Filter.OrderBy == PostFilterOrderBy.CreatedOn ? "active" : "")">Created On</a>
+            </th>
+            <th>Action</th>
+        </tr>
+        </tfoot>
     </table>
     @if (Model.Posts.Length < 1)
     {

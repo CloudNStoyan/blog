@@ -1,19 +1,28 @@
+// Order by
+
 const filterForm = document.querySelector('form.list-wrapper');
 
-function bindSelectToInput(inputSelector, selectSelector) {
-    const input = document.querySelector(inputSelector);
-    const select = document.querySelector(selectSelector);
+const orderByButtons = document.querySelectorAll('.order a');
 
-    select.addEventListener('change',
-        () => {
-            input.value = select.children[select.selectedIndex].value;
+const orderByInput = document.querySelector('#Filter_OrderBy');
+const sortInput = document.querySelector('#Filter_Sort');
 
+orderByButtons.forEach(button => button.addEventListener('click',
+    (e) => {
+        e.preventDefault();
+
+        if (button.classList.contains('active')) {
+            const currentSort = sortInput.value;
+
+            sortInput.value = (currentSort === 'Ascending') ? 'Descending' : 'Ascending';
             filterForm.submit();
-        });
-}
+            return;
+        }
 
-bindSelectToInput('#Filter_OrderBy', '#OrderBy');
-bindSelectToInput('#Filter_Sort', '#Sort');
+        orderByInput.value = button.dataset.orderBy;
+        sortInput.value = 'Ascending';
+        filterForm.submit();
+    }));
 
 // Pagination
 
