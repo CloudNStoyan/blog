@@ -1,6 +1,6 @@
 // Order by
 
-const filterForm = document.querySelector('form.list-wrapper');
+const filterForm = document.querySelector('.posts-form');
 
 const orderByButtons = document.querySelectorAll('.order a');
 

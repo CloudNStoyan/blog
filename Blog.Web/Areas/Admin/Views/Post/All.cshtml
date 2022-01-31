@@ -1,5 +1,5 @@
 ﻿@using Blog.Web.Areas.Admin.Posts
-@model Blog.Web.Areas.Admin.Posts.FilteredPostsModel
+@model FilteredPostsModel
 
 @{
     ViewData["Title"] = "All Posts";
@@ -7,21 +7,21 @@
 
 @section styles
 {
-    <link rel="stylesheet" href="~/admin/css/posts.css"/>
+    <link rel="stylesheet" href="~/sass_compiled/admin/posts.css"/>
 }
 
 @section footer {
     <script src="/admin/js/posts.js"></script>
 }
 
-<form asp-controller="Post" asp-action="All" method="get" class="list-wrapper">
+<form asp-controller="Post" asp-action="All" method="get" class="posts-form">
     <input type="hidden" asp-for="Filter.Offset" value="@Model?.Filter?.Offset"/>
     <input type="hidden" asp-for="Filter.Limit" value="@Model?.Filter?.Limit"/>
     <input type="hidden" asp-for="Filter.OrderBy" value="@Model?.Filter?.OrderBy"/>
     <input type="hidden" asp-for="Filter.Sort" value="@Model?.Filter?.Sort"/>
     <h1 class="text-center">All Posts</h1>
     <div class="actions">
-        <div class="filter-group">
+        <div class="search-wrapper">
             <input type="text" class="form-control" placeholder="Search"
                    asp-for="Filter.Search" value="@Model?.Filter?.Search"/>
             <button class="btn btn-rounded btn-info" type="submit">
@@ -32,7 +32,7 @@
             <a class="btn btn-primary create-post-btn" asp-controller="Post" asp-action="Create">Create<i class="fa fa-plus"></i></a>
         </div>
     </div>
-    <table class="table table-striped table-dark table-bordered my-table">
+    <table class="table table-striped table-dark table-bordered posts-table">
         <caption>
             @($"Showing {Model.Posts.Length} ({Model.Filter.Offset} - {(Model.Filter.Offset + Model.Posts.Length)}) posts from {Model.PostsCount}")
         </caption>
