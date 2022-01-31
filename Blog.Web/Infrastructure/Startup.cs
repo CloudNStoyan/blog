@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Blog.Web.Infrastructure
 {
@@ -37,6 +38,14 @@ namespace Blog.Web.Infrastructure
             });
 
             services.AddHttpContextAccessor();
+
+            #if DEBUG
+            services.AddHostedService(sp => new NpmWatchHostedService(
+                sp.GetRequiredService<IWebHostEnvironment>().IsDevelopment(),
+                sp.GetRequiredService<ILogger<NpmWatchHostedService>>()
+                )
+            );
+            #endif
 
             return new AutofacServiceProvider(ContainerFactory.Create(this.Configuration, services));
         }

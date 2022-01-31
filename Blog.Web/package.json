@@ -1,0 +1,22 @@
+{
+  "name": "blog",
+  "version": "1.0.0",
+  "description": "My blog",
+  "main": "postcss.config.js",
+  "scripts": {
+    "prebuild:css": "del -rf wwwroot/sass_compiled",
+    "build": "sass --style compressed --no-source-map Sass:wwwroot/sass_compiled",
+    "postbuild:css": "postcss wwwroot/sass_compiled/style.css --replace",
+    "prewatch": "del -rf wwwroot/sass_compiled",
+    "watch": "sass --watch Sass:wwwroot/sass_compiled"
+  },
+  "author": "Stoyan Kolev",
+  "license": "MIT",
+  "devDependencies": {
+    "autoprefixer": "^10.2.6",
+    "cssnano": "^5.0.5",
+    "cssnano-preset-advanced": "^5.1.2",
+    "postcss-cli": "^8.3.1",
+    "sass": "^1.34.1"
+  }
+}
