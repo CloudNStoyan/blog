@@ -4,31 +4,31 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Blog.Web</title>
-    <link href="~/css/style.css" rel="stylesheet" />
+    <link href="~/sass_compiled/layout.css" rel="stylesheet" />
     <link rel="icon" href="/favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
     @await RenderSectionAsync("styles", false)
 </head>
 <body>
     <header class="navigation">
-        <a asp-controller="Home" asp-action="Index" class="title">
-            <h1>Stoyan's Blog</h1>
-        </a>
-        <nav>
-            <a asp-controller="Home" asp-action="Index">
-                <span>Home</span>
-            </a>
-            <a href="#">
-                <span>Most popular</span>
-            </a>
-            <a asp-area="" asp-controller="Home" asp-action="MyPosts">
-                <span>My posts</span>
-            </a>
-            <a asp-area="Admin" asp-controller="Auth" asp-action="LoginPage">
-                <span>Login</span>
-            </a>
-        </nav>
-        <div class="logo"></div>
+        <div class="container">
+            <a asp-controller="Home" asp-action="Index" class="homepage">Stoyan's Blog</a>
+            <a href="#" class="menu"><i class="fas fa-bars"></i></a>
+            <nav>
+                <a asp-controller="Home" asp-action="Index">
+                    Home
+                </a>
+                <a href="#">
+                    Most popular
+                </a>
+                <a asp-area="" asp-controller="Home" asp-action="MyPosts">
+                    My posts
+                </a>
+                <a asp-area="Admin" asp-controller="Auth" asp-action="LoginPage">
+                    Login
+                </a>
+            </nav>
+        </div>
     </header>
     <div class="popup"></div>
     @RenderBody()
@@ -40,7 +40,7 @@
         <div class="about">
             <a href="#">About</a>
         </div>
-        <div class="license">This is personal blog made by <a href="#">Me</a></div>
+        <div class="message">This is personal blog made by <a href="#">Me</a></div>
     </footer>
 </body>
 </html>
