@@ -5,23 +5,29 @@
 }
 
 @section styles {
-    <link href="~/css/home.css" rel="stylesheet" />
+    <link href="~/sass_compiled/home.css" rel="stylesheet" />
 }
 <main>
     @foreach (var post in Model)
     {
         <article>
-            <header>
-                <a asp-controller="Home" asp-action="Post" asp-route-id="@post.Id">@post.Title</a>
+            <header class="title">
+                <h2>
+                    <a asp-controller="Home" asp-action="Post" asp-route-id="@post.Id">@post.Title</a>
+                </h2>
+                <div class="tags">
+                    @foreach (var tag in post.Tags)
+                    {
+                        <a class="tag" href="#">@tag</a>
+                    }
+                </div>
             </header>
-            <div class="line"></div>
-            <p>@post.Content</p>
-            <div class="tags">
-                @foreach (var tag in post.Tags)
-                {
-                    <a href="#">@tag</a>
-                }
-            </div>
+            @{
+                const int excerpLength = 40;
+                string excerp = post.Content.Length > excerpLength ? $"{post.Content[..excerpLength]}.." : post.Content;
+            }
+            <p class="excerp">@excerp</p>
+            
         </article>
     }
 </main>
