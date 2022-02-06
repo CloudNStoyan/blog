@@ -48,10 +48,49 @@ html, body {
 
     .menu {
         float: right;
+        -webkit-tap-highlight-color: transparent;
+
+        .fa-times {
+            display: none;
+        }
+
+        &.hide {
+            .fa-times {
+                display: inline-block;
+            }
+
+            .fa-bars {
+                display: none;
+            }
+        }
     }
 
     nav {
-        display: none;
+        display: block;
+        position: absolute;
+        top: 40px;
+        background-color: rgba(255,255,255,0.9);
+        width: 100%;
+        left: 0;
+        height: 100vh;
+        transition: transform 0.25s linear;
+
+        ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        li {
+            text-align: center;
+            font-weight: 600;
+            letter-spacing: -1px;
+            text-transform: capitalize;
+        }
+
+        &:not(.show) {
+            transform: translateX(100%);
+        }
     }
 }
 
@@ -134,7 +173,12 @@ footer {
         }
 
         nav {
-            display: block;
+            transform: translateX(0)!important;
+            position: static;
+            background-color: transparent;
+            height: unset;
+            width: fit-content;
+            width: -moz-fit-content;
 
             a {
                 display: inline-block;
@@ -147,19 +191,10 @@ footer {
                 }
             }
 
-            ul {
-                list-style: none;
-                margin: 0;
-                padding: 0;
-            }
-
             li {
                 position: relative;
                 margin: 0 5px;
                 display: inline-block;
-                font-weight: 600;
-                letter-spacing: -1px;
-                text-transform: capitalize;
 
                 &:not(:last-child)::after {
                     content: "";

@@ -13,7 +13,10 @@
     <header class="navigation">
         <div class="container">
             <a asp-controller="Home" asp-action="Index" class="homepage">Stoyan's Blog</a>
-            <a href="#" class="menu"><i class="fas fa-bars"></i></a>
+            <a href="#" class="menu">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-times"></i>
+            </a>
             <nav>
                 <ul>
                     <li>
@@ -45,6 +48,7 @@
     <div class="popup"></div>
     @RenderBody()
     <script src="~/js/script.js"></script>
+    <script src="/js/mobile-menu.js"></script>
 <footer>
     <div class="message">This is personal blog made by <a href="#">Me</a></div>
     <div class="links-container">
