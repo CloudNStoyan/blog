@@ -1,22 +1,37 @@
 ﻿@model PostModel
 
 @{
-    ViewData["Title"] = @Model.Title;
+    ViewData["Title"] = @Model!.Title;
 }
 
 @section styles {
-    <link href="~/css/post.css" rel="stylesheet" />
+    <link href="~/sass_compiled/post.css" rel="stylesheet" />
 }
 
 <main>
-    <header>@Model.Title</header>
-    <p>@Model.Content</p>
-    <div class="tags">
-        @foreach (var tag in Model.Tags)
-        {
-            <a href="#">@tag</a>
-        }
-    </div>
+    <article>
+        <header>
+            <h1>@Model!.Title</h1>
+            <div class="tags">
+                @foreach (var tag in Model.Tags)
+                {
+                    <a href="#" class="tag">@tag</a>
+                }
+            </div>
+            <div class="post-info">
+                @if (Model.UpdatedOn.HasValue)
+                {
+                    <div>
+                        <i class="far fa-clock"></i>
+                        @(Model.UpdatedOn.Value.ToString("D"))
+                    </div>
+                }
+            </div>
+        </header>
+        <div class="content">
+            <p>@Model.Content</p>
+        </div>
+    </article>
 </main>
 
 
