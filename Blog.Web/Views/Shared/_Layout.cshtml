@@ -1,54 +1,52 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>@ViewData["Title"] - Blog.Web</title>
-    <link href="~/sass_compiled/layout.css" rel="stylesheet" />
-    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    <link href="~/sass_compiled/layout.css" rel="stylesheet"/>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon"/>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
     @await RenderSectionAsync("styles", false)
 </head>
 <body>
-    <header class="navigation">
-        <div class="container">
-            <a asp-controller="Home" asp-action="Index" class="homepage">Stoyan's Blog</a>
-            <a href="#" class="menu">
-                <i class="fas fa-bars"></i>
-                <i class="fas fa-times"></i>
-            </a>
-            <nav>
-                <ul>
-                    <li>
+<header class="navigation">
+    <div class="container">
+        <a asp-controller="Home" asp-action="Index" class="homepage">Stoyan's Blog</a>
+        <a href="#" class="menu">
+            <i class="fas fa-bars"></i>
+            <i class="fas fa-times"></i>
+        </a>
+        <nav>
+            <ul>
+                <li>
 
-                        <a asp-controller="Home" asp-action="Index">
-                            Home
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#">
-                            Most popular
-                        </a>
-                    </li>
-                    <li>
-                        <a asp-area="" asp-controller="Home" asp-action="MyPosts">
-                            My posts
-                        </a>
-                    </li>
-                    <li>
-
-                        <a asp-area="Admin" asp-controller="Auth" asp-action="LoginPage">
-                            Login
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
-    </header>
-    <div class="popup"></div>
-    @RenderBody()
-    <script src="~/js/script.js"></script>
-    <script src="/js/mobile-menu.js"></script>
+                    <a asp-controller="Home" asp-action="Index">
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        Most popular
+                    </a>
+                </li>
+                <li>
+                    <a asp-area="" asp-controller="Home" asp-action="MyPosts">
+                        My posts
+                    </a>
+                </li>
+                <li>
+                    <a asp-area="Admin" asp-controller="Auth" asp-action="LoginPage">
+                        Login
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</header>
+@RenderBody()
+<script src="/js/mobile-menu.js"></script>
+@await RenderSectionAsync("scripts", false)
 <footer>
     <div class="message">This is personal blog made by <a href="#">Me</a></div>
     <div class="links-container">
