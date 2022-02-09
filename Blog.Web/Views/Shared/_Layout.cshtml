@@ -6,42 +6,37 @@
     <title>@ViewData["Title"] - Blog.Web</title>
     <link href="~/sass_compiled/layout.css" rel="stylesheet"/>
     <link rel="icon" href="/favicon.ico" type="image/x-icon"/>
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    <script src="https://kit.fontawesome.com/366ff167f5.js" crossorigin="anonymous"></script>
     @await RenderSectionAsync("styles", false)
 </head>
 <body>
 <header class="navigation">
     <div class="container">
-        <a asp-controller="Home" asp-action="Index" class="homepage">Stoyan's Blog</a>
         <a href="#" class="menu">
             <i class="fas fa-bars"></i>
-            <i class="fas fa-times"></i>
         </a>
+        <a asp-controller="Home" asp-action="Index" class="homepage">Stoyan's Blog</a>
         <nav>
             <ul>
                 <li>
 
                     <a asp-controller="Home" asp-action="Index">
-                        Home
+                        <i class="fas fa-home"></i>Home
                     </a>
                 </li>
                 <li>
                     <a href="#">
-                        Most popular
-                    </a>
-                </li>
-                <li>
-                    <a asp-area="" asp-controller="Home" asp-action="MyPosts">
-                        My posts
+                        <i class="fa-solid fa-chart-line"></i>Most popular
                     </a>
                 </li>
                 <li>
                     <a asp-area="Admin" asp-controller="Auth" asp-action="LoginPage">
-                        Login
+                        <i class="fa-solid fa-arrow-right-to-bracket"></i>Login
                     </a>
                 </li>
             </ul>
         </nav>
+        <div class="menu-overlay"></div>
     </div>
 </header>
 @RenderBody()

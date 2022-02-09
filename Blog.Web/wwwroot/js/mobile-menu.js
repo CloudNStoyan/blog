@@ -1,14 +1,25 @@
 ﻿const menuBtn = document.querySelector('.menu');
 const navMenu = document.querySelector('.navigation nav');
+const menuOverlay = document.querySelector('.menu-overlay');
 
-const toggleMenu = (e) => {
+const menuOpenClass = 'show';
+
+const openMenu = (e) => {
+    e.preventDefault();
+    
+    navMenu.classList.add(menuOpenClass);
+}
+
+const closeMenu = (e) => {
     e.preventDefault();
 
-    menuBtn.classList.toggle('hide');
-    navMenu.classList.toggle('show');
+    navMenu.classList.remove(menuOpenClass);
 }
 
 if (menuBtn) {
-    menuBtn.addEventListener('click', toggleMenu);
+    menuBtn.addEventListener('click', openMenu);
 }
 
+if (menuOverlay) {
+    menuOverlay.addEventListener('click', closeMenu);
+}

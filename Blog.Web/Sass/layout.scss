@@ -25,6 +25,7 @@ body {
 main {
     flex-grow: 1;
     width: 100%;
+    z-index: 0;
 }
 
 .navigation {
@@ -39,6 +40,7 @@ main {
     display: flex;
     flex-flow: column nowrap;
     justify-content: center;
+    z-index: 100;
 
     a {
         color: $color-cyan;
@@ -48,7 +50,7 @@ main {
 
     .homepage {
         font-weight: 600;
-        float: left;
+        float: right;
         transition: color 0.25s linear;
 
         &:hover {
@@ -57,50 +59,60 @@ main {
     }
 
     .menu {
-        float: right;
+        margin-left: 10px;
+        float: left;
         -webkit-tap-highlight-color: transparent;
-
-        .fa-times {
-            display: none;
-        }
-
-        &.hide {
-            .fa-times {
-                display: inline-block;
-            }
-
-            .fa-bars {
-                display: none;
-            }
-        }
     }
 
     nav {
         display: block;
         position: fixed;
-        top: 40px;
-        background-color: rgba(255,255,255,0.9);
-        width: 100%;
+        top: 0;
+        background-color: white;
+        width: 250px;
         left: 0;
         height: 100vh;
         transition: transform 0.25s linear;
+        z-index: 2;
 
         ul {
             list-style: none;
             margin: 0;
             padding: 0;
+            padding-left: 10px;
+            padding-top: 20px;
         }
 
         li {
-            text-align: center;
-            font-weight: 600;
+            font-size: 18px;
             letter-spacing: -1px;
             text-transform: capitalize;
+
+            svg {
+                width: 20px;
+                margin-right: 15px;
+            }
         }
 
         &:not(.show) {
-            transform: translateX(100%);
+            transform: translateX(-100%);
+
+            & + .menu-overlay {
+                opacity: 0;
+                z-index: -1;
+            }
         }
+    }
+
+    .menu-overlay {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100vh;
+        width: 100%;
+        background-color: rgba(0,0,0, 0.3);
+        transition: opacity 0.15s linear;
+        z-index: 1;
     }
 }
 
@@ -182,8 +194,12 @@ footer {
             align-items: center;
         }
 
+        .menu-overlay {
+            display: none;
+        }
+
         nav {
-            transform: translateX(0)!important;
+            transform: translateX(0) !important;
             position: static;
             background-color: transparent;
             height: unset;
@@ -201,6 +217,10 @@ footer {
                 }
             }
 
+            ul {
+                padding: 0;
+            }
+
             li {
                 position: relative;
                 margin: 0 5px;
@@ -214,6 +234,10 @@ footer {
                     width: 5px;
                     background-color: #e5e5e5;
                     vertical-align: middle;
+                }
+
+                svg {
+                    display: none;
                 }
             }
         }
