@@ -6,3 +6,4 @@ packages/
 Blog.Web/appsettings.Development.json
 node_modules/
 sass_compiled/
+Blog.Web/wwwroot/fontawesome/

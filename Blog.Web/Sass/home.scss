@@ -40,9 +40,8 @@ article {
 
         .tag {
             &::before {
-                content: '\f292';
-                font-family: "Font Awesome 5 Free";
-                font-weight: 600;
+                content: '\f02b';
+                font-family: 'FontAwesome';
                 margin-right: 3px;
             }
 
