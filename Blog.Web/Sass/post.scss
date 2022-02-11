@@ -36,7 +36,9 @@ article {
 
     .content {
         padding: 10px;
-        padding-top: 0;
+        background-color: #fefefe;
+        margin: 20px;
+        min-height: 400px;
 
         > p:first-child {
             margin-top: 10px;
