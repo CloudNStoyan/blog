@@ -1,7 +1,10 @@
-﻿@model PostModel
+﻿@using Markdig
+@model PostModel
 
 @{
     ViewData["Title"] = @Model!.Title;
+
+    string contentHtml = Markdown.ToHtml(Model.Content);
 }
 
 @section styles {
@@ -29,7 +32,7 @@
             </div>
         </header>
         <div class="content">
-            <p>@Model.Content</p>
+            @Html.Raw(contentHtml)
         </div>
     </article>
 </main>
