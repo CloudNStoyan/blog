@@ -1,4 +1,5 @@
 ﻿$color-orange: #f58225;
+$color-cyan: #02a0a9;
 
 article {
     max-width: 800px;
@@ -36,12 +37,42 @@ article {
 
     .content {
         padding: 10px;
-        background-color: #fefefe;
+        background-color: white;
         margin: 20px;
         min-height: 400px;
+        color: #333;
 
-        > p:first-child {
-            margin-top: 10px;
+        h1 {
+            text-decoration: underline;
+        }
+
+        h1, h2, h3, h4 {
+            color: $color-orange;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+
+            ul {
+                padding-left: 20px;
+            }
+
+            li {
+                &::before {
+                    content: '\f068';
+                    font-family: 'FontAwesome';
+                    margin-right: 10px;
+                    font-size: 12px;
+                }
+            }
+
+            code {
+                background-color: #f7f6f3;
+                color: $color-cyan;
+                padding: 5px 10px;
+                font-weight: 600;
+            }
         }
     }
 
