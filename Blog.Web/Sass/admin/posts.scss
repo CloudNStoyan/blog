@@ -68,6 +68,32 @@
     width: 100%;
 }
 
+.tags {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+
+    .tag {
+        text-decoration: none;
+
+        &::before {
+            content: "\f02b";
+            font-family: "FontAwesome";
+            margin-right: 3px;
+        }
+
+        &:not(:first-child) {
+            margin-left: 5px;
+        }
+
+        background-color: #333;
+        border: 1px solid #222;
+        border-radius: 5px;
+        padding: 5px;
+        color: #ececec;
+    }
+}
+
 .search-wrapper {
     flex: 0 0 90%;
     display: flex;

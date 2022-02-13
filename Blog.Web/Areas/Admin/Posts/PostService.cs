@@ -86,10 +86,19 @@ namespace Blog.Web.Areas.Admin.Posts
                 });
             }
 
-            if (filter.UserId > 0)
+            if (filter.UserId is > 0)
             {
                 postgresFilters.Add("user_id = @userId");
                 postgresParameters.Add(new NpgsqlParameter("userId", filter.UserId));
+            }
+
+            var postgresJoins = new List<string>();
+
+            if (filter.TagId is > 0)
+            {
+                postgresJoins.Add("INNER JOIN posts_tags pt on p.post_id = pt.post_id");
+                postgresFilters.Add("pt.tag_id = @tagId");
+                postgresParameters.Add(new NpgsqlParameter("tagId", filter.TagId.Value));
             }
 
             string orderBy = PostFilter.PostFilterOrderByToSqlColumn(filter.OrderBy);
@@ -98,6 +107,10 @@ namespace Blog.Web.Areas.Admin.Posts
 
             string filters = postgresFilters.Count > 0
                 ? $"WHERE {string.Join(" AND ", postgresFilters)}"
+                : string.Empty;
+
+            string joins = postgresJoins.Count > 0
+                ? string.Join(" ", postgresJoins)
                 : string.Empty;
 
             string offsetSql = string.Empty;
@@ -117,13 +130,13 @@ namespace Blog.Web.Areas.Admin.Posts
             }
 
             string sql =
-                $"SELECT * FROM posts {filters} ORDER BY {orderBy} {sort} {offsetSql} {limitSql};";
+                $"SELECT * FROM posts p {joins} {filters} ORDER BY {orderBy} {sort} {offsetSql} {limitSql};";
 
             var filteredPosts = await this.Database.Query<PostPoco>(sql, postgresParameters.ToArray());
 
             // We clone the parameters because the original ones belong to the filtered query
             int postsCount = await this.Database.Execute<int>(
-                $"SELECT COUNT(*)::int FROM posts {filters};",
+                $"SELECT COUNT(*)::int FROM posts p {joins} {filters};",
                 postgresParameters.Select(x => x.Clone()).ToArray()
             );
 

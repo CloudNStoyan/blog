@@ -19,6 +19,7 @@
     <input type="hidden" asp-for="Filter.Limit" value="@Model?.Filter?.Limit"/>
     <input type="hidden" asp-for="Filter.OrderBy" value="@Model?.Filter?.OrderBy"/>
     <input type="hidden" asp-for="Filter.Sort" value="@Model?.Filter?.Sort"/>
+    <input type="hidden" asp-for="Filter.TagId" value="@Model?.Filter?.TagId"/>
     <h1 class="text-center">All Posts</h1>
     <div class="actions">
         <div class="search-wrapper">
@@ -42,6 +43,7 @@
                 <a href="#" data-order-by="Title" data-sort="@Model.Filter?.Sort"
                    class="@(Model.Filter.OrderBy == PostFilterOrderBy.Title ? "active" : "")">Title</a>
             </th>
+            <th>Tags</th>
             <th class="order">
                 <a href="#" data-order-by="UpdatedOn" data-sort="@Model.Filter?.Sort"
                    class="@(Model.Filter.OrderBy == PostFilterOrderBy.UpdatedOn ? "active" : "")">Updated On</a>
@@ -58,6 +60,12 @@
         {
             <tr>
                 <td>@post.Title</td>
+                <td class="tags">
+                    @foreach (string tag in post.Tags)
+                    {
+                        <span class="tag">@tag</span>
+                    }
+                </td>
                 <td>@post.UpdatedOn</td>
                 <td>@post.CreatedOn</td>
                 <td class="action-wrapper">
@@ -76,6 +84,7 @@
                 <a href="#" data-order-by="Title" data-sort="@Model.Filter?.Sort"
                    class="@(Model.Filter.OrderBy == PostFilterOrderBy.Title ? "active" : "")">Title</a>
             </th>
+            <th>Tags</th>
             <th class="order">
                 <a href="#" data-order-by="UpdatedOn" data-sort="@Model.Filter?.Sort"
                    class="@(Model.Filter.OrderBy == PostFilterOrderBy.UpdatedOn ? "active" : "")">Updated On</a>

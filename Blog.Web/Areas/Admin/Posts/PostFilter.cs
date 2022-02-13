@@ -9,7 +9,8 @@ namespace Blog.Web.Areas.Admin.Posts
         public int Limit { get; set; } = 20;
         public PostFilterOrderBy OrderBy { get; set; }
         public PostFilterSort Sort { get; set; }
-        public int UserId { get; set; }
+        public int? UserId { get; set; }
+        public int? TagId { get; set; }
 
         public static string PostFilterOrderByToSqlColumn(PostFilterOrderBy orderBy) => orderBy switch
         {
