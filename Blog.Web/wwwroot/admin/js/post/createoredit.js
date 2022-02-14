@@ -32,7 +32,8 @@ tagInput.addEventListener('keydown', (e) => {
         return;
     }
     
-    const tag = document.createElement('span');
+    const tag = document.createElement('a');
+    tag.href = '#';
     tag.innerText = tagName;
     tag.className = 'tag';
     tag.addEventListener('click', (tagE) => {
