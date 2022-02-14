@@ -48,3 +48,21 @@ paginationButtons.forEach(button => {
         filterForm.submit();
     });
 });
+
+// Clickable Tags
+
+const tags = document.querySelectorAll('.tag');
+const tagInput = document.querySelector('#Filter_TagId');
+
+const tagIsClicked = (tagEl) => {
+    const tagId = tagEl.dataset.tagId;
+
+    tagInput.value = tagId;
+
+    filterForm.submit();
+}
+
+tags.forEach(tag => tag.addEventListener('click', (e) => {
+    e.preventDefault();
+    tagIsClicked(tag);
+}));

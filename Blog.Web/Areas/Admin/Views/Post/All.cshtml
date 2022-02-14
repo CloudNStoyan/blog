@@ -61,9 +61,9 @@
             <tr>
                 <td>@post.Title</td>
                 <td class="tags">
-                    @foreach (string tag in post.Tags)
+                    @foreach (var tag in post.Tags)
                     {
-                        <span class="tag">@tag</span>
+                        <a href="#" class="tag" data-tag-id="@tag.TagId">@tag.Name</a>
                     }
                 </td>
                 <td>@post.UpdatedOn</td>

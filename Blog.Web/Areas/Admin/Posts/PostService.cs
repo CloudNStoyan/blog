@@ -30,7 +30,7 @@ namespace Blog.Web.Areas.Admin.Posts
 
             var tagsPoco = await this.GetPostTags(postPoco.PostId);
 
-            model.Tags = tagsPoco.Select(tagPoco => tagPoco.TagName).ToArray();
+            model.Tags = tagsPoco.Select(TagModel.FromPoco).ToArray();
 
             return model;
         }
@@ -151,7 +151,7 @@ namespace Blog.Web.Areas.Admin.Posts
         /// <summary>
         /// Updates post with the new values
         /// </summary>
-        public async Task UpdatePost(PostModel post)
+        public async Task UpdatePost(FormPostModel post)
         {
             var session = this.SessionService.Session;
             var postPoco = new PostPoco

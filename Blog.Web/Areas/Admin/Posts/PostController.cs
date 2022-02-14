@@ -50,7 +50,7 @@ namespace Blog.Web.Areas.Admin.Posts
                 Title = pocoPost.Title,
                 Content = pocoPost.Content,
                 Id = pocoPost.Id,
-                Tags = string.Join(',' ,pocoPost.Tags),
+                Tags = string.Join(',' ,pocoPost.Tags.Select(tag => tag.Name)),
                 UpdatedOn = pocoPost.UpdatedOn,
                 CreatedOn = pocoPost.CreatedOn
             };
@@ -93,24 +93,11 @@ namespace Blog.Web.Areas.Admin.Posts
                 return this.View("CreateOrEdit", model);
             }
 
-            string[] tags = model.Tags?.Split(',')
-                .Select(x => x.Trim())
-                .Where(x => !string.IsNullOrWhiteSpace(x))
-                .ToArray();
-
             var now = DateTime.Now;
 
-            var postModel = new PostModel
-            {
-                Content = model.Content,
-                Id = model.Id,
-                Tags = tags,
-                Title = model.Title,
-                CreatedOn = model.CreatedOn,
-                UpdatedOn = now
-            };
+            model.UpdatedOn = now;
 
-            await this.PostService.UpdatePost(postModel);
+            await this.PostService.UpdatePost(model);
 
             return this.RedirectToAction("Post", "Home", new { area = "", id = model.Id });
         }
