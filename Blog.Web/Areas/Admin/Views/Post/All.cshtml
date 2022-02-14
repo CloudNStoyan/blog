@@ -60,7 +60,7 @@
         {
             <tr>
                 <td>@post.Title</td>
-                <td class="tags">
+                <td>
                     @foreach (var tag in post.Tags)
                     {
                         <a href="#" class="tag" data-tag-id="@tag.TagId">@tag.Name</a>
@@ -68,12 +68,10 @@
                 </td>
                 <td>@post.UpdatedOn</td>
                 <td>@post.CreatedOn</td>
-                <td class="action-wrapper">
-                    <div>
-                        <a class="btn btn-info" asp-area="" asp-controller="Home" asp-action="Post" asp-route-id="@post.Id">View</a>
-                        <a class="btn btn-warning" asp-controller="Post" asp-action="Edit" asp-route-id="@post.Id">Edit</a>
-                        <a class="btn btn-danger" asp-controller="Post" asp-action="Delete" asp-route-id="@post.Id">Delete</a>
-                    </div>
+                <td class="actions-container">
+                    <a class="btn btn-info" asp-area="" asp-controller="Home" asp-action="Post" asp-route-id="@post.Id">View</a>
+                    <a class="btn btn-warning" asp-controller="Post" asp-action="Edit" asp-route-id="@post.Id">Edit</a>
+                    <a class="btn btn-danger" asp-controller="Post" asp-action="Delete" asp-route-id="@post.Id">Delete</a>
                 </td>
             </tr>
         }
