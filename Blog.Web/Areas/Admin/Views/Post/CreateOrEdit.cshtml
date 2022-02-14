@@ -5,7 +5,11 @@
 }
 
 @section styles {
-    <link rel="stylesheet" href="~/admin/css/create-post.css" />
+    <link rel="stylesheet" href="~/sass_compiled/admin/post/createoredit.css" />
+}
+
+@section footer {
+    <script src="/admin/js/post/createoredit.js"></script>
 }
 
 <div class="form-wrapper">
@@ -30,7 +34,18 @@
         </div>
         <div class="form-group">
             <label for="Tags">Tags</label>
-            <input class="form-control" asp-for="Tags" value="@Model?.Tags" />
+            <input class="form-control" type="hidden" asp-for="Tags" value="@Model?.Tags" />
+            <div class="tags">
+                @{
+                    string[] tags = Model?.Tags.Split(',') ?? Array.Empty<string>();
+
+                    foreach (string tag in tags)
+                    {
+                        <a href="#" class="tag">@tag</a>
+                    }
+                }
+                <input type="text" class="tag-input"/>
+            </div>
             <small class="form-text form-muted">
                 * Separate tags with commas
             </small>
