@@ -1,72 +1,82 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>@ViewData["Title"] - Blog.Web</title>
-    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="/favicon.ico" type="image/x-icon"/>
     @await RenderSectionAsync("styles", false)
     <link rel="stylesheet" href="/fontawesome/css/all.min.css"/>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
-    <link rel="stylesheet" href="~/sass_compiled/admin/layout.css" />
+    <link rel="stylesheet" href="~/sass_compiled/admin/layout.css"/>
 </head>
 <body>
-    <div class="wrapper">
-        <header class="main-header">
-            <a asp-area="" asp-controller="Home" asp-action="Index" class="logo">
-                <span class="logo-lg">Stoyan's Blog</span>
-            </a>
-            <nav class="navbar navbar-static-top">  
-                <div class="navbar-custom-menu">
-                    <ul class="nav navbar-nav">
-                        <li class="dropdown user user-menu">
-                            <a href="#">
-                                <span class="hidden-xs">@this.User.Identity.Name</span><i class="fas fa-angle-down"></i>
-                            </a>
-                            <ul class="user-sub-menu">
-                                <li>
-                                    <form asp-controller="Auth" asp-action="LogOut">
-                                        <button type="submit" class="btn btn-primary">Logout!</button>
-                                    </form>
-                                </li>
-                            </ul>
+<header class="topbar">
+    <a asp-area="" asp-controller="Home" asp-action="Index" class="logo">
+        <span class="logo-lg">Stoyan's Blog</span>
+    </a>
+    <nav class="navbar navbar-static-top">
+        <div class="navbar-custom-menu">
+            <ul class="nav navbar-nav">
+                <li class="dropdown user user-menu">
+                    <a href="#">
+                        <span class="hidden-xs">@this.User.Identity?.Name</span><i class="fas fa-angle-down"></i>
+                    </a>
+                    <ul class="user-sub-menu">
+                        <li>
+                            <form asp-controller="Auth" asp-action="LogOut">
+                                <button type="submit" class="btn btn-primary">Logout!</button>
+                            </form>
                         </li>
                     </ul>
-                </div>
-            </nav>
-        </header>
-        <aside class="main-sidebar">
-            <section class="sidebar">
-                <ul class="sidebar-menu">
-                    <li class="header">MAIN NAVIGATION</li>
-                    <li>
-                        <a asp-controller="Home" asp-action="Index">
-                            <i class="fas fa-home"></i> <span>Home</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a asp-controller="Post" asp-action="All">
-                            <i class="fas fa-thumbtack"></i> <span>Posts</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a asp-controller="User" asp-action="All">
-                            <i class="fas fa-users"></i> <span>Users</span>
-                        </a>
-                    </li>
-                    <li class="header">LABELS</li>
-                    <li><a href="#"><i class="far fa-circle text-danger"></i> <span>Important</span></a></li>
-                    <li><a href="#"><i class="far fa-circle text-warning"></i> <span>Warning</span></a></li>
-                    <li><a href="#"><i class="far fa-circle text-info"></i> <span>Information</span></a></li>
-                </ul>
-            </section>
-        </aside>
-        <main>
-            @RenderBody()
-        </main>
-        @await RenderSectionAsync("footer", false)
-    </div>
-    <script src="~/admin/js/adminpanel.js"></script>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header>
+<aside class="sidebar">
+    <section class="sidebar">
+        <ul class="sidebar-menu">
+            <li class="header">MAIN NAVIGATION</li>
+            <li>
+                <a asp-controller="Home" asp-action="Index">
+                    <i class="fas fa-home"></i> <span>Home</span>
+                </a>
+            </li>
+            <li>
+                <a asp-controller="Post" asp-action="All">
+                    <i class="fas fa-thumbtack"></i> <span>Posts</span>
+                </a>
+            </li>
+            <li>
+                <a asp-controller="User" asp-action="All">
+                    <i class="fas fa-users"></i> <span>Users</span>
+                </a>
+            </li>
+            <li class="header">LABELS</li>
+            <li>
+                <a href="#">
+                    <i class="far fa-circle text-danger"></i> <span>Important</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="far fa-circle text-warning"></i> <span>Warning</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="far fa-circle text-info"></i> <span>Information</span>
+                </a>
+            </li>
+        </ul>
+    </section>
+</aside>
+<main>
+    @RenderBody()
+</main>
+@await RenderSectionAsync("footer", false)
+<script src="~/admin/js/adminpanel.js"></script>
 </body>
 </html>
