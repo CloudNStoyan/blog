@@ -1,33 +1,65 @@
-﻿@model PostModel[]
+﻿@model Blog.Web.Areas.Admin.Posts.FilteredPostsModel
 
 @{
     ViewData["Title"] = "Home";
 }
 
 @section styles {
-    <link href="~/sass_compiled/home.css" rel="stylesheet" />
+    <link href="~/sass_compiled/home.css" rel="stylesheet"/>
 }
+
 <main>
-    @foreach (var post in Model)
-    {
-        <article>
-            <header class="title">
-                <h2>
-                    <a asp-controller="Home" asp-action="Post" asp-route-id="@post.Id">@post.Title</a>
-                </h2>
-                <div class="tags">
-                    @foreach (var tag in post.Tags)
-                    {
-                        <a class="tag" href="#">@tag.Name</a>
+    <div class="posts">
+        @if (Model?.Posts != null)
+        {
+            foreach (var post in Model.Posts)
+            {
+                <article>
+                    <header class="title">
+                        <h2>
+                            <a asp-controller="Home" asp-action="Post" asp-route-id="@post.Id">@post.Title</a>
+                        </h2>
+                        <div class="tags">
+                            @foreach (var tag in post.Tags)
+                            {
+                                <a class="tag" href="#">@tag.Name</a>
+                            }
+                        </div>
+                    </header>
+                    @{
+                        const int excerpLength = 40;
+                        string excerp = post.Content.Length > excerpLength ? $"{post.Content[..excerpLength]}.." : post.Content;
                     }
-                </div>
-            </header>
-            @{
-                const int excerpLength = 40;
-                string excerp = post.Content.Length > excerpLength ? $"{post.Content[..excerpLength]}.." : post.Content;
+                    <p class="excerp">@excerp</p>
+                </article>
             }
-            <p class="excerp">@excerp</p>
-            
-        </article>
-    }
+        }
+    </div>
+
+    <div class="pagination">
+        @if (Model != null)
+        {
+            int previousOffset = Model.Filter.Offset - Model.Filter.Limit;
+
+            if (previousOffset >= 0)
+            {
+                <a asp-controller="Home" asp-action="Index" asp-route-offset="@(previousOffset > 0 ? previousOffset : null)" class="previous">Previous</a>
+            }
+            else
+            {
+                <a href="#" class="previous disabled">Previous</a>
+            }
+
+            int nextOffset = Model.Filter.Offset + Model.Filter.Limit;
+
+            if (nextOffset < Model.PostsCount)
+            {
+                <a asp-controller="Home" asp-action="Index" asp-route-offset="@nextOffset" class="next">Next</a>
+            }
+            else
+            {
+                <a href="#" class="next disabled">Next</a>
+            }
+        }
+    </div>
 </main>

@@ -16,20 +16,19 @@ public class HomeController : Controller
         this.SessionService = sessionService;
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(int offset)
     {
         var filter = new PostFilter
         {
             Limit = 10,
+            Offset = offset,
             OrderBy = PostFilterOrderBy.UpdatedOn,
             Sort = PostFilterSort.Descending
         };
 
         var filteredPostsModel = await this.PostService.GetPosts(filter);
 
-        var posts = filteredPostsModel.Posts;
-
-        return this.View(posts);
+        return this.View(filteredPostsModel);
     }
 
     public async Task<IActionResult> Post(int id)

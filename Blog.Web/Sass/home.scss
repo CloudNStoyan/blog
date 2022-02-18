@@ -13,6 +13,9 @@ article {
         border-bottom: 2px solid lightgray;
         padding-bottom: 5px;
         padding-left: 10px;
+        color: gray;
+        margin: 0;
+        font-size: 0.6em;
     }
 }
 
@@ -59,8 +62,17 @@ article {
     }
 }
 
-.excerp {
-    color: gray;
-    margin: 0;
-    font-size: 0.6em;
+.pagination {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+
+    a {
+        padding: 0 10px;
+
+        color: $color-orange;
+        font-weight: 600;
+        text-decoration: none;
+        border-top: 1px solid;
+    }
 }
