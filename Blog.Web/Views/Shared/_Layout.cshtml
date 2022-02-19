@@ -11,11 +11,17 @@
 </head>
 <body>
 <header class="navigation">
-    <div class="container">
+    <div class="container search">
         <a href="#" class="menu">
             <i class="fas fa-bars"></i>
         </a>
         <a asp-controller="Home" asp-action="Index" class="homepage">Stoyan's Blog</a>
+        <form class="search-wrapper">
+            <a href="#" class="close-search"><i class="fa-solid fa-xmark"></i></a>
+            <input type="text" name="search" placeholder="Search Stoyan's Blog"/>
+            <button type="submit" class="search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+        </form>
+        <a href="#" class="open-search"><i class="fa-solid fa-magnifying-glass"></i></a>
         <nav>
             <ul>
                 <li>

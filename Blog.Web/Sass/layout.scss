@@ -3,6 +3,7 @@
 );
 
 $color-cyan: #02a0a9;
+$color-darkcyan: #017379;
 
 html, body {
     min-height: 100vh;
@@ -42,6 +43,47 @@ main {
     justify-content: center;
     z-index: 100;
 
+    .container {
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: space-between;
+    }
+
+    .container.search {
+        .homepage, .menu, .open-search {
+            display: none;
+        }
+
+        .close-search {
+            display: block;
+        }
+
+        .search-wrapper {
+            button {
+                display: none;
+            }
+
+            @keyframes expand {
+                0% {
+                    width: 50px;
+                }
+
+                100% {
+                    width: 100%;
+                }
+            }
+
+            display: block;
+            width: 100%;
+            margin: 0 auto;
+
+            animation-name: expand;
+            animation-duration: 0.25s;
+            animation-iteration-count: 1;
+            animation-timing-function: ease-out;
+        }
+    }
+
     a {
         color: $color-cyan;
         text-decoration: none;
@@ -54,7 +96,53 @@ main {
         transition: color 0.25s linear;
 
         &:hover {
-            color: #017379;
+            color: $color-darkcyan;
+        }
+    }
+
+    .search-wrapper {
+        display: none;
+        position: relative;
+        opacity: 0.55;
+        width: 270px;
+        align-items: center;
+
+        .close-search {
+            display: none;
+            position: absolute;
+            right: 10px;
+        }
+
+        input {
+            height: 30px;
+            width: 100%;
+            padding: 0;
+            padding-left: 10px;
+            font-size: 1em;
+            border: 2px solid $color-cyan;
+            border-radius: 5px;
+
+            &:focus {
+                outline: 0;
+                border: 2px solid $color-darkcyan;
+
+                + button {
+                    color: $color-darkcyan;
+                }
+            }
+        }
+
+        button {
+            background-color: transparent;
+            border: 0;
+            padding: 0;
+            color: $color-cyan;
+            position: absolute;
+            right: 0;
+            margin: 0;
+            height: 100%;
+            margin-right: 10px;
+            font-size: 1em;
         }
     }
 
@@ -189,10 +277,15 @@ footer {
             width: 100%;
             max-width: 1200px;
             margin: 0 auto;
-            display: flex;
-            flex-flow: row nowrap;
-            justify-content: space-between;
             align-items: center;
+        }
+
+        .open-search {
+            display: none;
+        }
+
+        .search-wrapper {
+            display: block;
         }
 
         .menu-overlay {
