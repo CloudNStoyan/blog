@@ -3,6 +3,8 @@ main {
 }
 
 $color-orange: #f58225;
+$color-lightorange: #f79e55;
+$color-darkorange: #ea6f0b;
 
 article {
     border-left: 5px solid $color-orange;
@@ -65,14 +67,43 @@ article {
 .pagination {
     display: flex;
     flex-flow: row nowrap;
-    justify-content: center;
+    margin: 0 auto;
+    width: fit-content;
+    box-shadow: 0 3px 4px 0 rgb(0 0 0 / 20%);
+    border-radius: 5px;
 
     a {
-        padding: 0 10px;
-
-        color: $color-orange;
+        padding: 5px 10px;
+        color: white;
         font-weight: 600;
         text-decoration: none;
-        border-top: 1px solid;
+        background-color: $color-orange;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 120px;
+
+        &.disabled {
+            opacity: 0.5;
+            border-left: none !important;
+            border-right: none!important;
+        }
+
+        &:hover:not(.disabled) {
+            background-color: $color-darkorange;
+        }
+
+        &:first-child {
+            border-right: 1px solid $color-lightorange;
+            border-top-left-radius: 5px;
+            border-bottom-left-radius: 5px;
+        }
+
+        &:last-child {
+            border-left: 1px solid $color-lightorange;
+            border-top-right-radius: 5px;
+            border-bottom-right-radius: 5px;
+        }
     }
 }

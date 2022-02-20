@@ -76,7 +76,6 @@ main {
             display: block;
             width: 100%;
             margin: 0 auto;
-
             animation-name: expand;
             animation-duration: 0.25s;
             animation-iteration-count: 1;
@@ -106,6 +105,7 @@ main {
         opacity: 0.55;
         width: 270px;
         align-items: center;
+        transition: width 0.25s ease-in-out;
 
         .close-search {
             display: none;
@@ -278,14 +278,30 @@ footer {
             max-width: 1200px;
             margin: 0 auto;
             align-items: center;
+            display: block;
         }
 
         .open-search {
             display: none;
         }
 
+        .homepage {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            float: left;
+        }
+
         .search-wrapper {
-            display: block;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            float: left;
+            margin: 0 50px;
+
+            &:focus-within {
+                width: 500px;
+            }
         }
 
         .menu-overlay {
@@ -293,6 +309,7 @@ footer {
         }
 
         nav {
+            float: right;
             transform: translateX(0) !important;
             position: static;
             background-color: transparent;
@@ -317,7 +334,6 @@ footer {
 
             li {
                 position: relative;
-                margin: 0 5px;
                 display: inline-block;
 
                 &:not(:last-child)::after {
