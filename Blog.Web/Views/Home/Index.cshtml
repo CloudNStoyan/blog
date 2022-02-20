@@ -10,6 +10,10 @@
 
 <main>
     <div class="posts">
+        @if (!string.IsNullOrWhiteSpace(Model?.Filter?.Search)) {
+            <div>Results for "@Model.Filter.Search"</div>
+        }
+
         @if (Model?.Posts != null)
         {
             foreach (var post in Model.Posts)
@@ -34,16 +38,23 @@
                 </article>
             }
         }
+
+        @if (Model?.Posts?.Length == 0)
+        {
+            <div>No results found</div>
+        }
     </div>
 
     <div class="pagination">
-        @if (Model != null)
+        @if (Model != null && Model.PostsCount > Model.Filter.Limit)
         {
             int previousOffset = Model.Filter.Offset - Model.Filter.Limit;
 
             if (previousOffset >= 0)
             {
-                <a asp-controller="Home" asp-action="Index" asp-route-offset="@(previousOffset > 0 ? previousOffset : null)" class="previous">Previous</a>
+                <a asp-controller="Home" asp-action="Index" 
+                   asp-route-offset="@(previousOffset > 0 ? previousOffset : null)" asp-route-search="@Model.Filter.Search"
+                   class="previous">Previous</a>
             }
             else
             {
@@ -54,7 +65,9 @@
 
             if (nextOffset < Model.PostsCount)
             {
-                <a asp-controller="Home" asp-action="Index" asp-route-offset="@nextOffset" class="next">Next</a>
+                <a asp-controller="Home" asp-action="Index" 
+                   asp-route-offset="@nextOffset" asp-route-search="@Model.Filter.Search" 
+                   class="next">Next</a>
             }
             else
             {

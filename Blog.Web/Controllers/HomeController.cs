@@ -16,14 +16,15 @@ public class HomeController : Controller
         this.SessionService = sessionService;
     }
 
-    public async Task<IActionResult> Index(int offset)
+    public async Task<IActionResult> Index(string search, int offset)
     {
         var filter = new PostFilter
         {
             Limit = 10,
             Offset = offset,
             OrderBy = PostFilterOrderBy.UpdatedOn,
-            Sort = PostFilterSort.Descending
+            Sort = PostFilterSort.Descending,
+            Search = search
         };
 
         var filteredPostsModel = await this.PostService.GetPosts(filter);
