@@ -3,6 +3,8 @@ using System.Reflection;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Blog.Web.DAL;
+using Markdig;
+using Markdig.Extensions.AutoIdentifiers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
@@ -37,9 +39,11 @@ namespace Blog.Web.Infrastructure
 
         protected override void Load(ContainerBuilder builder)
         {
-            builder.Register((ctx, p) => new NpgsqlConnection(this.Configuration.GetValue<string>("DatabaseConnectionString"))).InstancePerLifetimeScope();
+            builder.Register((_, _) => new NpgsqlConnection(this.Configuration.GetValue<string>("DatabaseConnectionString"))).InstancePerLifetimeScope();
 
             builder.RegisterType<Database>().InstancePerLifetimeScope();
+
+            builder.Register((_, _) => new MarkdownPipelineBuilder().UseAutoIdentifiers(AutoIdentifierOptions.GitHub).Build());
 
             var serviceTypes = Assembly.GetExecutingAssembly()
                 .DefinedTypes.Where(x => x.IsClass && x.Name.EndsWith("Service")).ToList();

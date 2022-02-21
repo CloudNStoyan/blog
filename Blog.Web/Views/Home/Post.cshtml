@@ -1,14 +1,31 @@
 ﻿@using Markdig
 @model PostModel
-
+@inject MarkdownPipeline markdownPipeline
 @{
     ViewData["Title"] = @Model!.Title;
 
-    string contentHtml = Markdown.ToHtml(Model.Content);
+    string contentHtml = Markdown.ToHtml(Model.Content, markdownPipeline);
 }
 
 @section styles {
     <link href="~/sass_compiled/post.css" rel="stylesheet" />
+}
+
+@section scripts {
+    <script>
+        const content = document.querySelector('.content');
+        const headings = content.querySelectorAll('h1,h2,h3,h4,h5,h6');
+
+        const addAnchor = (el) => {
+            const anchor = document.createElement('a');
+            anchor.href = `#${el.id}`;
+            anchor.innerHTML = '<i class="fa-solid fa-link"></i>';
+            anchor.className = 'heading-anchor';
+            el.insertBefore(anchor, el.firstChild);
+        }
+
+        headings.forEach(addAnchor);
+    </script>
 }
 
 <main>
