@@ -37,7 +37,7 @@ namespace Blog.Web.Areas.Admin.Posts
 
     public enum PostFilterSort
     {
-        Ascending,
-        Descending
+        Descending,
+        Ascending
     }
 }

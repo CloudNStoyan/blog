@@ -5,6 +5,11 @@
 $color-cyan: #02a0a9;
 $color-darkcyan: #017379;
 
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 50px;
+}
+
 html, body {
     min-height: 100vh;
     margin: 0;
