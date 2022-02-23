@@ -26,7 +26,8 @@
                         <div class="tags">
                             @foreach (var tag in post.Tags)
                             {
-                                <a class="tag" href="#">@tag.Name</a>
+                                <a asp-area="" asp-controller="Home" asp-action="Index" asp-route-search="@tag.Name"
+                                   class="tag">@tag.Name</a>
                             }
                         </div>
                     </header>
