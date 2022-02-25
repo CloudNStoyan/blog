@@ -1,4 +1,5 @@
 ﻿@using Markdig
+@using Blog.Web.Areas.Admin.Auth
 @model PostModel
 @inject MarkdownPipeline markdownPipeline
 @{
@@ -7,11 +8,16 @@
     string contentHtml = Markdown.ToHtml(Model.Content, markdownPipeline);
 }
 
+@inject SessionService sessionService;
+
 @section styles {
     <link href="~/sass_compiled/post.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/highlight/styles/github.min.css">
 }
 
 @section scripts {
+    <script src="/highlight/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
     <script>
         const content = document.querySelector('.content');
         const headings = content.querySelectorAll('h1,h2,h3,h4,h5,h6');
@@ -48,6 +54,13 @@
                     </div>
                 }
             </div>
+            @if (sessionService.Session.IsLoggedIn)
+            {
+                <div class="quick-access">
+                    <a asp-area="Admin" asp-controller="Post" asp-action="Create">Create</a>
+                    <a asp-area="Admin" asp-controller="Post" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+                </div>
+            }
         </header>
         <div class="content">
             @Html.Raw(contentHtml)

@@ -9,18 +9,22 @@
     <Compile Remove="css\**" />
     <Compile Remove="wwwroot\css\fontawesome\**" />
     <Compile Remove="wwwroot\fontawesome\**" />
+    <Compile Remove="wwwroot\highlight\**" />
     <Compile Remove="wwwroot\sass_compiled\**" />
     <Content Remove="css\**" />
     <Content Remove="wwwroot\css\fontawesome\**" />
     <Content Remove="wwwroot\fontawesome\**" />
+    <Content Remove="wwwroot\highlight\**" />
     <Content Remove="wwwroot\sass_compiled\**" />
     <EmbeddedResource Remove="css\**" />
     <EmbeddedResource Remove="wwwroot\css\fontawesome\**" />
     <EmbeddedResource Remove="wwwroot\fontawesome\**" />
+    <EmbeddedResource Remove="wwwroot\highlight\**" />
     <EmbeddedResource Remove="wwwroot\sass_compiled\**" />
     <None Remove="css\**" />
     <None Remove="wwwroot\css\fontawesome\**" />
     <None Remove="wwwroot\fontawesome\**" />
+    <None Remove="wwwroot\highlight\**" />
     <None Remove="wwwroot\sass_compiled\**" />
   </ItemGroup>
 
