@@ -1,4 +1,5 @@
-﻿@model Blog.Web.Areas.Admin.Posts.FilteredPostsModel
+﻿@using Markdig
+@model Blog.Web.Areas.Admin.Posts.FilteredPostsModel
 
 @{
     ViewData["Title"] = "Home";
@@ -35,7 +36,7 @@
                         const int excerpLength = 40;
                         string excerp = post.Content.Length > excerpLength ? $"{post.Content[..excerpLength]}.." : post.Content;
                     }
-                    <p class="excerp">@excerp</p>
+                    <p class="excerp">@Markdown.ToPlainText(excerp)</p>
                 </article>
             }
         }
