@@ -37,7 +37,7 @@
             <input class="form-control" type="hidden" asp-for="Tags" value="@Model?.Tags" />
             <div class="tags">
                 @{
-                    string[] tags = Model?.Tags.Split(',') ?? Array.Empty<string>();
+                    string[] tags = Model?.Tags?.Split(',') ?? Array.Empty<string>();
 
                     foreach (string tag in tags)
                     {

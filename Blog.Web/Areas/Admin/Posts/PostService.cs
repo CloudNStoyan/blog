@@ -221,6 +221,11 @@ namespace Blog.Web.Areas.Admin.Posts
             {
                 string tag = tags[i].Trim();
 
+                if (string.IsNullOrWhiteSpace(tag))
+                {
+                    continue;
+                }
+
                 var tagPoco = await this.Database.QueryOne<TagPoco>("SELECT * FROM tags t WHERE t.tag_name = @tagName;",
                     new NpgsqlParameter("tagName", tag));
 

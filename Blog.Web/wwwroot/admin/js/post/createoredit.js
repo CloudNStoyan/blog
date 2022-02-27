@@ -75,3 +75,23 @@ tagInput.addEventListener('keydown', (e) => {
 
     tagBackendInput.value = tags.join(',');
 });
+
+const mainForm = document.querySelector('.main-form');
+const addLeftoverTag = () => {
+    const tagName = tagInput.value.trim();
+
+    if (!tagName || tagName.length === 0 || tags.includes(tagName)) {
+        return;
+    }
+
+    tags.push(tagName);
+
+    tagBackendInput.value = tags.join(',');
+}
+mainForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    addLeftoverTag();
+
+    mainForm.submit();
+});
