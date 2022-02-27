@@ -41,7 +41,7 @@
             <div class="tags">
                 @foreach (var tag in Model.Tags)
                 {
-                    <a asp-area="" asp-controller="Home" asp-action="Index" asp-route-search="@tag.Name"
+                    <a asp-area="" asp-controller="Home" asp-action="Index" asp-route-tagId="@tag.TagId"
                         class="tag">@tag.Name</a>
                 }
             </div>

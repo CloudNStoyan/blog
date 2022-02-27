@@ -16,7 +16,7 @@ public class HomeController : Controller
         this.SessionService = sessionService;
     }
 
-    public async Task<IActionResult> Index(string search, int offset)
+    public async Task<IActionResult> Index(string search, int offset, int? tagId)
     {
         var filter = new PostFilter
         {
@@ -24,7 +24,8 @@ public class HomeController : Controller
             Offset = offset,
             OrderBy = PostFilterOrderBy.UpdatedOn,
             Sort = PostFilterSort.Descending,
-            Search = search
+            Search = search,
+            TagId = tagId
         };
 
         var filteredPostsModel = await this.PostService.GetPosts(filter);
