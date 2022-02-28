@@ -21,7 +21,7 @@ article {
                 background-color: white;
                 border: 1px solid lightgray;
                 border-radius: 5px;
-                padding: 3px;
+                padding: 5px;
                 font-size: 0.6em;
                 color: gray;
                 width: fit-content;
@@ -34,12 +34,39 @@ article {
     }
 
     .content {
-        padding: 15px 40px;
+        padding: 10px;
         background-color: white;
         margin: 20px;
         min-height: 400px;
         color: #333;
         overflow-wrap: break-word;
+
+        >*:first-child {
+            padding-top: 0;
+            margin-top: 0;
+        }
+
+        pre {
+            position: relative;
+
+            code {
+                background-color: #fffcf4;
+                border: 2px solid $color-orange;
+            }
+
+            .copy-btn {
+                position: absolute;
+                bottom: 10px;
+                right: 10px;
+                color: gray;
+                text-decoration: none;
+                opacity: 0.5;
+
+                &:hover {
+                    opacity: 1;
+                }
+            }
+        }
 
         h1, h2, h3, h4, h5, h6 {
             color: $color-orange;
@@ -73,13 +100,6 @@ article {
                     font-size: 12px;
                 }
             }
-
-            code {
-                background-color: #f7f6f3;
-                color: $color-cyan;
-                padding: 5px 10px;
-                font-weight: 600;
-            }
         }
     }
 
@@ -105,7 +125,7 @@ article {
             background-color: white;
             border: 1px solid lightgray;
             border-radius: 5px;
-            padding: 3px;
+            padding: 5px;
             font-size: 0.6em;
             color: gray;
         }
@@ -139,10 +159,14 @@ article {
         opacity: 0;
     }
 
-    h1,h2,h3,h4,h5,h6 {
-        &:hover {
-            .heading-anchor {
-                opacity: 1;
+    article .content {
+        padding: 20px;
+
+        h1, h2, h3, h4, h5, h6 {
+            &:hover {
+                .heading-anchor {
+                    opacity: 1;
+                }
             }
         }
     }

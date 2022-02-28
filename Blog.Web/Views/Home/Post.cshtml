@@ -31,6 +31,23 @@
         }
 
         headings.forEach(addAnchor);
+
+        const codeWrappers = content.querySelectorAll('code');
+
+        const addCopyToClipboard = (el) => {
+            const copyBtn = document.createElement('a');
+            copyBtn.href = '#';
+            copyBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+
+                navigator.clipboard.writeText(el.innerText.trim());
+            });
+            copyBtn.className = 'copy-btn';
+            copyBtn.innerText = 'Copy';
+            el.parentElement.insertBefore(copyBtn, el);
+        }
+
+        codeWrappers.forEach(addCopyToClipboard);
     </script>
 }
 
