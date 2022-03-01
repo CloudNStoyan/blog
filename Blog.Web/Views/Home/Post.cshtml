@@ -41,6 +41,7 @@
                 e.preventDefault();
 
                 navigator.clipboard.writeText(el.innerText.trim());
+                createToast('Copied to clipboard.');
             });
             copyBtn.className = 'copy-btn';
             copyBtn.innerText = 'Copy';
