@@ -75,7 +75,6 @@ article {
 
         .heading-anchor {
             color: $color-orange;
-            margin-left: -30px;
             margin-right: 10px;
             text-decoration: none;
 
@@ -157,10 +156,11 @@ article {
 @media (min-width: 1400px) {
     .heading-anchor {
         opacity: 0;
+        margin-left: -30px;
     }
 
     article .content {
-        padding: 20px;
+        padding: 20px 40px;
 
         h1, h2, h3, h4, h5, h6 {
             &:hover {
