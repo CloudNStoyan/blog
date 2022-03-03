@@ -14,34 +14,37 @@ article {
     .excerp {
         border-bottom: 2px solid lightgray;
         padding-bottom: 5px;
-        padding-left: 10px;
+        padding-left: 5px;
         color: gray;
         margin: 0;
         font-size: 0.6em;
+        padding-right: 5px;
     }
 }
 
 .title {
-    margin-left: 10px;
-
-    a {
-        color: $color-orange;
-        font-size: 0.7em;
-        text-decoration: none;
-        white-space: nowrap;
-        overflow: hidden;
-        display: block;
-        text-overflow: ellipsis;
-        word-spacing: -2px;
-    }
-
     h2 {
         margin: 0;
+        margin-left: 5px;
+
+        a {
+            color: $color-orange;
+            font-size: 0.7em;
+            text-decoration: none;
+            white-space: nowrap;
+            overflow: hidden;
+            display: block;
+            text-overflow: ellipsis;
+            word-spacing: -2px;
+            margin-right: 5px;
+        }
     }
 
     .tags {
         display: flex;
         flex-flow: row wrap;
+        margin-right: 5px;
+        margin-bottom: 5px;
 
         .tag {
             &::before {
@@ -50,10 +53,9 @@ article {
                 margin-right: 3px;
             }
 
-            &:not(:first-child) {
-                margin-left: 5px;
-            }
-
+            text-decoration: none;
+            margin-left: 5px;
+            margin-top: 5px;
             background-color: #f8f8f8;
             border: 1px solid lightgray;
             border-radius: 5px;
