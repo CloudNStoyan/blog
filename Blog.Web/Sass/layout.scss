@@ -295,6 +295,9 @@ footer {
     bottom: 20px;
     z-index: 100;
     width: 100%;
+    display: flex;
+    flex-flow: column-reverse wrap;
+    pointer-events: none;
 
     .toast {
         width: fit-content;
