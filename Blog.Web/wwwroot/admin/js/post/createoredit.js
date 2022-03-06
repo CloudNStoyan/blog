@@ -76,7 +76,7 @@ tagInput.addEventListener('keydown', (e) => {
     tagBackendInput.value = tags.join(',');
 });
 
-const mainForm = document.querySelector('.main-form');
+const mainForm = document.querySelector('.form-wrapper > form');
 const addLeftoverTag = () => {
     const tagName = tagInput.value.trim();
 

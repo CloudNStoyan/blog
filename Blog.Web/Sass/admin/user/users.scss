@@ -1,0 +1,38 @@
+﻿.list-wrapper {
+    margin: 20px;
+    background-color: #29373d;
+    padding: 20px;
+    border: 1px solid white;
+}
+
+.users-table {
+    th,
+    td {
+        text-align: center;
+        vertical-align: middle !important;
+    }
+
+    th:first-child,
+    td:first-child {
+        text-align: left;
+        padding-left: 20px;
+        width: 50px;
+    }
+
+    .actions-container {
+        width: 300px;
+    }
+}
+
+.actions {
+    margin-bottom: 20px;
+    float: right;
+}
+
+.create-user {
+    flex: 0 0 7%;
+}
+
+.create-user-btn i {
+    margin-left: 5px;
+}
