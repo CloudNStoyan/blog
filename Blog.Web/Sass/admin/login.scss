@@ -1,0 +1,147 @@
+﻿@import url( 'https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap' );
+
+$main-color: #f58225;
+$main-color-light: rgba(245, 130, 37, .25);
+$main-color-dark: #f4740b;
+
+html, body {
+    min-height: 100vh;
+    margin: 0;
+    font-family: 'Roboto Mono', monospace;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    background-color: $main-color;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.wrapper {
+    border: 0;
+    border-radius: 20px;
+    background-color: white;
+    padding: 20px;
+    margin: 20px;
+    width: 100%;
+
+
+    h1 {
+        text-align: center;
+        text-transform: capitalize;
+        font-size: 1rem;
+        font-weight: 400;
+    }
+
+    .field {
+        position: relative;
+        margin: 10px 0;
+
+        input {
+            border: 1px solid lightgray;
+            border-radius: 10px;
+            width: 100%;
+            height: auto;
+            padding: .75rem 1.5rem;
+            display: block;
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.5;
+            color: #495057;
+            background-color: #fff;
+            border: 1px solid #ced4da;
+            transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+
+            &:focus {
+                color: #495057;
+                background-color: white;
+                border-color: $main-color-light;
+                outline: 0;
+                box-shadow: 0 0 0 0.2rem $main-color-light;
+            }
+
+            &::-webkit-input-placeholder {
+                color: #fff;
+            }
+
+            &:not(:placeholder-shown) ~ label {
+                padding-top: calc(.75rem / 3);
+                padding-bottom: calc(.75rem / 3);
+                font-size: 12px;
+                color: #777;
+            }
+        }
+
+        label {
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: block;
+            width: 100%;
+            margin-bottom: 0;
+            line-height: 1;
+            color: #495057;
+            border: 1px solid transparent;
+            border-radius: .25rem;
+            transition: all .1s ease-in-out;
+            padding-left: 1.5rem;
+            padding-top: 1rem;
+            cursor: text;
+        }
+    }
+
+    .remember-me {
+        margin-bottom: 15px;
+        display: flex;
+        flex-flow: row wrap;
+        align-content: center;
+
+        input {
+            accent-color: $main-color;
+            width: 20px;
+            height: 20px;
+        }
+
+        label {
+            cursor: pointer;
+            padding: 0 10px;
+        }
+    }
+
+    .login-btn {
+        width: 100%;
+        border: 0;
+        border-radius: 10px;
+        background-color: $main-color;
+        color: white;
+        padding: 10px 20px;
+        cursor: pointer;
+        transition: background-color .15s linear;
+
+        &:hover {
+            background-color: $main-color-dark;
+        }
+    }
+}
+
+@media (min-width: 1367px) {
+    .wrapper {
+        width: 600px;
+    }
+
+    h1 {
+        font-size: 2em!important;
+    }
+
+    .login-btn {
+        font-size: 1em;
+    }
+}

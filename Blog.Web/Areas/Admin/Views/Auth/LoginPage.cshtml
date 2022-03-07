@@ -9,32 +9,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login - Blog.Web</title>
     <link rel="icon" href="/favicon.ico" type="image/x-icon" />
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" href="~/admin/css/login.css" />
+    <link rel="stylesheet" href="~/sass_compiled/admin/login.css" />
 </head>
 <body>
-    <main>
-        <div class="content">
-            <form asp-area="Admin" asp-controller="Auth" asp-action="Login" method="post">
-                <div class="wrapper">
-                    <h5 class="custom-title text-center">Sign In</h5>
-                    <div class="form-group">
-                        <input class="form-control form-control-lg custom-input" placeholder="Username" id="inputUsername" type="text" name="username" />
-                        <label for="inputUsername" class="form-labels">Username</label>
-                    </div>
-                    <div class="form-group">
-                        <input class="form-control form-control-lg custom-input" placeholder="Password" id="inputPassword" type="password" name="password" />
-                        <label for="inputPassword" class="form-labels">Password</label>
-                    </div>
-                    <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" id="customCheck1" name="RememberMe" value="true">
-                        <label class="custom-control-label" for="customCheck1">Rembember me</label>
-                    </div>
-                    <button type="submit" class="btn btn-lg btn-primary btn-block text-uppercase">Sign in</button>
-                </div>
-            </form>
+<div class="wrapper">
+    <form asp-area="Admin" asp-controller="Auth" asp-action="Login" method="post">
+        <div class="inner-wrapper">
+            <h1>Sign In</h1>
+            <div class="field">
+                <input placeholder="Username" id="username" type="text" name="username" />
+                <label for="username">Username</label>
+            </div>
+            <div class="field">
+                <input placeholder="Password" id="password" type="password" name="password" />
+                <label for="password">Password</label>
+            </div>
+            <div class="remember-me">
+                <input type="checkbox" id="remember-me" name="RememberMe" value="true">
+                <label for="remember-me">Rembember me</label>
+            </div>
+            <button type="submit" class="login-btn">Sign in</button>
         </div>
-    </main>
+    </form>
+</div>
 </body>
 </html>
