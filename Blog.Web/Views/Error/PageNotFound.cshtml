@@ -1,22 +1,17 @@
-﻿
-@{
-    Layout = null;
+﻿@{
+    ViewData["title"] = "Not found";
 }
 
-<!DOCTYPE html>
+@section styles {
+    <link rel="stylesheet" href="/sass_compiled/notfound.css">
+}
 
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Not Found 404</title>
-    <link rel="stylesheet" href="~/css/error.css">
-    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Capriola">
-</head>
-<body>
+<main>
     <div class="wrapper">
-        <h1>404</h1>
-        <p>Sorry - Page not Found!</p>
-        <a asp-controller="Home" asp-action="Index">Back to Home</a>
+        <h1 class="error">404</h1>
+        <div class="message">
+            We can't seem to find the page you're looking for.
+        </div>
+        <a asp-area="" asp-controller="Home" asp-action="Index" class="action-btn"><i class="fa-solid fa-left-long"></i>Go to homepage</a>
     </div>
-</body>
-</html>
+</main>

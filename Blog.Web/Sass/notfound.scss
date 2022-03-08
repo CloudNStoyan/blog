@@ -1,0 +1,48 @@
+﻿$color-orange: #f58225;
+$color-cyan: #02a0a9;
+$color-darkercyan: #017379;
+
+main {
+	padding: 10px;
+}
+
+.wrapper {
+	color: $color-cyan;
+	padding: 20px;
+	margin: 0 auto;
+	max-width: 700px;
+	text-align: center;
+}
+
+.message {
+	font-size: 1.2rem;
+	margin-top: 10px;
+	background-color: white;
+	padding: 10px;
+	border: 0;
+	border-radius: 5px;
+}
+
+.error {
+	color: $color-orange;
+	text-align: center;
+	font-size: 3rem;
+	margin: 0;
+}
+
+.action-btn {
+	display: block;
+	text-decoration: none;
+	margin: 10px;
+	font-weight: 600;
+	color: $color-cyan;
+	text-align: left;
+
+	i {
+		margin-right: 10px;
+	}
+
+	&:hover {
+		color: $color-darkercyan;
+	}
+}
