@@ -11,10 +11,10 @@
 }
 
 @section footer {
-    <script src="/admin/js/post/posts.js"></script>
+    <script src="/admin/js/form-filter.js"></script>
 }
 
-<form asp-controller="Post" asp-action="All" method="get" class="posts-form">
+<form asp-controller="Post" asp-action="All" method="get" class="filter-form">
     <input type="hidden" asp-for="Filter.Offset" value="@Model?.Filter?.Offset"/>
     <input type="hidden" asp-for="Filter.Limit" value="@Model?.Filter?.Limit"/>
     <input type="hidden" asp-for="Filter.OrderBy" value="@Model?.Filter?.OrderBy"/>

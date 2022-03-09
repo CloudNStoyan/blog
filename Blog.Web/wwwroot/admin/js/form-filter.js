@@ -1,6 +1,6 @@
-// Order by
+﻿// Order by
 
-const filterForm = document.querySelector('.posts-form');
+const filterForm = document.querySelector('.filter-form');
 
 const orderByButtons = document.querySelectorAll('.order a');
 
@@ -62,7 +62,9 @@ const tagIsClicked = (tagEl) => {
     filterForm.submit();
 }
 
-tags.forEach(tag => tag.addEventListener('click', (e) => {
-    e.preventDefault();
-    tagIsClicked(tag);
-}));
+if (tags) {
+    tags.forEach(tag => tag.addEventListener('click', (e) => {
+        e.preventDefault();
+        tagIsClicked(tag);
+    }));
+}

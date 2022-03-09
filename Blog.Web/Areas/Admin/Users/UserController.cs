@@ -19,11 +19,11 @@ namespace Blog.Web.Areas.Admin.Users
             this.UserService = userService;
         }
 
-        public async Task<IActionResult> All()
+        public async Task<IActionResult> All(UserFilter filter)
         {
-            var users = await this.UserService.GetAllUsers();
+            var filteredUsers = await this.UserService.GetUsers(filter);
 
-            return this.View(users);
+            return this.View(filteredUsers);
         }
 
         [HttpGet]

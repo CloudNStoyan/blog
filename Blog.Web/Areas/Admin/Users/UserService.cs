@@ -1,9 +1,13 @@
-﻿using System.Security.Cryptography;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Blog.Web.Areas.Admin.Auth;
+using Blog.Web.Areas.Admin.Posts;
 using Blog.Web.DAL;
 using Npgsql;
+using NpgsqlTypes;
 
 namespace Blog.Web.Areas.Admin.Users
 {
@@ -26,6 +30,51 @@ namespace Blog.Web.Areas.Admin.Users
                 );
 
             return users.ToArray();
+        }
+
+        public async Task<FilteredUsersModel> GetUsers(UserFilter filter)
+        {
+            filter ??= new UserFilter();
+
+            string orderBy = UserFilter.UserFilterOrderByToSqlColumn(filter.OrderBy);
+
+            string sort = UserFilter.UserFilterSortToSql(filter.Sort);
+
+            string offsetSql = string.Empty;
+
+            var postgresParameters = new List<NpgsqlParameter>();
+
+            if (filter.Offset > 0)
+            {
+                offsetSql = "OFFSET @offset";
+                postgresParameters.Add(new NpgsqlParameter("offset", filter.Offset));
+            }
+
+            string limitSql = string.Empty;
+
+            if (filter.Limit > 1)
+            {
+                limitSql = "LIMIT @limit";
+                postgresParameters.Add(new NpgsqlParameter("limit", filter.Limit));
+            }
+
+            string sql =
+                $"SELECT * FROM users ORDER BY {orderBy} {sort} {offsetSql} {limitSql};";
+
+            var filteredUsers = await this.Database.Query<UserPoco>(sql, postgresParameters.ToArray());
+
+            // We clone the parameters because the original ones belong to the filtered query
+            int usersCount = await this.Database.Execute<int>(
+                $"SELECT COUNT(*)::int FROM users;",
+                postgresParameters.Select(x => x.Clone()).ToArray()
+            );
+
+            return new FilteredUsersModel
+            {
+                Users = filteredUsers.ToArray(),
+                Filter = filter,
+                UsersCount = usersCount
+            };
         }
 
         /// <summary>
