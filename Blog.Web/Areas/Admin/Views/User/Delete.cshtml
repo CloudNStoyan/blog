@@ -4,23 +4,15 @@
 }
 
 @section styles {
-    <link rel="stylesheet" href="~/admin/css/delete-form.css" />
+    <link rel="stylesheet" href="~/sass_compiled/admin/user/delete.css" />
 }
 
-<div class="inner-wrapper">
-    <form asp-area="Admin" asp-controller="User" asp-action="TakeDelete" asp-route-id="@Model!.UserId">
-        <div class="card">
-            <div class="card-header alert alert-danger">
-                <h2>Delete Alert</h2>
-                You are gonna delete user: @Model.Name
-            </div>
-            <div class="card-body">
-                <h5 class="card-title">Are you sure?</h5>
-                <a type="submit" class="btn btn-info" asp-controller="Post" asp-action="All">Cancel</a>
-                <button type="submit" class="btn btn-danger">Delete</button>
-            </div>
-        </div>
-    </form>
-</div>
+<form class="main-form" asp-area="Admin" asp-controller="User" asp-action="TakeDelete" asp-route-id="@Model!.UserId">
+    <h2>You are about to delete user:</h2>
+    <h1 class="username">@Model.Name</h1>
+    <h3>Are you sure?</h3>
+    <a type="submit" class="btn btn-primary" asp-controller="Post" asp-action="All">Cancel</a>
+    <button type="submit" class="btn btn-link btn-delete">Delete</button>
+</form>
 
 

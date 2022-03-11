@@ -1,0 +1,27 @@
+﻿$color-danger: #dc3545;
+
+.main-form {
+    background-color: white;
+    padding: 20px;
+    border: 2px solid #999;
+    margin: 0 auto;
+    margin-top: 20px;
+    width: 600px;
+    color: #333;
+    text-align: center;
+
+    .username {
+        color: $color-danger;
+    }
+
+    .btn-delete {
+        color: $color-danger;
+        transition: transform .15s linear;
+
+        &:hover {
+            color: red;
+            text-decoration: none;
+            transform: scale(1.1);
+        }
+    }
+}

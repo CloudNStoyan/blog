@@ -1,26 +1,16 @@
 ﻿@model PostModel
 @{
-    ViewData["Title"] = "DeletePostForm";
+    ViewData["Title"] = "Delete Post";
 }
 
 @section styles {
-    <link rel="stylesheet" href="~/admin/css/delete-form.css" />
+    <link rel="stylesheet" href="~/sass_compiled/admin/post/delete.css" />
 }
-<div class="inner-wrapper">
-    <form asp-controller="Post" asp-action="TakeDelete" asp-route-id="@Model.Id">
-        <div class="card">
-            <div class="card-header alert alert-danger">
-                <h2>Delete Alert</h2>
-                You are gonna delete post: @Model.Title
-            </div>
-            <div class="card-body">
-                <h5 class="card-title">Are you sure?</h5>
-                <p class="card-text">After deleting post it will be lost forever!</p>
-                <a type="submit" class="btn btn-info" asp-controller="Post" asp-action="All">Cancel</a>
-                <button type="submit" class="btn btn-danger">Delete</button>
-            </div>
-        </div>
-    </form>
-</div>
 
-
+<form class="main-form" asp-controller="Post" asp-action="TakeDelete" asp-route-id="@Model!.Id">
+    <h2>You are about to delete post:</h2>
+    <h1 class="title">@Model.Title</h1>
+    <h3>Are you sure?</h3>
+    <a type="submit" class="btn btn-primary" asp-controller="Post" asp-action="All">Cancel</a>
+    <button type="submit" class="btn btn-link btn-delete">Delete</button>
+</form>
