@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Blog.Web.Areas.Admin.Auth;
+using Blog.Web.Areas.Admin.Users;
 using Blog.Web.DAL;
 using Blog.Web.Models;
 using Npgsql;
@@ -17,16 +18,26 @@ namespace Blog.Web.Areas.Admin.Posts
         private Database Database { get; }
 
         private SessionService SessionService { get; }
+        private UserService UserService { get; }
 
-        public PostService(Database database, SessionService sessionService)
+        public PostService(Database database, SessionService sessionService, UserService userService)
         {
             this.Database = database;
             this.SessionService = sessionService;
+            this.UserService = userService;
         }
 
         private async Task<PostModel> ConvertPostPocoToPostModel(PostPoco postPoco)
         {
             var model = PostModel.FromPoco(postPoco);
+
+            var userPoco = await this.UserService.GetUserById(postPoco.UserId);
+
+            model.Author = new PostUserModel
+            {
+                UserId = userPoco.UserId,
+                Name = userPoco.Name
+            };
 
             var tagsPoco = await this.GetPostTags(postPoco.PostId);
 

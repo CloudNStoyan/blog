@@ -52,6 +52,7 @@
                 <a href="#" data-order-by="CreatedOn" data-sort="@Model.Filter?.Sort"
                    class="@(Model.Filter.OrderBy == PostFilterOrderBy.CreatedOn ? "active" : "")">Created On</a>
             </th>
+            <th>Author</th>
             <th>Action</th>
         </tr>
         </thead>
@@ -68,6 +69,7 @@
                 </td>
                 <td>@post.UpdatedOn</td>
                 <td>@post.CreatedOn</td>
+                <td>@post.Author.Name</td>
                 <td class="actions-container">
                     <a class="btn btn-info" asp-area="" asp-controller="Home" asp-action="Post" asp-route-id="@post.Id">View</a>
                     <a class="btn btn-warning" asp-controller="Post" asp-action="Edit" asp-route-id="@post.Id">Edit</a>
@@ -91,6 +93,7 @@
                 <a href="#" data-order-by="CreatedOn" data-sort="@Model.Filter?.Sort"
                    class="@(Model.Filter.OrderBy == PostFilterOrderBy.CreatedOn ? "active" : "")">Created On</a>
             </th>
+            <th>Author</th>
             <th>Action</th>
         </tr>
         </tfoot>
