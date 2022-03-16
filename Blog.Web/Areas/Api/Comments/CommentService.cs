@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
-using Blog.Web.Areas.Admin.Users;
 using Blog.Web.DAL;
 
-namespace Blog.Web.Areas.Admin.Posts
+namespace Blog.Web.Areas.Api.Comments
 {
+    // ReSharper disable once ClassNeverInstantiated.Global
     public class CommentService
     {
         private Database Database { get; }

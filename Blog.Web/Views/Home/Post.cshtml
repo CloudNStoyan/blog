@@ -50,6 +50,30 @@
 
         codeWrappers.forEach(addCopyToClipboard);
     </script>
+    <script>
+        const createCommentWrapper = document.querySelector('.comment-wrapper .create-comment');
+        const commentInput = createCommentWrapper.querySelector('textarea');
+        const commentBtn = createCommentWrapper.querySelector('button');
+
+        const createComment = (content) => {
+            const comment = {
+                content: content,
+                postId: @Model?.Id
+            };
+
+
+            fetch(`/api/comment/create?${new URLSearchParams(comment)}`,
+                {
+                    method: 'POST'
+                });
+        }
+
+        commentBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+
+            createComment(commentInput.value.trim());
+        });
+    </script>
 }
 
 <main>
@@ -84,7 +108,19 @@
             @Html.Raw(contentHtml)
         </div>
         <div class="comment-wrapper">
-            <form></form>
+            <div class="create-comment">
+                <textarea rows="4" placeholder="Add a comment..."></textarea>
+                <button>Comment</button>
+            </div>
+            <div class="comments">
+                @foreach (var comment in Model.Comments)
+                {
+                    <div class="comment">
+                        <div class="user">@comment.User.Name</div>
+                        <div>@comment.Content</div>
+                    </div>
+                }
+            </div>
         </div>
     </article>
 </main>

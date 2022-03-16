@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Blog.Web.Areas.Admin.Auth;
 using Blog.Web.Areas.Admin.Users;
+using Blog.Web.Areas.Api.Comments;
 using Blog.Web.DAL;
 using Blog.Web.Models;
 using Npgsql;
@@ -42,6 +43,8 @@ namespace Blog.Web.Areas.Admin.Posts
             var tagsPoco = await this.GetPostTags(postPoco.PostId);
 
             model.Tags = tagsPoco.Select(TagModel.FromPoco).ToArray();
+
+            model.Comments = await this.GetPostComments(postPoco.PostId);
 
             return model;
         }
@@ -193,6 +196,34 @@ namespace Blog.Web.Areas.Admin.Posts
                 new NpgsqlParameter("postId", id));
 
             return tags.ToArray();
+        }
+
+        private async Task<CommentModel> ConvertCommentPocoToCommentModel(CommentPoco commentPoco) =>
+            new()
+            {
+                Content = commentPoco.Content,
+                User = await this.UserService.GetUserById(commentPoco.UserId)
+            };
+
+        private async Task<CommentModel[]> ConvertCommentPocosToCommentModels(CommentPoco[] commentPocos)
+        {
+            var commentModels = new List<CommentModel>();
+
+            foreach (var commentPoco in commentPocos)
+            {
+                commentModels.Add(await this.ConvertCommentPocoToCommentModel(commentPoco));
+            }
+
+            return commentModels.ToArray();
+        }
+
+        private async Task<CommentModel[]> GetPostComments(int postId)
+        {
+            var commentPocos = await this.Database.Query<CommentPoco>(
+                "SELECT * FROM comments WHERE post_id = @postId;",
+                new NpgsqlParameter("postId", postId));
+
+            return await this.ConvertCommentPocosToCommentModels(commentPocos.ToArray());
         }
 
         /// <summary>
