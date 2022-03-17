@@ -40,9 +40,16 @@ namespace Blog.Web.Areas.Api.Comments
                 return this.BadRequest();
             }
 
-            await this.CommentService.CreateComment(content, session.UserAccount.UserId, post.Id);
+            int? commentId = await this.CommentService.CreateComment(content, session.UserAccount.UserId, post.Id);
 
-            return this.Ok();
+            var resposeCommentDto = new CommentDto
+            {
+                CommentId = commentId,
+                Content = content,
+                Username = session.UserAccount.Username
+            };
+
+            return this.Ok(resposeCommentDto);
         }
     }
 }

@@ -13,7 +13,7 @@ namespace Blog.Web.Areas.Api.Comments
             this.Database = database;
         }
 
-        public async Task CreateComment(string content, int userId, int postId)
+        public async Task<int?> CreateComment(string content, int userId, int postId)
         {
             var commentPoco = new CommentPoco
             {
@@ -22,7 +22,7 @@ namespace Blog.Web.Areas.Api.Comments
                 PostId = postId
             };
 
-            await this.Database.Insert(commentPoco);
+            return await this.Database.Insert(commentPoco);
         }
     }
 }

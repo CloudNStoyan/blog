@@ -37,12 +37,13 @@
         const addCopyToClipboard = (el) => {
             const copyBtn = document.createElement('a');
             copyBtn.href = '#';
-            copyBtn.addEventListener('click', (e) => {
-                e.preventDefault();
+            copyBtn.addEventListener('click',
+                (e) => {
+                    e.preventDefault();
 
-                navigator.clipboard.writeText(el.innerText.trim());
-                createToast('Copied to clipboard.');
-            });
+                    navigator.clipboard.writeText(el.innerText.trim());
+                    createToast('Copied to clipboard.');
+                });
             copyBtn.className = 'copy-btn';
             copyBtn.innerText = 'Copy';
             el.parentElement.insertBefore(copyBtn, el);
@@ -51,9 +52,32 @@
         codeWrappers.forEach(addCopyToClipboard);
     </script>
     <script>
-        const createCommentWrapper = document.querySelector('.comment-wrapper .create-comment');
+        const createCommentWrapper = document.querySelector('.create-comment');
+        const commentsWrapper = document.querySelector('.comments');
+
+        const addCommentToPage = (comment) => {
+            const commentElement = document.createElement('div');
+            commentElement.className = 'comment new';
+            commentElement.innerHTML =
+                `
+                    <div class="user">${comment["username"]}</div>
+                    <div>${comment["content"]}</div>
+                `;
+
+            commentsWrapper.insertBefore(commentElement, commentsWrapper.firstElementChild);
+        }
+
         const commentInput = createCommentWrapper.querySelector('textarea');
-        const commentBtn = createCommentWrapper.querySelector('button');
+
+        const cleanCreateCommentFields = () => {
+            commentInput.value = "";
+        }
+
+        const handleCommentResponse = (comment) => {
+            addCommentToPage(comment);
+            cleanCreateCommentFields();
+            createToast('Successfully submitted a comment.');
+        }
 
         const createComment = (content) => {
             const comment = {
@@ -63,16 +87,22 @@
 
 
             fetch(`/api/comment/create?${new URLSearchParams(comment)}`,
-                {
-                    method: 'POST'
-                });
+                    {
+                        method: 'POST'
+                    })
+                .then(response => response.json())
+                .then(handleCommentResponse)
+                .catch(error => console.log('error', error));
         }
 
-        commentBtn.addEventListener('click', (e) => {
-            e.preventDefault();
+        const commentBtn = createCommentWrapper.querySelector('button');
 
-            createComment(commentInput.value.trim());
-        });
+        commentBtn.addEventListener('click',
+            (e) => {
+                e.preventDefault();
+
+                createComment(commentInput.value.trim());
+            });
     </script>
 }
 
