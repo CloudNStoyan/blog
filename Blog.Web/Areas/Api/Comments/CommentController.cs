@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Blog.Web.Areas.Admin.Auth;
 using Blog.Web.Areas.Admin.Posts;
-using Blog.Web.Areas.Admin.Users;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Blog.Web.Areas.Api.Comments
@@ -9,22 +8,20 @@ namespace Blog.Web.Areas.Api.Comments
     [Area(AuthenticationAreas.Api)]
     public class CommentController : Controller
     {
-        private UserService UserService { get; }
         private SessionService SessionService { get; }
         private PostService PostService { get; }
         private CommentService CommentService { get; }
 
-        public CommentController(UserService userService, SessionService sessionService,
+        public CommentController(SessionService sessionService,
             PostService postService, CommentService commentService)
         {
-            this.UserService = userService;
             this.SessionService = sessionService;
             this.PostService = postService;
             this.CommentService = commentService;
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(string content, int postId)
+        public async Task<IActionResult> Create(string content, int postId, int? parentId)
         {
             var session = this.SessionService.Session;
 
@@ -40,7 +37,17 @@ namespace Blog.Web.Areas.Api.Comments
                 return this.BadRequest();
             }
 
-            int? commentId = await this.CommentService.CreateComment(content, session.UserAccount.UserId, post.Id);
+            if (parentId.HasValue)
+            {
+                var parentComment = await this.CommentService.GetCommentById(parentId.Value);
+
+                if (parentComment == null)
+                {
+                    return this.BadRequest();
+                }
+            }
+
+            int? commentId = await this.CommentService.CreateComment(content, session.UserAccount.UserId, post.Id, parentId);
 
             var resposeCommentDto = new CommentDto
             {

@@ -6,5 +6,6 @@ namespace Blog.Web.Areas.Api.Comments
     {
         public UserPoco User { get; set; }
         public string Content { get; set; }
+        public CommentModel Parent { get; set; }
     }
 }

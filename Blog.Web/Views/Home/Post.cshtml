@@ -79,10 +79,11 @@
             createToast('Successfully submitted a comment.');
         }
 
-        const createComment = (content) => {
+        const createComment = (content, parentId) => {
             const comment = {
                 content: content,
-                postId: @Model?.Id
+                postId: @Model?.Id,
+                parentId: parentId
             };
 
 

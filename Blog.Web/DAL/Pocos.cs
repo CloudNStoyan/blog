@@ -35,6 +35,9 @@ namespace Blog.Web.DAL
 
         [Column(Name = "content")]
         public string Content { get; set; }
+
+        [Column(Name = "parent_id")]
+        public int? ParentId { get; set; }
     }
 
     [Table(Name = "posts", Schema = "public")]
