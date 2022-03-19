@@ -33,6 +33,63 @@ article {
         }
     }
 
+    .comment-wrapper {
+        margin: 20px;
+        font-size: 14px;
+
+        .create-comment-wrapper {
+            display: flex;
+            flex-flow: row nowrap;
+
+            .create-comment {
+                flex-grow: 1;
+                margin-left: 10px;
+
+                textarea {
+                    resize: none;
+                    padding: 5px;
+                    width: 100%;
+
+                    &:focus {
+                        outline: 0;
+                    }
+                }
+
+                button {
+                    float: right;
+                }
+            }
+        }
+
+        .avatar {
+            overflow: hidden;
+            border-radius: 50%;
+            width: 64px;
+            height: 64px;
+
+            img {
+                width: 100%;
+                height: 100%;
+            }
+        }
+
+        .comment {
+            margin-bottom: 20px;
+            display: flex;
+            flex-flow: row nowrap;
+
+            .comment-body {
+                margin-left: 10px;
+
+                .user {
+                    font-weight: 600;
+                    font-size: 13px;
+                    margin-bottom: 5px;
+                }
+            }
+        }
+    }
+
     .content {
         padding: 10px;
         background-color: white;
@@ -41,7 +98,7 @@ article {
         color: #333;
         overflow-wrap: break-word;
 
-        >*:first-child {
+        > *:first-child {
             padding-top: 0;
             margin-top: 0;
         }
