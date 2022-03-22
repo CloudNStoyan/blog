@@ -12,5 +12,8 @@ namespace Blog.Web.Areas.Api.Comments
 
         [JsonPropertyName("username")]
         public string Username { get; set; }
+
+        [JsonPropertyName("avatar_url")]
+        public string AvatarUrl { get; set; }
     }
 }

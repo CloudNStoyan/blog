@@ -53,7 +53,8 @@ namespace Blog.Web.Areas.Api.Comments
             {
                 CommentId = commentId,
                 Content = content,
-                Username = session.UserAccount.Username
+                Username = session.UserAccount.Username,
+                AvatarUrl = session.UserAccount.Avatar
             };
 
             return this.Ok(resposeCommentDto);

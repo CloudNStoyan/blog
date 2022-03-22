@@ -52,19 +52,24 @@
         codeWrappers.forEach(addCopyToClipboard);
     </script>
     <script>
-        const createCommentWrapper = document.querySelector('.create-comment-wrapper');
-        const commentsWrapper = document.querySelector('.comments');
+    const createCommentWrapper = document.querySelector('.create-comment-wrapper');
+    const commentsWrapper = document.querySelector('.comments');
 
-        const addCommentToPage = (comment) => {
-            const commentElement = document.createElement('div');
-            commentElement.className = 'comment new';
-            commentElement.innerHTML =
-                `
-                    <div class="user">${comment["username"]}</div>
-                    <div>${comment["content"]}</div>
-                `;
+    const addCommentToPage = (comment) => {
+        const commentElement = document.createElement('div');
+        commentElement.className = 'comment new';
+        commentElement.innerHTML =
+            `
+            <div class="avatar">
+                <img src="${comment["avatar_url"]}" alt="${comment["username"]}"/>
+            </div>
+            <div class="comment-body">
+                <div class="user">${comment["username"]}</div>
+                <div>${comment["content"]}</div>
+            </div>
+            `;
 
-            commentsWrapper.insertBefore(commentElement, commentsWrapper.firstElementChild);
+        commentsWrapper.insertBefore(commentElement, commentsWrapper.firstElementChild);
         }
 
         const commentInput = createCommentWrapper.querySelector('textarea');

@@ -220,7 +220,7 @@ namespace Blog.Web.Areas.Admin.Posts
         private async Task<CommentModel[]> GetPostComments(int postId)
         {
             var commentPocos = await this.Database.Query<CommentPoco>(
-                "SELECT * FROM comments WHERE post_id = @postId;",
+                "SELECT * FROM comments WHERE post_id = @postId ORDER BY comment_id DESC;",
                 new NpgsqlParameter("postId", postId));
 
             return await this.ConvertCommentPocosToCommentModels(commentPocos.ToArray());
