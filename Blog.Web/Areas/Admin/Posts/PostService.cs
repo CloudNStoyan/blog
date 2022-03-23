@@ -20,12 +20,15 @@ namespace Blog.Web.Areas.Admin.Posts
 
         private SessionService SessionService { get; }
         private UserService UserService { get; }
+        private CommentService CommentService { get; }
 
-        public PostService(Database database, SessionService sessionService, UserService userService)
+        public PostService(Database database, SessionService sessionService, 
+            UserService userService, CommentService commentService)
         {
             this.Database = database;
             this.SessionService = sessionService;
             this.UserService = userService;
+            this.CommentService = commentService;
         }
 
         private async Task<PostModel> ConvertPostPocoToPostModel(PostPoco postPoco)
@@ -44,7 +47,7 @@ namespace Blog.Web.Areas.Admin.Posts
 
             model.Tags = tagsPoco.Select(TagModel.FromPoco).ToArray();
 
-            model.Comments = await this.GetPostComments(postPoco.PostId);
+            model.Comments = await this.CommentService.GetCommentsWithPostId(postPoco.PostId);
 
             return model;
         }
@@ -196,34 +199,6 @@ namespace Blog.Web.Areas.Admin.Posts
                 new NpgsqlParameter("postId", id));
 
             return tags.ToArray();
-        }
-
-        private async Task<CommentModel> ConvertCommentPocoToCommentModel(CommentPoco commentPoco) =>
-            new()
-            {
-                Content = commentPoco.Content,
-                User = await this.UserService.GetUserById(commentPoco.UserId)
-            };
-
-        private async Task<CommentModel[]> ConvertCommentPocosToCommentModels(CommentPoco[] commentPocos)
-        {
-            var commentModels = new List<CommentModel>();
-
-            foreach (var commentPoco in commentPocos)
-            {
-                commentModels.Add(await this.ConvertCommentPocoToCommentModel(commentPoco));
-            }
-
-            return commentModels.ToArray();
-        }
-
-        private async Task<CommentModel[]> GetPostComments(int postId)
-        {
-            var commentPocos = await this.Database.Query<CommentPoco>(
-                "SELECT * FROM comments WHERE post_id = @postId ORDER BY comment_id DESC;",
-                new NpgsqlParameter("postId", postId));
-
-            return await this.ConvertCommentPocosToCommentModels(commentPocos.ToArray());
         }
 
         /// <summary>

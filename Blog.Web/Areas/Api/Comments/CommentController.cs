@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Blog.Web.Areas.Admin.Auth;
 using Blog.Web.Areas.Admin.Posts;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +19,21 @@ namespace Blog.Web.Areas.Api.Comments
             this.SessionService = sessionService;
             this.PostService = postService;
             this.CommentService = commentService;
+        }
+
+        public async Task<IActionResult> Get(int postId, int offset)
+        {
+            var commentModels = await this.CommentService.GetCommentsWithPostId(postId, offset);
+
+            var commentDtos = commentModels.Select(model => new CommentDto
+            {
+                AvatarUrl = model.User.AvatarUrl,
+                CommentId = model.CommentId,
+                Content = model.Content,
+                Username = model.User.Name
+            });
+
+            return this.Ok(commentDtos);
         }
 
         [HttpPost]
