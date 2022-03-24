@@ -52,14 +52,83 @@
         codeWrappers.forEach(addCopyToClipboard);
     </script>
     <script>
-    const createCommentWrapper = document.querySelector('.create-comment-wrapper');
-    const commentsWrapper = document.querySelector('.comments');
+        const commentWrapper = document.querySelector('.comment-wrapper');
+        const createCommentWrapper = commentWrapper.querySelector('.create-comment-wrapper');
+        const commentsWrapper = commentWrapper.querySelector('.comments');
 
-    const addCommentToPage = (comment) => {
-        const commentElement = document.createElement('div');
-        commentElement.className = 'comment new';
-        commentElement.innerHTML =
-            `
+        const isInViewport = (el) => {
+            const rect = el.getBoundingClientRect();
+
+            return (
+                rect.top >= 0 &&
+                    rect.left >= 0 &&
+                    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+                    rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+            );
+        }
+
+        const commentLoader = commentWrapper.querySelector('.comment-loader');
+
+        let isLoadingComments = false;
+        let loadedAllComments = false;
+        let offset = 10;
+
+        const loadCommentsIfNeeded = async () => {
+            if (!isInViewport(commentLoader) || isLoadingComments || loadedAllComments) {
+                return;
+            }
+
+            isLoadingComments = true;
+
+            const filter = {
+                postId: @Model?.Id,
+                offset: offset
+            }
+
+            const comments = await fetch(`/api/comment/get?${new URLSearchParams(filter)}`)
+                .then(response => response.json())
+                .catch(error => console.error(error));
+
+            if (comments.length === 0) {
+                loadedAllComments = true;
+                commentLoader.classList.add('hide');
+                return;
+            }
+
+            appendCommentsToPage(comments);
+
+            offset += 10;
+
+            isLoadingComments = false;
+        }
+
+        document.addEventListener('scroll', loadCommentsIfNeeded);
+
+        const appendCommentsToPage = (comments) => {
+            comments.forEach(comment => {
+                const commentElement = document.createElement('div');
+                commentElement.className = 'comment';
+                commentElement.innerHTML =
+                    `
+            <div class="avatar">
+                <img src="${comment["avatar_url"]}" alt="${comment["username"]}"/>
+            </div>
+            <div class="comment-body">
+                <div class="user">${comment["username"]}</div>
+                <div>${comment["content"]}</div>
+            </div>
+            `;
+            
+                commentsWrapper.appendChild(commentElement);
+            });
+        }
+
+
+        const addCommentToPage = (comment) => {
+            const commentElement = document.createElement('div');
+            commentElement.className = 'comment new';
+            commentElement.innerHTML =
+                `
             <div class="avatar">
                 <img src="${comment["avatar_url"]}" alt="${comment["username"]}"/>
             </div>
@@ -69,7 +138,7 @@
             </div>
             `;
 
-        commentsWrapper.insertBefore(commentElement, commentsWrapper.firstElementChild);
+            commentsWrapper.insertBefore(commentElement, commentsWrapper.firstElementChild);
         }
 
         const commentInput = createCommentWrapper.querySelector('textarea');
@@ -170,6 +239,9 @@
                         </div>
                     </div>
                 }
+            </div>
+            <div class="comment-loader">
+                <i class="fa-solid fa-spinner"></i>
             </div>
         </div>
     </article>

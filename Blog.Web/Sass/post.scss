@@ -1,6 +1,18 @@
 ﻿$color-orange: #f58225;
 $color-cyan: #02a0a9;
 
+@keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg)
+    }
+
+    to {
+        -webkit-transform: rotate(1turn);
+        transform: rotate(1turn)
+    }
+}
+
 article {
 
     header {
@@ -36,6 +48,22 @@ article {
     .comment-wrapper {
         margin: 20px;
         font-size: 14px;
+
+        .comment-loader {
+            text-align: center;
+
+            &.hide {
+                display: none;
+            }
+
+            i {
+                animation-duration: 0.7s;
+                animation-name: spin;
+                animation-iteration-count: infinite;
+                animation-timing-function: ease-in-out;
+                font-size: 20px;
+            }
+        }
 
         .create-comment-wrapper {
             display: flex;
