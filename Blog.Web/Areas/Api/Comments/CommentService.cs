@@ -50,18 +50,7 @@ namespace Blog.Web.Areas.Api.Comments
             return await this.ConvertCommentPocosToCommentModels(commentPocos.ToArray());
         }
 
-        public async Task<int?> CreateComment(string content, int userId, int postId, int? parentId)
-        {
-            var commentPoco = new CommentPoco
-            {
-                Content = content,
-                UserId = userId,
-                PostId = postId,
-                ParentId = parentId
-            };
-
-            return await this.Database.Insert(commentPoco);
-        }
+        public async Task<int?> CreateComment(CommentPoco commentPoco) => await this.Database.Insert(commentPoco);
 
         public async Task<CommentPoco> GetCommentById(int commentId)
         {

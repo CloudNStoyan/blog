@@ -1,7 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Blog.Web.Areas.Admin.Auth;
 using Blog.Web.Areas.Admin.Posts;
+using Blog.Web.DAL;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Blog.Web.Areas.Api.Comments
@@ -63,12 +66,27 @@ namespace Blog.Web.Areas.Api.Comments
                 }
             }
 
-            int? commentId = await this.CommentService.CreateComment(content, session.UserAccount.UserId, post.Id, parentId);
+            if (string.IsNullOrWhiteSpace(content.Trim()))
+            {
+                return this.BadRequest();
+            }
+
+            string sanitizedContent = Regex.Replace(content, @"(\n){2,}", Environment.NewLine);
+
+            var commentPoco = new CommentPoco
+            {
+                Content = sanitizedContent,
+                UserId = session.UserAccount.UserId,
+                PostId = post.Id,
+                ParentId = parentId
+            };
+
+            int? commentId = await this.CommentService.CreateComment(commentPoco);
 
             var resposeCommentDto = new CommentDto
             {
                 CommentId = commentId,
-                Content = content,
+                Content = sanitizedContent,
                 Username = session.UserAccount.Username,
                 AvatarUrl = session.UserAccount.Avatar
             };

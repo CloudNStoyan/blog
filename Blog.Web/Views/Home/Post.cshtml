@@ -79,6 +79,7 @@
             }
 
             isLoadingComments = true;
+            commentLoader.classList.remove('hide');
 
             const filter = {
                 postId: @Model?.Id,
@@ -91,6 +92,7 @@
 
             if (comments.length === 0) {
                 loadedAllComments = true;
+                isLoadingComments = false;
                 commentLoader.classList.add('hide');
                 return;
             }
@@ -100,9 +102,16 @@
             offset += 10;
 
             isLoadingComments = false;
+            commentLoader.classList.add('hide');
         }
 
         document.addEventListener('scroll', loadCommentsIfNeeded);
+
+        const notScrollable = !(document.body.clientHeight > window.innerHeight);
+
+        if (notScrollable) {
+            loadCommentsIfNeeded();
+        }
 
         const appendCommentsToPage = (comments) => {
             comments.forEach(comment => {
@@ -115,7 +124,7 @@
             </div>
             <div class="comment-body">
                 <div class="user">${comment["username"]}</div>
-                <div>${comment["content"]}</div>
+                <p>${comment["content"]}</p>
             </div>
             `;
             
@@ -134,7 +143,7 @@
             </div>
             <div class="comment-body">
                 <div class="user">${comment["username"]}</div>
-                <div>${comment["content"]}</div>
+                <p>${comment["content"]}</p>
             </div>
             `;
 
@@ -235,12 +244,12 @@
                             <img src="@commentUser.AvatarUrl" alt="@commentUser.Name"/></div>
                         <div class="comment-body">
                             <div class="user">@commentUser.Name</div>
-                            <div>@comment.Content</div>
+                            <p>@comment.Content</p>
                         </div>
                     </div>
                 }
             </div>
-            <div class="comment-loader">
+            <div class="comment-loader hide">
                 <i class="fa-solid fa-spinner"></i>
             </div>
         </div>
