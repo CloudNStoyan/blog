@@ -298,11 +298,12 @@ footer {
     display: flex;
     flex-flow: column-reverse wrap;
     pointer-events: none;
+    padding: 10px;
 
     .toast {
         width: fit-content;
         width: -moz-fit-content;
-        margin: 0 auto;
+        margin: 10px auto;
         animation: 1s 1 alternate toastin;
         text-align: center;
         background-color: white;
@@ -310,8 +311,7 @@ footer {
         color: $color-cyan;
         padding: 10px;
         border-radius: 5px;
-        margin-top: 10px;
-        margin-bottom: 10px;
+        overflow-wrap: anywhere;
 
         &.remove {
             animation: 1s 1 alternate toastout;

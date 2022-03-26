@@ -176,7 +176,11 @@
                     })
                 .then(response => response.json())
                 .then(handleCommentResponse)
-                .catch(error => console.log('error', error));
+                .catch(error => {
+                    console.error(error);
+
+                    createToast('Error, try again.');
+                });
         }
 
         const commentBtn = createCommentWrapper.querySelector('button');
@@ -185,7 +189,14 @@
             (e) => {
                 e.preventDefault();
 
-                createComment(commentInput.value.trim());
+                const commentContent = commentInput.value.trim();
+
+                if (commentContent.length === 0) {
+                    createToast('You can\'t comment nothing.');
+                    return;
+                }
+
+                createComment(commentContent);
             });
     </script>
 }
