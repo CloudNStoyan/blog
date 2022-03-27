@@ -38,6 +38,12 @@ namespace Blog.Web.DAL
 
         [Column(Name = "parent_id")]
         public int? ParentId { get; set; }
+
+        [Column(Name = "created_on")]
+        public DateTime? CreatedOn { get; set; }
+
+        [Column(Name = "edited")]
+        public bool Edited { get; set; }
     }
 
     [Table(Name = "posts", Schema = "public")]

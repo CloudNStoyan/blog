@@ -1,5 +1,6 @@
 ﻿@using Markdig
 @using Blog.Web.Areas.Admin.Auth
+@using Blog.Web.Infrastructure
 @model PostModel
 @inject MarkdownPipeline markdownPipeline
 @{
@@ -123,11 +124,15 @@
                 <img src="${comment["avatar_url"]}" alt="${comment["username"]}"/>
             </div>
             <div class="comment-body">
-                <div class="user">${comment["username"]}</div>
+                <div class="user">
+                    <span>${comment["username"]}</span>
+                    <span class="created">${comment["human_date"]}</span>
+                    ${comment["edited"] ? '<span>(edited)</span>' : ''}
+                </div>
                 <p>${comment["content"]}</p>
             </div>
             `;
-            
+
                 commentsWrapper.appendChild(commentElement);
             });
         }
@@ -142,7 +147,10 @@
                 <img src="${comment["avatar_url"]}" alt="${comment["username"]}"/>
             </div>
             <div class="comment-body">
-                <div class="user">${comment["username"]}</div>
+                <div class="user">
+                    <span>${comment["username"]}</span>
+                    <span class="created">${comment["human_date"]}</span>
+                </div>
                 <p>${comment["content"]}</p>
             </div>
             `;
@@ -254,7 +262,14 @@
                         <div class="avatar">
                             <img src="@commentUser.AvatarUrl" alt="@commentUser.Name"/></div>
                         <div class="comment-body">
-                            <div class="user">@commentUser.Name</div>
+                            <div class="user">
+                                <span>@commentUser.Name</span>
+                                <span class="created">@DateUtils.DateTimeToLongAgo(@comment.CreatedOn)</span>
+                                @if (comment.Edited)
+                                {
+                                    <span class="edited">(edited)</span>
+                                }
+                            </div>
                             <p>@comment.Content</p>
                         </div>
                     </div>

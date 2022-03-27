@@ -23,7 +23,9 @@ namespace Blog.Web.Areas.Api.Comments
             {
                 CommentId = commentPoco.CommentId,
                 Content = commentPoco.Content,
-                User = await this.UserService.GetUserById(commentPoco.UserId)
+                User = await this.UserService.GetUserById(commentPoco.UserId),
+                CreatedOn = commentPoco.CreatedOn,
+                Edited = commentPoco.Edited
             };
 
         private async Task<CommentModel[]> ConvertCommentPocosToCommentModels(CommentPoco[] commentPocos)

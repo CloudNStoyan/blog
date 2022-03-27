@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Blog.Web.Areas.Admin.Auth;
 using Blog.Web.Areas.Admin.Posts;
 using Blog.Web.DAL;
+using Blog.Web.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Blog.Web.Areas.Api.Comments
@@ -33,7 +34,9 @@ namespace Blog.Web.Areas.Api.Comments
                 AvatarUrl = model.User.AvatarUrl,
                 CommentId = model.CommentId,
                 Content = model.Content,
-                Username = model.User.Name
+                Username = model.User.Name,
+                HumanDate = DateUtils.DateTimeToLongAgo(model.CreatedOn),
+                Edited = model.Edited
             });
 
             return this.Ok(commentDtos);
@@ -73,12 +76,15 @@ namespace Blog.Web.Areas.Api.Comments
 
             string sanitizedContent = Regex.Replace(content, @"(\n){2,}", Environment.NewLine);
 
+            var now = DateTime.Now;
+
             var commentPoco = new CommentPoco
             {
                 Content = sanitizedContent,
                 UserId = session.UserAccount.UserId,
                 PostId = post.Id,
-                ParentId = parentId
+                ParentId = parentId,
+                CreatedOn = now
             };
 
             int? commentId = await this.CommentService.CreateComment(commentPoco);
@@ -88,7 +94,8 @@ namespace Blog.Web.Areas.Api.Comments
                 CommentId = commentId,
                 Content = sanitizedContent,
                 Username = session.UserAccount.Username,
-                AvatarUrl = session.UserAccount.Avatar
+                AvatarUrl = session.UserAccount.Avatar,
+                HumanDate = DateUtils.DateTimeToLongAgo(now)
             };
 
             return this.Ok(resposeCommentDto);

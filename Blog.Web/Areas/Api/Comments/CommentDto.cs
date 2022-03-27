@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System;
+using System.Text.Json.Serialization;
 
 namespace Blog.Web.Areas.Api.Comments
 {
@@ -15,5 +16,11 @@ namespace Blog.Web.Areas.Api.Comments
 
         [JsonPropertyName("avatar_url")]
         public string AvatarUrl { get; set; }
+
+        [JsonPropertyName("human_date")]
+        public string HumanDate { get; set; }
+
+        [JsonPropertyName("edited")]
+        public bool Edited { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Blog.Web.DAL;
+﻿using System;
+using Blog.Web.DAL;
 
 namespace Blog.Web.Areas.Api.Comments
 {
@@ -8,5 +9,7 @@ namespace Blog.Web.Areas.Api.Comments
         public UserPoco User { get; set; }
         public string Content { get; set; }
         public CommentModel Parent { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public bool Edited { get; set; }
     }
 }
