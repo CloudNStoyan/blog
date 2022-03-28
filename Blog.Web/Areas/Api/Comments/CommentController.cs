@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Blog.Web.Areas.Admin.Auth;
 using Blog.Web.Areas.Admin.Posts;
+using Blog.Web.Areas.Admin.Users;
 using Blog.Web.DAL;
 using Blog.Web.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
@@ -16,13 +17,15 @@ namespace Blog.Web.Areas.Api.Comments
         private SessionService SessionService { get; }
         private PostService PostService { get; }
         private CommentService CommentService { get; }
+        private UserService UserService { get; }
 
         public CommentController(SessionService sessionService,
-            PostService postService, CommentService commentService)
+            PostService postService, CommentService commentService, UserService userService)
         {
             this.SessionService = sessionService;
             this.PostService = postService;
             this.CommentService = commentService;
+            this.UserService = userService;
         }
 
         public async Task<IActionResult> Get(int postId, int offset)
@@ -40,6 +43,43 @@ namespace Blog.Web.Areas.Api.Comments
             });
 
             return this.Ok(commentDtos);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(string content, int commentId)
+        {
+            var session = this.SessionService.Session;
+
+            if (!session.IsLoggedIn)
+            {
+                return this.BadRequest();
+            }
+
+            var commentPoco = await this.CommentService.GetCommentById(commentId);
+
+            if (commentPoco == null)
+            {
+                return this.BadRequest();
+            }
+
+            string sanitizedContent = Regex.Replace(content, @"(\n){2,}", Environment.NewLine);
+
+            commentPoco.Content = sanitizedContent;
+
+            await this.CommentService.UpdateComment(commentPoco);
+
+            var commentUser = await this.UserService.GetUserById(commentPoco.UserId);
+
+            var resposeCommentDto = new CommentDto
+            {
+                CommentId = commentPoco.CommentId,
+                Content = sanitizedContent,
+                Username = commentUser.Name,
+                AvatarUrl = commentUser.AvatarUrl,
+                HumanDate = DateUtils.DateTimeToLongAgo(commentPoco.CreatedOn)
+            };
+
+            return this.Ok(resposeCommentDto);
         }
 
         [HttpPost]
