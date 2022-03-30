@@ -57,7 +57,7 @@ namespace Blog.Web.Areas.Api.Comments
 
             var commentPoco = await this.CommentService.GetCommentById(commentId);
 
-            if (commentPoco == null)
+            if (commentPoco == null || commentPoco.UserId != session.UserAccount.UserId)
             {
                 return this.BadRequest();
             }
