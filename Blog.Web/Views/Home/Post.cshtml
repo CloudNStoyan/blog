@@ -245,13 +245,21 @@
                 @{
                     var currentUser = sessionService?.Session?.UserAccount;
                 }
-                <div class="avatar">
-                    <img src="@currentUser?.Avatar" alt="@currentUser?.Username"/>
-                </div>
-                <div class="create-comment">
-                    <textarea rows="4" placeholder="Add a comment..."></textarea>
-                    <button>Comment</button>
-                </div>
+                
+                @if (sessionService.Session.IsLoggedIn)
+                {
+                    <div class="avatar">
+                        <img src="@currentUser?.Avatar" alt="@currentUser?.Username"/>
+                    </div>
+                    <div class="create-comment">
+                        <textarea rows="4" placeholder="Add a comment..."></textarea>
+                        <button>Comment</button>
+                    </div>
+                }
+                else
+                {
+                    <div class="login-required">You need to <a asp-area="Admin" asp-controller="Auth" asp-action="LoginPage">Log In</a> to comment.</div>
+                }
             </div>
             <div class="comments">
                 @foreach (var comment in Model.Comments)
@@ -272,10 +280,13 @@
                             </div>
                             <p>@comment.Content</p>
                             <div class="actions">
-                                <a class="reply" href="#">Reply</a>
-                                @if (sessionService.Session.IsLoggedIn && commentUser.UserId == sessionService.Session.UserAccount?.UserId)
+                                @if (sessionService.Session.IsLoggedIn)
                                 {
-                                    <a class="edit" href="#">Edit</a>
+                                    <a class="reply" href="#">Reply</a>
+                                    @if (commentUser.UserId == sessionService.Session.UserAccount?.UserId)
+                                    {
+                                        <a class="edit" href="#">Edit</a>
+                                    }
                                 }
                             </div>
                         </div>

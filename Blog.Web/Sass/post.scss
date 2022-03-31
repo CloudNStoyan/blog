@@ -69,6 +69,16 @@ article {
             display: flex;
             flex-flow: row nowrap;
 
+            .login-required {
+                margin: 20px auto;
+
+                a {
+                    color: $color-cyan;
+                    font-weight: 600;
+                    text-decoration: none;
+                }
+            }
+
             .create-comment {
                 flex-grow: 1;
                 margin-left: 10px;
