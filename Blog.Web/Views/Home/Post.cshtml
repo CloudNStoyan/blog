@@ -271,6 +271,13 @@
                                 }
                             </div>
                             <p>@comment.Content</p>
+                            <div class="actions">
+                                <a class="reply" href="#">Reply</a>
+                                @if (sessionService.Session.IsLoggedIn && commentUser.UserId == sessionService.Session.UserAccount?.UserId)
+                                {
+                                    <a class="edit" href="#">Edit</a>
+                                }
+                            </div>
                         </div>
                     </div>
                 }
