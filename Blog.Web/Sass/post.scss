@@ -46,10 +46,11 @@ article {
     }
 
     .comment-wrapper {
-        margin: 20px;
+        margin: 20px 0;
         font-size: 14px;
 
         .comment-loader {
+            padding: 0 20px;
             text-align: center;
 
             &.hide {
@@ -65,9 +66,16 @@ article {
             }
         }
 
+        .comments {
+            padding: 0 20px;
+        }
+
         .create-comment-wrapper {
             display: flex;
             flex-flow: row nowrap;
+            border-bottom: 1px solid lightgray;
+            margin-bottom: 20px;
+            padding: 0 20px;
 
             .login-required {
                 margin: 20px auto;
@@ -87,14 +95,32 @@ article {
                     resize: none;
                     padding: 5px;
                     width: 100%;
+                    border: 1px solid lightgray;
+                    font-size: 14px;
 
                     &:focus {
                         outline: 0;
                     }
                 }
 
-                button {
+                .actions {
                     float: right;
+
+                    a {
+                        display: inline-block;
+                        text-transform: uppercase;
+                        text-decoration: none;
+                        font-weight: 500;
+
+                        &.cancel {
+                            color: black;
+                            margin-right: 10px;
+                        }
+
+                        &.comment {
+                            color: $color-orange;
+                        }
+                    }
                 }
             }
         }
@@ -102,9 +128,8 @@ article {
         .avatar {
             overflow: hidden;
             border-radius: 50%;
-            flex: 0 0 64px;
-            width: 64px;
-            height: 64px;
+            flex: 0 0 48px;
+            height: 48px;
 
             img {
                 width: 100%;

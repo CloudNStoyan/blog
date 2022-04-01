@@ -191,7 +191,7 @@
                 });
         }
 
-        const commentBtn = createCommentWrapper.querySelector('button');
+        const commentBtn = createCommentWrapper.querySelector('.comment');
 
         commentBtn.addEventListener('click',
             (e) => {
@@ -253,7 +253,10 @@
                     </div>
                     <div class="create-comment">
                         <textarea rows="4" placeholder="Add a comment..."></textarea>
-                        <button>Comment</button>
+                        <div class="actions">
+                            <a href="#" class="cancel">Cancel</a>
+                            <a href="#" class="comment">Comment</a>
+                        </div>
                     </div>
                 }
                 else
