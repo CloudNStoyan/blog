@@ -33,7 +33,7 @@
 
         headings.forEach(addAnchor);
 
-        const codeWrappers = content.querySelectorAll('code');
+        const codeWrappers = content.querySelectorAll('pre code');
 
         const addCopyToClipboard = (el) => {
             const copyBtn = document.createElement('a');
@@ -206,6 +206,54 @@
 
                 createComment(commentContent);
             });
+
+        const replyToComment = (el) => {
+            const commentEl = el.parentElement.parentElement.parentElement;
+
+            const createCommentWrapperEl = document.createElement('div');
+            createCommentWrapperEl.className = 'create-comment-wrapper';
+            commentEl.appendChild(createCommentWrapperEl);
+
+            const avatarEl = document.createElement('div');
+            avatarEl.className = 'avatar';
+            avatarEl.innerHTML = '<img src="@sessionService?.Session?.UserAccount?.Avatar" alt="@sessionService?.Session?.UserAccount?.Username">';
+            createCommentWrapperEl.appendChild(avatarEl);
+
+            const createCommentEl = document.createElement('div');
+            createCommentEl.className = 'create-comment';
+            createCommentWrapperEl.appendChild(createCommentEl);
+
+            const createCommentTextarea = document.createElement('textarea');
+            createCommentTextarea.setAttribute('rows', '4');
+            createCommentTextarea.setAttribute('placeholder', 'Add a comment...');
+            createCommentEl.appendChild(createCommentTextarea);
+
+            const actionsEl = document.createElement('div');
+            actionsEl.className = 'actions';
+            createCommentEl.appendChild(actionsEl);
+
+            const cancelBtn = document.createElement('a');
+            cancelBtn.className = 'cancel';
+            cancelBtn.href = '#';
+            cancelBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+
+                createCommentWrapperEl.remove();
+            });
+            actionsEl.appendChild(cancelBtn);
+
+            const commentBtn = document.createElement('a');
+            commentBtn.className = 'comment';
+            commentBtn.href = '#';
+            commentBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+
+                createComment(createCommentTextarea.value.trim(), el.dataset.commentId);
+                createToast('Successfully submitted a comment.');
+                createCommentWrapperEl.remove();
+            });
+            actionsEl.appendChild(commentBtn);
+        }
     </script>
 }
 
@@ -285,7 +333,7 @@
                             <div class="actions">
                                 @if (sessionService.Session.IsLoggedIn)
                                 {
-                                    <a class="reply" href="#">Reply</a>
+                                    <a class="reply" href="#" data-comment-id="@comment.CommentId" onclick="replyToComment(this);">Reply</a>
                                     @if (commentUser.UserId == sessionService.Session.UserAccount?.UserId)
                                     {
                                         <a class="edit" href="#">Edit</a>
