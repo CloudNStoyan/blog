@@ -158,19 +158,43 @@
             commentsWrapper.insertBefore(commentElement, commentsWrapper.firstElementChild);
         }
 
+        const addReplyToPage = (comment, parentEl) => {
+            const commentElement = document.createElement('div');
+            commentElement.className = 'comment new';
+            commentElement.innerHTML =
+                `
+            <div class="avatar">
+                <img src="${comment["avatar_url"]}" alt="${comment["username"]}"/>
+            </div>
+            <div class="comment-body">
+                <div class="user">
+                    <span>${comment["username"]}</span>
+                    <span class="created">${comment["human_date"]}</span>
+                </div>
+                <p>${comment["content"]}</p>
+            </div>
+            `;
+
+            parentEl.appendChild(commentElement);
+        }
+
         const commentInput = createCommentWrapper.querySelector('textarea');
 
         const cleanCreateCommentFields = () => {
             commentInput.value = "";
         }
 
-        const handleCommentResponse = (comment) => {
-            addCommentToPage(comment);
+        const handleCommentResponse = (comment, parentEl) => {
+            if (!parentEl) {
+                addCommentToPage(comment);
+            } else {
+                addReplyToComment(comment, parentEl);
+            }
             cleanCreateCommentFields();
             createToast('Successfully submitted a comment.');
         }
 
-        const createComment = (content, parentId) => {
+        const createComment = (content, parentId, parentEl) => {
             const comment = {
                 content: content,
                 postId: @Model?.Id,
@@ -183,7 +207,7 @@
                         method: 'POST'
                     })
                 .then(response => response.json())
-                .then(handleCommentResponse)
+                .then(comment => handleCommentResponse(comment, parentEl))
                 .catch(error => {
                     console.error(error);
 
@@ -234,6 +258,7 @@
 
             const cancelBtn = document.createElement('a');
             cancelBtn.className = 'cancel';
+            cancelBtn.innerText = 'Cancel';
             cancelBtn.href = '#';
             cancelBtn.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -244,12 +269,12 @@
 
             const commentBtn = document.createElement('a');
             commentBtn.className = 'comment';
+            commentBtn.innerText = 'Comment';
             commentBtn.href = '#';
             commentBtn.addEventListener('click', (e) => {
                 e.preventDefault();
 
-                createComment(createCommentTextarea.value.trim(), el.dataset.commentId);
-                createToast('Successfully submitted a comment.');
+                createComment(createCommentTextarea.value.trim(), el.dataset.commentId, commentEl);
                 createCommentWrapperEl.remove();
             });
             actionsEl.appendChild(commentBtn);

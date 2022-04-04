@@ -107,6 +107,12 @@ namespace Blog.Web.Areas.Api.Comments
                 {
                     return this.BadRequest();
                 }
+
+                // We don't want more than 1 level of nesting
+                if (parentComment.ParentId.HasValue)
+                {
+                    return this.BadRequest();
+                }
             }
 
             if (string.IsNullOrWhiteSpace(content.Trim()))
