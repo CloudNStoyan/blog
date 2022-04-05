@@ -179,6 +179,21 @@
         }
 
         const commentInput = createCommentWrapper.querySelector('textarea');
+        const commentCancelBtn = createCommentWrapper.querySelector('.cancel');
+
+        const activeCreateCommentClass = 'active';
+
+        commentCancelBtn.addEventListener('click',
+            (e) => {
+                e.preventDefault();
+
+                createCommentWrapper.classList.remove(activeCreateCommentClass);
+            });
+
+        commentInput.addEventListener('focus',
+            () => {
+                createCommentWrapper.classList.add(activeCreateCommentClass);
+            });
 
         const cleanCreateCommentFields = () => {
             commentInput.value = "";
@@ -231,11 +246,13 @@
                 createComment(commentContent);
             });
 
-        const replyToComment = (el) => {
-            const commentEl = el.parentElement.parentElement.parentElement;
+        const replyToComment = (e) => {
+            e.preventDefault();
+
+            const commentEl = e.target.parentElement.parentElement.parentElement;
 
             const createCommentWrapperEl = document.createElement('div');
-            createCommentWrapperEl.className = 'create-comment-wrapper';
+            createCommentWrapperEl.className = 'create-comment-wrapper active';
             commentEl.appendChild(createCommentWrapperEl);
 
             const avatarEl = document.createElement('div');
@@ -358,7 +375,7 @@
                             <div class="actions">
                                 @if (sessionService.Session.IsLoggedIn)
                                 {
-                                    <a class="reply" href="#" data-comment-id="@comment.CommentId" onclick="replyToComment(this);">Reply</a>
+                                    <a class="reply" href="#" data-comment-id="@comment.CommentId" onclick="replyToComment(event);">Reply</a>
                                     @if (commentUser.UserId == sessionService.Session.UserAccount?.UserId)
                                     {
                                         <a class="edit" href="#">Edit</a>

@@ -76,6 +76,7 @@ article {
             border-bottom: 1px solid lightgray;
             margin-bottom: 20px;
             padding: 0 20px;
+            padding-bottom: 10px;
 
             .login-required {
                 margin: 20px auto;
@@ -84,6 +85,16 @@ article {
                     color: $color-cyan;
                     font-weight: 600;
                     text-decoration: none;
+                }
+            }
+
+            &.active {
+                textarea {
+                    border: 1px solid black!important;
+                }
+
+                .actions {
+                    display: block!important;
                 }
             }
 
@@ -105,6 +116,7 @@ article {
 
                 .actions {
                     float: right;
+                    display: none;
 
                     a {
                         display: inline-block;
