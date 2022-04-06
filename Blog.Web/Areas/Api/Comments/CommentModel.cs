@@ -11,5 +11,6 @@ namespace Blog.Web.Areas.Api.Comments
         public CommentModel Parent { get; set; }
         public DateTime? CreatedOn { get; set; }
         public bool Edited { get; set; }
+        public CommentModel[] Children { get; set; }
     }
 }

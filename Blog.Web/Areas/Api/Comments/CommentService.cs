@@ -43,13 +43,27 @@ namespace Blog.Web.Areas.Api.Comments
         public async Task<CommentModel[]> GetCommentsWithPostId(int postId, int offset = 0, int limit = 10)
         {
             var commentPocos = await this.Database.Query<CommentPoco>(
-                "SELECT * FROM comments WHERE post_id = @postId ORDER BY comment_id DESC OFFSET @offset LIMIT @limit;",
+                "SELECT * FROM comments WHERE post_id = @postId AND parent_id IS NULL ORDER BY created_on DESC OFFSET @offset LIMIT @limit;",
                 new NpgsqlParameter("postId", postId),
                 new NpgsqlParameter("offset", offset),
                 new NpgsqlParameter("limit", limit)
             );
 
-            return await this.ConvertCommentPocosToCommentModels(commentPocos.ToArray());
+            var commentModels = await this.ConvertCommentPocosToCommentModels(commentPocos.ToArray());
+
+            foreach (var commentModel in commentModels)
+            {
+                var childrenCommentPocos = await this.Database.Query<CommentPoco>(
+                    "SELECT * FROM comments WHERE parent_id = @parentId ORDER BY created_on ASC OFFSET @offset LIMIT @limit;",
+                    new NpgsqlParameter("parentId", commentModel.CommentId),
+                    new NpgsqlParameter("offset", offset),
+                    new NpgsqlParameter("limit", limit)
+                );
+
+                commentModel.Children = await this.ConvertCommentPocosToCommentModels(childrenCommentPocos.ToArray());
+            }
+
+            return commentModels;
         }
 
         public async Task<int?> CreateComment(CommentPoco commentPoco) => await this.Database.Insert(commentPoco);

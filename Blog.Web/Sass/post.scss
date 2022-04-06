@@ -68,6 +68,17 @@ article {
 
         .comments {
             padding: 0 20px;
+
+            &.children {
+                flex: 0 0 100%;
+                margin-top: 20px;
+                margin-left: 38px;
+
+                .avatar {
+                    flex: 0 0 24px;
+                    height: 24px;
+                }
+            }
         }
 
         .create-comment-wrapper {
@@ -90,11 +101,11 @@ article {
 
             &.active {
                 textarea {
-                    border: 1px solid black!important;
+                    border: 1px solid black !important;
                 }
 
                 .actions {
-                    display: block!important;
+                    display: block !important;
                 }
             }
 
@@ -192,6 +203,12 @@ article {
             .create-comment-wrapper {
                 flex: 0 0 100%;
                 margin-top: 20px;
+                margin-left: 38px;
+
+                .avatar {
+                    flex: 0 0 24px;
+                    height: 24px;
+                }
             }
         }
     }

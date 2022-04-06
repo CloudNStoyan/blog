@@ -175,7 +175,18 @@
             </div>
             `;
 
-            parentEl.appendChild(commentElement);
+            const childrenComments = parentEl.querySelector('.children.comments');
+
+            if (!childrenComments) {
+                const childrenCommentsEl = document.createElement('div');
+                childrenCommentsEl.className = 'children comments';
+                childrenCommentsEl.appendChild(commentElement);
+
+                parentEl.appendChild(childrenCommentsEl);
+                return;
+            }
+
+            childrenComments.appendChild(commentElement);
         }
 
         const commentInput = createCommentWrapper.querySelector('textarea');
@@ -203,7 +214,7 @@
             if (!parentEl) {
                 addCommentToPage(comment);
             } else {
-                addReplyToComment(comment, parentEl);
+                addReplyToPage(comment, parentEl);
             }
             cleanCreateCommentFields();
             createToast('Successfully submitted a comment.');
@@ -215,6 +226,8 @@
                 postId: @Model?.Id,
                 parentId: parentId
             };
+
+            console.log(comment);
 
 
             fetch(`/api/comment/create?${new URLSearchParams(comment)}`,
@@ -277,8 +290,8 @@
             cancelBtn.className = 'cancel';
             cancelBtn.innerText = 'Cancel';
             cancelBtn.href = '#';
-            cancelBtn.addEventListener('click', (e) => {
-                e.preventDefault();
+            cancelBtn.addEventListener('click', (cancelE) => {
+                cancelE.preventDefault();
 
                 createCommentWrapperEl.remove();
             });
@@ -288,10 +301,12 @@
             commentBtn.className = 'comment';
             commentBtn.innerText = 'Comment';
             commentBtn.href = '#';
-            commentBtn.addEventListener('click', (e) => {
-                e.preventDefault();
+            commentBtn.addEventListener('click', (btnE) => {
+                btnE.preventDefault();
 
-                createComment(createCommentTextarea.value.trim(), el.dataset.commentId, commentEl);
+                console.log(e);
+
+                createComment(createCommentTextarea.value.trim(), Number(e.target.dataset.commentId), commentEl);
                 createCommentWrapperEl.remove();
             });
             actionsEl.appendChild(commentBtn);
@@ -365,7 +380,7 @@
                         <div class="comment-body">
                             <div class="user">
                                 <span>@commentUser.Name</span>
-                                <span class="created">@DateUtils.DateTimeToLongAgo(@comment.CreatedOn)</span>
+                                <span class="created">@DateUtils.DateTimeToLongAgo(comment.CreatedOn)</span>
                                 @if (comment.Edited)
                                 {
                                     <span class="edited">(edited)</span>
@@ -382,6 +397,38 @@
                                     }
                                 }
                             </div>
+                        </div>
+                        <div class="children comments">
+                            @foreach (var childComment in comment.Children)
+                            {
+                                var childCommentUser = childComment.User;
+
+                                <div class="comment">
+                                    <div class="avatar">
+                                        <img src="@childCommentUser.AvatarUrl" alt="@childCommentUser.Name"/></div>
+                                    <div class="comment-body">
+                                        <div class="user">
+                                            <span>@childCommentUser.Name</span>
+                                            <span class="created">@DateUtils.DateTimeToLongAgo(childComment.CreatedOn)</span>
+                                            @if (childComment.Edited)
+                                            {
+                                                <span class="edited">(edited)</span>
+                                            }
+                                        </div>
+                                        <p>@childComment.Content</p>
+                                        <div class="actions">
+                                            @if (sessionService.Session.IsLoggedIn)
+                                            {
+                                                <a class="reply" href="#" data-comment-id="@childComment.CommentId" onclick="replyToComment(event);">Reply</a>
+                                                @if (childCommentUser.UserId == sessionService.Session.UserAccount?.UserId)
+                                                {
+                                                    <a class="edit" href="#">Edit</a>
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            }
                         </div>
                     </div>
                 }
