@@ -306,7 +306,13 @@
 
                 console.log(e);
 
-                createComment(createCommentTextarea.value.trim(), Number(e.target.dataset.commentId), commentEl);
+                let parentEl = commentEl;
+
+                if (e.target.hasAttribute('data-is-child')) {
+                    parentEl = commentEl.parentElement.parentElement;
+                }
+
+                createComment(createCommentTextarea.value.trim(), Number(e.target.dataset.commentId), parentEl);
                 createCommentWrapperEl.remove();
             });
             actionsEl.appendChild(commentBtn);
@@ -419,7 +425,7 @@
                                         <div class="actions">
                                             @if (sessionService.Session.IsLoggedIn)
                                             {
-                                                <a class="reply" href="#" data-comment-id="@childComment.CommentId" onclick="replyToComment(event);">Reply</a>
+                                                <a class="reply" href="#" data-comment-id="@comment.CommentId" onclick="replyToComment(event);" data-is-child>Reply</a>
                                                 @if (childCommentUser.UserId == sessionService.Session.UserAccount?.UserId)
                                                 {
                                                     <a class="edit" href="#">Edit</a>
