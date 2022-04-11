@@ -65,6 +65,7 @@ namespace Blog.Web.Areas.Api.Comments
             string sanitizedContent = Regex.Replace(content, @"(\n){2,}", Environment.NewLine);
 
             commentPoco.Content = sanitizedContent;
+            commentPoco.Edited = true;
 
             await this.CommentService.UpdateComment(commentPoco);
 

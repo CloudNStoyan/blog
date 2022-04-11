@@ -138,6 +138,7 @@ const addReplyToPage = (comment, parentEl) => {
 
 const commentInput = createCommentWrapper.querySelector('textarea');
 const commentCancelBtn = createCommentWrapper.querySelector('.cancel');
+const createCommentEl = createCommentWrapper.querySelector('.create-comment');
 
 const activeCreateCommentClass = 'active';
 
@@ -145,12 +146,12 @@ commentCancelBtn.addEventListener('click',
     (e) => {
         e.preventDefault();
 
-        createCommentWrapper.classList.remove(activeCreateCommentClass);
+        createCommentEl.classList.remove(activeCreateCommentClass);
     });
 
 commentInput.addEventListener('focus',
     () => {
-        createCommentWrapper.classList.add(activeCreateCommentClass);
+        createCommentEl.classList.add(activeCreateCommentClass);
     });
 
 const cleanCreateCommentFields = () => {
@@ -174,9 +175,6 @@ const createComment = (content, parentId, parentEl) => {
         parentId: parentId
     };
 
-    console.log(comment);
-
-
     fetch(`/api/comment/create?${new URLSearchParams(comment)}`,
             {
                 method: 'POST'
@@ -189,6 +187,26 @@ const createComment = (content, parentId, parentEl) => {
             createToast('Error, try again.');
         });
 };
+
+const editComment = async (content, commentId) => {
+    const comment = {
+        content,
+        commentId
+    }
+
+    const commentResponse = await fetch(`/api/comment/edit?${new URLSearchParams(comment)}`,
+            {
+                method: 'POST'
+            })
+        .then(response => response.json())
+        .catch(error => {
+            console.error(error);
+
+            createToast('Error, try again.');
+        });
+
+    return commentResponse;
+}
 
 const commentBtn = createCommentWrapper.querySelector('.comment');
 
@@ -206,6 +224,71 @@ commentBtn.addEventListener('click',
         createComment(commentContent);
     });
 
+const editCommentHandler = (e) => {
+    e.preventDefault();
+
+    const commentEl = e.target.parentElement.parentElement.parentElement;;
+
+    const createCommentEl = document.createElement('div');
+    createCommentEl.className = 'create-comment active';
+
+    const commentBody = commentEl.querySelector('.comment-body');
+    commentBody.classList.add('hide');
+
+    commentEl.insertBefore(createCommentEl, commentEl.children[1]);
+
+    const commentContent = commentBody.querySelector('p');
+
+    const createCommentTextarea = document.createElement('textarea');
+    createCommentTextarea.setAttribute('rows', '4');
+    createCommentTextarea.setAttribute('placeholder', 'Edit comment...');
+    createCommentTextarea.value = commentContent.innerText;
+    createCommentEl.appendChild(createCommentTextarea);
+
+    const actionsEl = document.createElement('div');
+    actionsEl.className = 'actions';
+    createCommentEl.appendChild(actionsEl);
+
+    const cancelBtn = document.createElement('a');
+    cancelBtn.className = 'cancel';
+    cancelBtn.innerText = 'Cancel';
+    cancelBtn.href = '#';
+    cancelBtn.addEventListener('click',
+        (cancelE) => {
+            cancelE.preventDefault();
+
+            createCommentEl.remove();
+            commentBody.classList.remove('hide');
+        });
+    actionsEl.appendChild(cancelBtn);
+
+    const commentBtn = document.createElement('a');
+    commentBtn.className = 'comment';
+    commentBtn.innerText = 'Edit';
+    commentBtn.href = '#';
+    commentBtn.addEventListener('click',
+        async (btnE) => {
+            btnE.preventDefault();
+
+            const editedComment = await editComment(createCommentTextarea.value, Number(e.target.dataset.commentId));
+
+            const commentUser = commentBody.querySelector('.user');
+
+            if (!commentUser.querySelector('.edited')) {
+                const commentEditedEl = document.createElement('span')
+                commentEditedEl.innerText = '(edited)';
+                commentEditedEl.className = 'edited';
+                commentUser.appendChild(commentEditedEl);
+            }
+
+            commentContent.innerText = editedComment.content;
+
+            createCommentEl.remove();
+            commentBody.classList.remove('hide');
+        });
+    actionsEl.appendChild(commentBtn);
+}
+
 const userJson = JSON.parse(document.querySelector('main[data-user-json]').dataset.userJson);
 
 const replyToComment = (e) => {
@@ -214,7 +297,7 @@ const replyToComment = (e) => {
     const commentEl = e.target.parentElement.parentElement.parentElement;
 
     const createCommentWrapperEl = document.createElement('div');
-    createCommentWrapperEl.className = 'create-comment-wrapper active';
+    createCommentWrapperEl.className = 'create-comment-wrapper';
     commentEl.appendChild(createCommentWrapperEl);
 
     const avatarEl = document.createElement('div');
@@ -224,7 +307,7 @@ const replyToComment = (e) => {
     createCommentWrapperEl.appendChild(avatarEl);
 
     const createCommentEl = document.createElement('div');
-    createCommentEl.className = 'create-comment';
+    createCommentEl.className = 'create-comment active';
     createCommentWrapperEl.appendChild(createCommentEl);
 
     const createCommentTextarea = document.createElement('textarea');

@@ -117,43 +117,47 @@
                                     <a class="reply" href="#" data-comment-id="@comment.CommentId" onclick="replyToComment(event);">Reply</a>
                                     @if (commentUser.UserId == sessionService.Session.UserAccount?.UserId)
                                     {
-                                        <a class="edit" href="#">Edit</a>
+                                        <a class="edit" href="#" data-comment-id="@comment.CommentId" onclick="editCommentHandler(event);">Edit</a>
                                     }
                                 }
                             </div>
                         </div>
-                        <div class="children comments">
-                            @foreach (var childComment in comment.Children)
-                            {
-                                var childCommentUser = childComment.User;
+                        @if (comment.Children is {Length: > 0 })
+                        {
+                            <div class="children comments">
+                                @foreach (var childComment in comment.Children)
+                                {
+                                    var childCommentUser = childComment.User;
 
-                                <div class="comment">
-                                    <div class="avatar">
-                                        <img src="@childCommentUser.AvatarUrl" alt="@childCommentUser.Name"/></div>
-                                    <div class="comment-body">
-                                        <div class="user">
-                                            <span>@childCommentUser.Name</span>
-                                            <span class="created">@DateUtils.DateTimeToLongAgo(childComment.CreatedOn)</span>
-                                            @if (childComment.Edited)
-                                            {
-                                                <span class="edited">(edited)</span>
-                                            }
+                                    <div class="comment">
+                                        <div class="avatar">
+                                            <img src="@childCommentUser.AvatarUrl" alt="@childCommentUser.Name"/>
                                         </div>
-                                        <p>@childComment.Content</p>
-                                        <div class="actions">
-                                            @if (sessionService.Session.IsLoggedIn)
-                                            {
-                                                <a class="reply" href="#" data-comment-id="@comment.CommentId" onclick="replyToComment(event);" data-is-child>Reply</a>
-                                                @if (childCommentUser.UserId == sessionService.Session.UserAccount?.UserId)
+                                        <div class="comment-body">
+                                            <div class="user">
+                                                <span>@childCommentUser.Name</span>
+                                                <span class="created">@DateUtils.DateTimeToLongAgo(childComment.CreatedOn)</span>
+                                                @if (childComment.Edited)
                                                 {
-                                                    <a class="edit" href="#">Edit</a>
+                                                    <span class="edited">(edited)</span>
                                                 }
-                                            }
+                                            </div>
+                                            <p>@childComment.Content</p>
+                                            <div class="actions">
+                                                @if (sessionService.Session.IsLoggedIn)
+                                                {
+                                                    <a class="reply" href="#" data-comment-id="@comment.CommentId" onclick="replyToComment(event);" data-is-child>Reply</a>
+                                                    @if (childCommentUser.UserId == sessionService.Session.UserAccount?.UserId)
+                                                    {
+                                                        <a class="edit" href="#" data-comment-id="@childComment.CommentId" onclick="editCommentHandler(event);">Edit</a>
+                                                    }
+                                                }
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            }
-                        </div>
+                                }
+                            </div>
+                        }
                     </div>
                 }
             </div>

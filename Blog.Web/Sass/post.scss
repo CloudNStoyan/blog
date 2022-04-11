@@ -98,54 +98,6 @@ article {
                     text-decoration: none;
                 }
             }
-
-            &.active {
-                textarea {
-                    border: 1px solid black !important;
-                }
-
-                .actions {
-                    display: block !important;
-                }
-            }
-
-            .create-comment {
-                flex-grow: 1;
-                margin-left: 10px;
-
-                textarea {
-                    resize: none;
-                    padding: 5px;
-                    width: 100%;
-                    border: 1px solid lightgray;
-                    font-size: 14px;
-
-                    &:focus {
-                        outline: 0;
-                    }
-                }
-
-                .actions {
-                    float: right;
-                    display: none;
-
-                    a {
-                        display: inline-block;
-                        text-transform: uppercase;
-                        text-decoration: none;
-                        font-weight: 500;
-
-                        &.cancel {
-                            color: black;
-                            margin-right: 10px;
-                        }
-
-                        &.comment {
-                            color: $color-orange;
-                        }
-                    }
-                }
-            }
         }
 
         .avatar {
@@ -157,6 +109,54 @@ article {
             img {
                 width: 100%;
                 height: 100%;
+            }
+        }
+
+        .create-comment {
+            flex-grow: 1;
+            margin-left: 10px;
+
+            &.active {
+                textarea {
+                    border: 1px solid black !important;
+                }
+
+                .actions {
+                    display: block !important;
+                }
+            }
+
+            textarea {
+                resize: none;
+                padding: 5px;
+                width: 100%;
+                border: 1px solid lightgray;
+                font-size: 14px;
+
+                &:focus {
+                    outline: 0;
+                }
+            }
+
+            .actions {
+                float: right;
+                display: none;
+
+                a {
+                    display: inline-block;
+                    text-transform: uppercase;
+                    text-decoration: none;
+                    font-weight: 500;
+
+                    &.cancel {
+                        color: black;
+                        margin-right: 10px;
+                    }
+
+                    &.comment {
+                        color: $color-orange;
+                    }
+                }
             }
         }
 
@@ -172,6 +172,10 @@ article {
             .comment-body {
                 margin-left: 10px;
                 flex-grow: 1;
+
+                &.hide {
+                    display: none;
+                }
 
                 .user {
                     font-weight: 600;
