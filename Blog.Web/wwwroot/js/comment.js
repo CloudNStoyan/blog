@@ -137,7 +137,7 @@ const addReplyToPage = (comment, parentEl) => {
 };
 
 const commentInput = createCommentWrapper.querySelector('textarea');
-const commentCancelBtn = createCommentWrapper.querySelector('.cancel');
+const commentCancelBtn = createCommentWrapper.querySelector('.cancel-btn');
 const createCommentEl = createCommentWrapper.querySelector('.create-comment');
 
 const activeCreateCommentClass = 'active';
@@ -208,7 +208,7 @@ const editComment = async (content, commentId) => {
     return commentResponse;
 }
 
-const commentBtn = createCommentWrapper.querySelector('.comment');
+const commentBtn = createCommentWrapper.querySelector('.comment-btn');
 
 commentBtn.addEventListener('click',
     (e) => {
@@ -250,7 +250,7 @@ const editCommentHandler = (e) => {
     createCommentEl.appendChild(actionsEl);
 
     const cancelBtn = document.createElement('a');
-    cancelBtn.className = 'cancel';
+    cancelBtn.className = 'cancel-btn';
     cancelBtn.innerText = 'Cancel';
     cancelBtn.href = '#';
     cancelBtn.addEventListener('click',
@@ -263,7 +263,7 @@ const editCommentHandler = (e) => {
     actionsEl.appendChild(cancelBtn);
 
     const commentBtn = document.createElement('a');
-    commentBtn.className = 'comment';
+    commentBtn.className = 'comment-btn';
     commentBtn.innerText = 'Edit';
     commentBtn.href = '#';
     commentBtn.addEventListener('click',
@@ -296,6 +296,11 @@ const replyToComment = (e) => {
 
     const commentEl = e.target.parentElement.parentElement.parentElement;
 
+    const existingCreateCommentWrapper = document.querySelector('.comments .create-comment-wrapper');
+    if (existingCreateCommentWrapper) {
+        existingCreateCommentWrapper.remove();
+    }
+
     const createCommentWrapperEl = document.createElement('div');
     createCommentWrapperEl.className = 'create-comment-wrapper';
     commentEl.appendChild(createCommentWrapperEl);
@@ -312,15 +317,16 @@ const replyToComment = (e) => {
 
     const createCommentTextarea = document.createElement('textarea');
     createCommentTextarea.setAttribute('rows', '4');
-    createCommentTextarea.setAttribute('placeholder', 'Add a comment...');
+    createCommentTextarea.setAttribute('placeholder', 'Add a reply...');
     createCommentEl.appendChild(createCommentTextarea);
+    createCommentTextarea.focus();
 
     const actionsEl = document.createElement('div');
     actionsEl.className = 'actions';
     createCommentEl.appendChild(actionsEl);
 
     const cancelBtn = document.createElement('a');
-    cancelBtn.className = 'cancel';
+    cancelBtn.className = 'cancel-btn';
     cancelBtn.innerText = 'Cancel';
     cancelBtn.href = '#';
     cancelBtn.addEventListener('click',
@@ -332,7 +338,7 @@ const replyToComment = (e) => {
     actionsEl.appendChild(cancelBtn);
 
     const commentBtn = document.createElement('a');
-    commentBtn.className = 'comment';
+    commentBtn.className = 'comment-btn';
     commentBtn.innerText = 'Comment';
     commentBtn.href = '#';
     commentBtn.addEventListener('click',

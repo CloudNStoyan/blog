@@ -148,12 +148,12 @@ article {
                     text-decoration: none;
                     font-weight: 500;
 
-                    &.cancel {
+                    &.cancel-btn {
                         color: black;
                         margin-right: 10px;
                     }
 
-                    &.comment {
+                    &.comment-btn {
                         color: $color-orange;
                     }
                 }
@@ -208,6 +208,9 @@ article {
                 flex: 0 0 100%;
                 margin-top: 20px;
                 margin-left: 38px;
+                border: 0;
+                padding-bottom: 0;
+                margin-bottom: 0;
 
                 .avatar {
                     flex: 0 0 24px;
