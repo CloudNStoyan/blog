@@ -67,7 +67,10 @@ namespace Blog.Web.Areas.Api.Comments
         }
 
         public async Task<int?> CreateComment(CommentPoco commentPoco) => await this.Database.Insert(commentPoco);
+
         public async Task UpdateComment(CommentPoco commentPoco) => await this.Database.Update(commentPoco);
+
+        public async Task DeleteComment(CommentPoco commentPoco) => await this.Database.Delete(commentPoco);
 
         public async Task<CommentPoco> GetCommentById(int commentId)
         {

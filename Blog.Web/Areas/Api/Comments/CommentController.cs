@@ -46,6 +46,28 @@ namespace Blog.Web.Areas.Api.Comments
         }
 
         [HttpPost]
+        public async Task<IActionResult> Delete(int commentId)
+        {
+            var session = this.SessionService.Session;
+
+            if (!session.IsLoggedIn)
+            {
+                return this.BadRequest();
+            }
+
+            var commentPoco = await this.CommentService.GetCommentById(commentId);
+
+            if (commentPoco == null || commentPoco.UserId != session.UserAccount.UserId)
+            {
+                return this.BadRequest();
+            }
+
+            await this.CommentService.DeleteComment(commentPoco);
+
+            return this.Ok();
+        }
+
+        [HttpPost]
         public async Task<IActionResult> Edit(string content, int commentId)
         {
             var session = this.SessionService.Session;

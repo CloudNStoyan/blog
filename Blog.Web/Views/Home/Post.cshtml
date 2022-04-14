@@ -118,6 +118,7 @@
                                     @if (commentUser.UserId == sessionService.Session.UserAccount?.UserId)
                                     {
                                         <a class="edit" href="#" data-comment-id="@comment.CommentId" onclick="editCommentHandler(event);">Edit</a>
+                                        <a class="delete" href="#" data-comment-id="@comment.CommentId" onclick="deleteCommentHandler(event);">Delete</a>
                                     }
                                 }
                             </div>
@@ -150,6 +151,7 @@
                                                     @if (childCommentUser.UserId == sessionService.Session.UserAccount?.UserId)
                                                     {
                                                         <a class="edit" href="#" data-comment-id="@childComment.CommentId" onclick="editCommentHandler(event);">Edit</a>
+                                                        <a class="delete" href="#" data-comment-id="@childComment.CommentId" onclick="deleteCommentHandler(event);">Delete</a>
                                                     }
                                                 }
                                             </div>

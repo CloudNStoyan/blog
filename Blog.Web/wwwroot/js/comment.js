@@ -208,6 +208,24 @@ const editComment = async (content, commentId) => {
     return commentResponse;
 }
 
+const deleteComment = (commentId) =>
+{
+    fetch(`/api/comment/delete?${new URLSearchParams({ commentId })}`,
+            {
+                method: 'POST'
+        })
+        .then(response => {
+            if (response.ok) {
+                createToast('Successfully deleted a comment.');
+            }
+        })
+        .catch(error => {
+            console.error(error);
+
+            createToast('Error, try again.');
+        });
+}
+
 const commentBtn = createCommentWrapper.querySelector('.comment-btn');
 
 commentBtn.addEventListener('click',
@@ -358,3 +376,21 @@ const replyToComment = (e) => {
         });
     actionsEl.appendChild(commentBtn);
 };
+
+const deleteCommentHandler = (e) => {
+    e.preventDefault();
+
+    const el = e.target;
+
+    if (!el.dataset.commentId) {
+        return;
+    }
+
+    const commentId = Number(e.target.dataset.commentId);
+
+    deleteComment(commentId);
+
+    const commentEl = el.parentElement.parentElement.parentElement;
+
+    commentEl.remove();
+}
