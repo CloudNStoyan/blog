@@ -388,9 +388,72 @@ const deleteCommentHandler = (e) => {
 
     const commentId = Number(e.target.dataset.commentId);
 
-    deleteComment(commentId);
+    const onSuccess = () => {
+        deleteComment(commentId);
 
-    const commentEl = el.parentElement.parentElement.parentElement;
+        const commentEl = el.parentElement.parentElement.parentElement;
 
-    commentEl.remove();
+        commentEl.remove();
+    }
+
+    CreateModal('Delete comment', 'Are you sure you want to delete this comment?', 'DELETE', onSuccess);
+}
+
+function CreateModal(title, content, okButtonText, onSuccess, onError) {
+    const modalContainer = document.createElement('div');
+    modalContainer.className = 'modal-container';
+    document.body.appendChild(modalContainer);
+    modalContainer.innerHTML =
+        `
+            <div class="modal__heading">
+                <h5 class="modal__title">${title}</h5>
+                <a href="#" class="modal__close-btn">
+                    <i class="fas fa-times"></i>
+                </a>
+            </div>
+            <div class="modal__body">
+                <p>${content}</p>
+            </div>
+        `;
+    modalContainer.querySelector('.modal__close-btn').addEventListener(
+        'click', function closeModal(e) {
+            e.preventDefault();
+            modalContainer.remove();
+        });
+
+    const modalActions = document.createElement('div');
+    modalActions.className = 'modal__actions';
+    modalContainer.appendChild(modalActions);
+
+    const okBtn = document.createElement('a');
+    okBtn.className = 'modal__btn-ok';
+    okBtn.href = '#';
+    okBtn.innerText = okButtonText;
+    okBtn.addEventListener('click',
+        function invokeOnSucessFunc(e) {
+            e.preventDefault();
+
+            modalContainer.remove();
+            
+            if (typeof (onSuccess) == 'function') {
+                onSuccess();
+            }
+        });
+    modalActions.appendChild(okBtn);
+
+    const closeBtn = document.createElement('a');
+    closeBtn.className = 'modal__btn-close';
+    closeBtn.href = '#';
+    closeBtn.innerText = 'Close';
+    closeBtn.addEventListener('click',
+        function invokeOnErrorFunc(e) {
+            e.preventDefault();
+
+            modalContainer.remove();
+
+            if (typeof (onError) == 'function') {
+                onError();
+            }
+        });
+    modalActions.appendChild(closeBtn);
 }
