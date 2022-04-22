@@ -172,6 +172,7 @@ article {
             .comment-body {
                 margin-left: 10px;
                 flex-grow: 1;
+                flex-basis: 0%;
 
                 &.hide {
                     display: none;
