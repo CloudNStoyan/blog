@@ -262,6 +262,7 @@ const editCommentHandler = (e) => {
     createCommentTextarea.setAttribute('placeholder', 'Edit comment...');
     createCommentTextarea.value = commentContent.innerText;
     createCommentEl.appendChild(createCommentTextarea);
+    createCommentTextarea.focus();
 
     const actionsEl = document.createElement('div');
     actionsEl.className = 'actions';
