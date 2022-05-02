@@ -401,9 +401,18 @@ const deleteCommentHandler = (e) => {
 }
 
 function CreateModal(title, content, okButtonText, onSuccess, onError) {
+    const modalWrapper = document.createElement('div');
+    modalWrapper.className = 'modal-wrapper';
+    document.body.appendChild(modalWrapper);
+
+    const closeModal = () => {
+        modalWrapper.classList.add('closed');
+        setTimeout(() => modalWrapper.remove(), 500);
+    }
+
     const modalContainer = document.createElement('div');
     modalContainer.className = 'modal-container';
-    document.body.appendChild(modalContainer);
+    modalWrapper.appendChild(modalContainer);
     modalContainer.innerHTML =
         `
             <div class="modal__heading">
@@ -417,9 +426,9 @@ function CreateModal(title, content, okButtonText, onSuccess, onError) {
             </div>
         `;
     modalContainer.querySelector('.modal__close-btn').addEventListener(
-        'click', function closeModal(e) {
+        'click', function exitModal(e) {
             e.preventDefault();
-            modalContainer.remove();
+            closeModal();
         });
 
     const modalActions = document.createElement('div');
@@ -434,7 +443,7 @@ function CreateModal(title, content, okButtonText, onSuccess, onError) {
         function invokeOnSucessFunc(e) {
             e.preventDefault();
 
-            modalContainer.remove();
+            closeModal();
             
             if (typeof (onSuccess) == 'function') {
                 onSuccess();
@@ -450,7 +459,7 @@ function CreateModal(title, content, okButtonText, onSuccess, onError) {
         function invokeOnErrorFunc(e) {
             e.preventDefault();
 
-            modalContainer.remove();
+            closeModal();
 
             if (typeof (onError) == 'function') {
                 onError();
