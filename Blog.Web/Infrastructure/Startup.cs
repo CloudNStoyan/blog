@@ -57,6 +57,8 @@ namespace Blog.Web.Infrastructure
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseInternalErrorMiddleware();
+
             app.UseNotFoundMiddleware();
 
             app.UseStaticFiles();
