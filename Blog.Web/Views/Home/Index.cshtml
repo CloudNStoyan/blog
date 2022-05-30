@@ -1,4 +1,5 @@
 ﻿@using Markdig
+@using Blog.Web.Infrastructure
 @model Blog.Web.Areas.Admin.Posts.FilteredPostsModel
 
 @{
@@ -32,11 +33,7 @@
                             }
                         </div>
                     </header>
-                    @{
-                        const int excerpLength = 40;
-                        string excerp = post.Content.Length > excerpLength ? $"{post.Content[..excerpLength]}.." : post.Content;
-                    }
-                    <p class="excerp">@Markdown.ToPlainText(excerp)</p>
+                    <p class="excerp">@Markdown.ToPlainText(PostUtils.GetExcerp(post.Content, 40))</p>
                 </article>
             }
         }
